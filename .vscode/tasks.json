@@ -1,0 +1,40 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "cmake_debug",
+            "command": "rm -rf * && cmake -DCMAKE_BUILD_TYPE=Debug .. && make",
+            "args": [],
+            "options": {
+                "cwd": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "cmake_release",
+            "command": "rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release .. && make",
+            "args": [],
+            "options": {
+                "cwd": "build"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "gcc build active file",
+            "command": "/usr/bin/gcc -g ${file} -lpthread -I${fileDirname}/../include -I/usr/include/ -I/usr/include/gtk-2.0/ -o ${fileDirname}/../build/${fileBasenameNoExtension} `pkg-config --cflags gtk+-2.0` && ${fileDirname}/../build/${fileBasenameNoExtension}",
+            "args": [],
+            "options": {},
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
