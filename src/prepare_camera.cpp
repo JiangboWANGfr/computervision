@@ -37,10 +37,9 @@ bool setTRiggerSwitchToOff();
 
 //////////////////////函数实现//////////////////
 
-int prepareCamera(GX_DEV_HANDLE *camera_hd)
+int prepareCamera(GX_DEV_HANDLE &camera_hd)
 {
-    camera_handle = *camera_hd;
-    if (initializeCameraDevice() == 0)
+    if (initializeCameraDevice() == false)
         return 0;
 
     if (countNumberOfCameras() == false)
@@ -67,7 +66,7 @@ int prepareCamera(GX_DEV_HANDLE *camera_hd)
     if (setTRiggerSwitchToOff() == false)
         return 0;
 
-    
+    camera_hd = camera_handle;
 }
 
 
@@ -79,11 +78,16 @@ int initializeCameraDevice()
     open_param.pszContent = "1";
     //初始化库
     status = GXInitLib();
+
+    cout << "初始化相机参数" << endl;
+
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
         return false;
     }
+
+    cout << "成功初始化相机参数" << endl;
     return true;
 }
 
@@ -91,20 +95,20 @@ bool countNumberOfCameras()
 {
     //获取枚举设备个数
     status = GXUpdateDeviceList(&camera_num, 1000);
-
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
         status = GXCloseLib();
         return false;
     }
-
+    cout << "number of cameras: " << camera_num << endl;
     return true;
 }
 
 bool openFirstCamera()
 {
     status = GXOpenDevice(&open_param, &camera_handle);
+    cout << "camera_handle: "<< camera_handle << endl;
     if (status != GX_STATUS_SUCCESS)
     {
         printf("Failed to open camera.\n");

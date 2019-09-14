@@ -20,6 +20,6 @@
 
 
 /////////////////函数声明///////////////////
-int prepareCamera(GX_DEV_HANDLE *camera_hd);
+int prepareCamera(GX_DEV_HANDLE &camera_hd);
 
 #endif

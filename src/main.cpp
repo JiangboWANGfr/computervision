@@ -12,8 +12,6 @@
 #include "head.h"
 #include "prepare_camera.h"
 
-
-
 #include "ArmorDetector.hpp"
 #include "AngleCalculate.hpp"
 #include "Serial.hpp"
@@ -23,18 +21,13 @@
 
 /////////////////全局变量声明区//////////////
 int64_t m_pixel_color = 0; ///< Bayer格式
-bool is_implemented; //是否支持彩色
+bool is_implemented;       //是否支持彩色
 GX_STATUS status;
 GX_DEV_HANDLE camera_handle = NULL; ///< 相机句柄
 char *m_rgb_image = NULL;
 GX_FRAME_DATA g_frame_data = {0}; ///< 采集图像参数
 bool g_get_image = false;         ///< 采集线程是否结束的标志：true 运行；false 退出
 Mat source_image_directly_from_camera;
-
-
-
-
-
 
 //API接口函数返回值
 uint32_t ret = 0;
@@ -57,13 +50,11 @@ VideoWriter videoSrc(filename + "Src.avi", CV_FOURCC('M', 'J', 'P', 'G'), videoR
 VideoWriter videoFin(filename + "Fin.avi", CV_FOURCC('M', 'J', 'P', 'G'), videoRate, videoSize); //记录结果图，用于判定赛场表现
 ofstream filterData;                                                                             // 记录装甲数据输出为csv文件，方便建模分析
 
-
 ////////////////////函数声明///////////
 int configSourceImage();
 int mallocForSourceImage();
 bool startReceiveImageThread();
 void *getImageFromCamera(void *pParam);
-
 
 void initArmorData(ArmorData &armorData)
 {
@@ -120,7 +111,6 @@ void writeIntoFilterDataCSV()
                << armor_data.atocDistance << endl;
 }
 
-
 int judgeTargetInsight(unsigned int &lost, bool &is_insight)
 {
     if (armor_data.isGet == true)
@@ -133,7 +123,6 @@ int judgeTargetInsight(unsigned int &lost, bool &is_insight)
         lost++;
     }
 }
-
 
 void kernel()
 {
@@ -187,6 +176,7 @@ void kernel()
              << endl;
     }
 }
+
 int UnPreForImage()
 {
     GX_STATUS status = GX_STATUS_SUCCESS;
@@ -241,19 +231,16 @@ int closeAll()
     return 0;
 }
 
-
-
-
-
-
-
 ///////////////////main///////////////
 
 int main()
 {
     cout << "Initializion.........." << endl;
-    prepareCamera(&camera_handle);
+    prepareCamera(camera_handle);
+    cout << "camera_handle: "<< camera_handle << endl;    
+    cout << "Success to open camera" << endl;
     configSourceImage();
+    cout << "Success to config source Image" << endl;
     //为采集做准备
     int ret = mallocForSourceImage();
     if (ret != 0)
@@ -274,32 +261,32 @@ int main()
     closeAll();
 }
 
-
 ////////////////////函数实现////////////////////////
-
 
 int configSourceImage()
 {
-    int64_t width, height;
-    double expotime;
-    int64_t gain;
+    int64_t width = 0, height = 0;
+    double expotime = 0;
+    int64_t gain = 0;
     status = GXGetInt(camera_handle, GX_INT_WIDTH, &width);
     status = GXGetInt(camera_handle, GX_INT_HEIGHT, &height);
     status = GXGetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, &expotime);
     status = GXGetInt(camera_handle, GX_INT_GAIN, &gain);
-    // cout << "width = " << width << '\t' << "height = " << height << endl;
-    // cout << "expotime = " << expotime << '\t' << "gain = " << gain << endl;
+    cout << "width = " << width << '\t' << "height = " << height << endl;
+    cout << "expotime = " << expotime << '\t' << "gain = " << gain << endl;
     // 查询当前相机是否支持GX_ENUM_PIXEL_COLOR_FILTER
     status = GXIsImplemented(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &is_implemented);
     //支持彩色图像
     if (is_implemented)
     {
+        cout << "支持彩色" << endl;
         status = GXGetEnum(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &m_pixel_color);
         source_image_directly_from_camera.create(height, width, CV_8UC3);
         m_rgb_image = new char[width * height * 3];
     }
     else
     {
+        cout << "不支持彩色" << endl;
         source_image_directly_from_camera.create(height, width, CV_8UC1);
     }
 }
