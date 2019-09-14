@@ -8,11 +8,10 @@
  * @LastEditors: 
  * @Description: 
  */
-#ifndef HEADER_H
-#define HEADER_H
+#ifndef __HEADER_H__
+#define __HEADER_H__
 
 #include "config.h"
-#include "actions.h"
 
 //////////////C/C++//////////////
 #include <stdio.h>
@@ -47,36 +46,51 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
 
+//////////////其他//////////////
+#include "GxIAPI.h"
+// #include "Serialport.h"
+#include "DxImageProc.h"
+
+////////////////////define/////////////////////
+
+
+
+
+///////////////////typedef//////////////////
+
+
+
+
 //////////namespace/////////////
 using namespace cv;
 using namespace std;
 
 /////////////全局变量区//////////////
-typedef struct ArmorData
+typedef struct TargetData
 {
-    bool isGet; //main<-ArmorDetector，ArmorData是否清零
+    bool is_get; //main<-ArmorDetector，ArmorData是否清零
     bool shoot;
-    float angleYaw;   //AngleCalculate->ArmorDetector->main->Serial
-    float anglePitch; //AngleCalculate->ArmorDetector->main->Serial
+    float yaw_angle;   //AngleCalculate->ArmorDetector->main->Serial
+    float pitch_angle; //AngleCalculate->ArmorDetector->main->Serial
     float x;
     float y;
     float z;
     float atocDistance; //ArmorDetector<-AngleCalculate，装甲板决策，main<-ArmorDetector
-    bool isBig;         //ArmorDetector->AngleCalculate，计算pnp
-    struct ArmorData operator=(const struct ArmorData &a)
+    bool is_big;         //ArmorDetector->AngleCalculate，计算pnp
+    struct TargetData operator=(const struct TargetData &a)
     {
-        isGet = a.isGet;
-        shoot = a.isGet;
-        angleYaw = a.angleYaw;
-        anglePitch = a.anglePitch;
+        is_get = a.is_get;
+        shoot = a.is_get;
+        yaw_angle = a.yaw_angle;
+        pitch_angle = a.pitch_angle;
         x = a.x;
         y = a.y;
         z = a.z;
         atocDistance = a.atocDistance;
-        isBig = a.isBig;
+        is_big = a.is_big;
     }
 
-} ArmorData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)
+} TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)
 
 typedef struct CarData
 {

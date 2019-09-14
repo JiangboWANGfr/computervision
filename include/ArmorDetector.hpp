@@ -11,35 +11,36 @@
 #ifndef ARMORDETECTOR_HPP
 #define ARMORDETECTOR_HPP
 
-#include "Header.h"
+#include "header.h"
 
-class ArmorDetector 
-{public:
-    #ifdef BLUE
-    cv::Scalar huahuaScalar = cv::Scalar(255,0,0);
-    #endif
-    #ifdef RED
-    cv::Scalar huahuaScalar = cv::Scalar(0,0,255);
-    #endif
+class ArmorDetector
+{
+public:
+#ifdef BLUE
+    cv::Scalar huahuaScalar = cv::Scalar(255, 0, 0);
+#endif
+#ifdef RED
+    cv::Scalar huahuaScalar = cv::Scalar(0, 0, 255);
+#endif
 
-    private:
-    vector<RotatedRect> rectLists,lightLists;
+private:
+    vector<RotatedRect> rectLists, lightLists;
     vector<Point2f> armorCenters;
-    vector<int> iRem;       //用于记录装甲板中心对应的两个灯条是x顺序中的哪个
-    vector<int> jRem;       //同iRem
-    vector<int> sbRem;      //用于记录装甲板大小类型
-    int armorRem;           //用于记录最后选中的装甲板在所有装甲板中的顺序
+    vector<int> iRem;  //用于记录装甲板中心对应的两个灯条是x顺序中的哪个
+    vector<int> jRem;  //同iRem
+    vector<int> sbRem; //用于记录装甲板大小类型
+    int armorRem;      //用于记录最后选中的装甲板在所有装甲板中的顺序
 
-    ArmorData armordata;
+    TargetData armordata;
 
     Mat ipImg;
 
-    
-    public:
+public:
+    int mode;//用于判断是识别装甲板还是能量机关
     ArmorDetector(){};
-    void getCenters(cv::Mat &ipImg, ArmorData &armor_data);
+    void getCenters(cv::Mat &ipImg, TargetData &armor_data);
 
-    private:
+private:
     void colorThres(cv::Mat &ipImage, cv::Mat &opImage);
     void getLights(void);
     void getArmors(cv::Mat &ipImg);
@@ -49,10 +50,9 @@ class ArmorDetector
     static inline bool rxCmp(cv::RotatedRect &rx1, cv::RotatedRect &rx2);
     void xCmp(cv::RotatedRect &x1, cv::RotatedRect &x2);
     int whiteSums(cv::Mat &src);
-    void drawRRects(cv::Mat &ipImg, std::vector< cv::RotatedRect > RectVectors);
+    void drawRRects(cv::Mat &ipImg, std::vector<cv::RotatedRect> RectVectors);
 
     void initializeVariate();
-
 };
 
 #endif

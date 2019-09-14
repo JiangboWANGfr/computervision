@@ -15,12 +15,12 @@ Mat_<float> intrinsic_matrix_8_640 = (Mat_<float>(3, 3) << 1453.68113, 0, 329.79
                                                         0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
 vector<float> distCoeff_8_640 = { -0.07301, 0.18455, -0.00017, -0.00115, 0 };
 
-void AngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, ArmorData &point4data)
+void AngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data)
 {
     // 准备pnp所需四点的世界坐标系3D坐标,小装甲灯柱对中心宽134mm，大装甲灯柱对中心宽229mm，高55mm
     // 世界坐标系中心建立在装甲板中心
     vector<cv::Point3f> Points3D;
-    if(point4data.isBig == 0)
+    if(point4data.is_big == 0)
     {
         Points3D.push_back(cv::Point3f(-67, -27.5, 0));        //P1 三维坐标的单位是毫米
         Points3D.push_back(cv::Point3f(-67, 27.5, 0));         //P2
@@ -86,13 +86,13 @@ void AngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, ArmorDa
 
     }
     // 计算两轴偏角，yaw向右为正，pitch向左为正
-    point4data.angleYaw = atan(point4data.x/point4data.z)*180/CV_PI;
-    point4data.anglePitch = atan(point4data.y/point4data.z)*180/CV_PI;       
+    point4data.yaw_angle = atan(point4data.x/point4data.z)*180/CV_PI;
+    point4data.pitch_angle = atan(point4data.y/point4data.z)*180/CV_PI;       
     // 角度太小赋0.0f防止抖动
-    point4data.angleYaw = abs(point4data.angleYaw) > 0.01f ? point4data.angleYaw : 0.0f;
-    point4data.anglePitch = abs(point4data.anglePitch) > 0.01f ? point4data.anglePitch : 0.0f;
+    point4data.yaw_angle = abs(point4data.yaw_angle) > 0.01f ? point4data.yaw_angle : 0.0f;
+    point4data.pitch_angle = abs(point4data.pitch_angle) > 0.01f ? point4data.pitch_angle : 0.0f;
     // 划定打击区域,静止时1.5°已经到达边沿，放的越大越暴力，后来电控做了预测后根据他们自己的量判断是否打击
-    if( (abs(point4data.angleYaw) < 1.5) && (abs(point4data.anglePitch) < 1.5) )
+    if( (abs(point4data.yaw_angle) < 1.5) && (abs(point4data.pitch_angle) < 1.5) )
     {
         point4data.shoot = true;
     }

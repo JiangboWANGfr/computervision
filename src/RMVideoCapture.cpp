@@ -1,6 +1,6 @@
 /*
  * @Copyright: CS of BIT
- * @Author: 王占坤
+ * @Author: 王占��
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:34:29 +0800
@@ -24,7 +24,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
 CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 *******************************************************************************************************************/
-#include "Header.h"
+#include "header.h"
 #include "RMVideoCapture.hpp"
 
 RMVideoCapture::RMVideoCapture(const char * device, int size_buffer) : video_path(device) {
@@ -414,7 +414,7 @@ void camSetMode(RMVideoCapture &cap0, int picW)
             cap0.changeVideoFormat(1920,1080);
             break;
         }
-        // case 2699应该用不上
+        // case 2699应该用不��
     }
 }
 

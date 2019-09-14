@@ -12,7 +12,7 @@
 #define __PREPARE_CAMERA_H__
 
 ////////////////////include///////////////
-#include "head.h"
+#include "header.h"
 #include "actions.h"
 //////////////////define////////////////
 

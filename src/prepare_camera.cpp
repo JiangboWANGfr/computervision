@@ -8,7 +8,7 @@
  * @LastEditors: 
  * @Description: 这里是对相机进行配置
  */
-#include "head.h"
+#include "header.h"
 #include "prepare_camera.h"
 
 /////////////////////文件内部全局变量声明区//////////////////////////

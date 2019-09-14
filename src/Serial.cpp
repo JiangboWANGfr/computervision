@@ -14,14 +14,14 @@
 //       open_port()成员函数可以打开一个串口，set_opt()更改参数。
 //@example:open_port("/dev/ttyUSB0");
 //         set_opt(115200, 8, 'N', 1);
-Serialport::Serialport(string port)
+SerialPort::SerialPort(string port)
 {
         open_port(port);
         set_opt();
 }
 
 //Serialport下的成员函数open_port()的实现；
-int Serialport::open_port(string port)
+int SerialPort::open_port(string port)
 {
     // char *dev[]={"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2"};
     // fd = open( "/dev/ttyS0", O_RDWR|O_NOCTTY|O_NDELAY);
@@ -58,7 +58,7 @@ int Serialport::open_port(string port)
        nBits: 数据位
        nEvent: 奇偶校验
        nStop: 停止位*/
-int Serialport::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
+int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
 {
     struct termios newtio,oldtio;
     if ( tcgetattr( fd,&oldtio) != 0)
@@ -139,7 +139,7 @@ int Serialport::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
     return 0;
 }
 
-bool Serialport::send(char *str)
+bool SerialPort::send(char *str)
 {
     buffer = str;
     if(fd < 0 || write(fd, buffer, 1) < 0)
@@ -152,8 +152,8 @@ bool Serialport::send(char *str)
     return true;
 }
 
-// 0xA5 | 0x5A | angleYaw | anglePitch | 0xAA | 0xAA
-bool Serialport::sendAngle(float _angle1,float _angle2,float Dis, bool big,bool insight, bool get)
+// 0xA5 | 0x5A | yaw_angle | pitch_angle | 0xAA | 0xAA
+bool SerialPort::sendAngle(float _angle1,float _angle2,float Dis, bool big,bool insight, bool get)
 {
 	char send_num=0;
     unsigned char *p;
@@ -183,7 +183,7 @@ bool Serialport::sendAngle(float _angle1,float _angle2,float Dis, bool big,bool 
 
     // cout << "Send_Angle:"<<dec<<_angle1<<","<<dec<<_angle2<<endl;
     // cout << "isget = " << get << endl;
-    // cout << "isBig = " << big << endl;
+    // cout << "is_big = " << big << endl;
     // cout << "Send_data:" <<hex<<(int)tmpchar[2]<<","<<hex<<(int)tmpchar[3]<<","<<hex<<(int)tmpchar[4]<<","<<hex<<(int)tmpchar[5]<<endl;
     // cout << "Send_data:" <<hex<<(int)tmpchar[6]<<","<<hex<<(int)tmpchar[7]<<","<<hex<<(int)tmpchar[8]<<","<<hex<<(int)tmpchar[9]<<endl;
 	// cout << "Check:" << hex << (int)tmpchar[10] << endl;
@@ -198,7 +198,7 @@ bool Serialport::sendAngle(float _angle1,float _angle2,float Dis, bool big,bool 
 }
 
 // 0xA5 | 0x5A | hitmode | 0xff
-void Serialport::readMode(int &carMode)
+void SerialPort::readMode(int &carMode)
 {
     int bytes;
     ioctl(fd, FIONREAD, &bytes);
@@ -216,8 +216,8 @@ void Serialport::readMode(int &carMode)
     // cout << "guapi is here !!! \n" << endl;
 }
 
-// 0xA5 | 0x5A | angleYaw | anglePitch | 0xAA | 0xAA
-uint8_t Serialport::readAngle(CarData &cardata)
+// 0xA5 | 0x5A | yaw_angle | pitch_angle | 0xAA | 0xAA
+uint8_t SerialPort::readAngle(CarData &cardata)
 {
     
     int bytes;
@@ -238,7 +238,7 @@ uint8_t Serialport::readAngle(CarData &cardata)
     // }
 }
 
-Serialport:: ~Serialport()
+SerialPort:: ~SerialPort()
 {
     close(fd);
 }
@@ -248,3 +248,49 @@ Serialport:: ~Serialport()
 //              3.自检是否接收成功
 //              4.自检数据解算是否正确
 //              5.验证发送数据是否正确
+
+bool SerialPort::sendAngleDist(float _angle1,float _angle2,float _angle3,float _angle4)
+{
+    char tmpchar[20];
+	char send_num=0;
+    unsigned char *p;
+    memset(tmpchar, 0x00, sizeof(tmpchar));    //对tempchar清零
+    tmpchar[0] = 0xA5;                                        //起始标志
+	tmpchar[1] = 0x5A;
+	//tmpchar[2] = 0x06;                                //the number of data bytes
+    p=(unsigned char *)&_angle1;
+    tmpchar[2] = *p;                      //第一个角度的低8位
+    tmpchar[3] = *(p+1);                  //第一个角度
+    tmpchar[4] = *(p+2);                  //
+    tmpchar[5] = *(p+3);                  //
+    p=(unsigned char *)&_angle2;
+    tmpchar[6] = *p;                      //第二个角度的低8位
+    tmpchar[7] = *(p+1);                  //第二个角度
+    tmpchar[8] = *(p+2);                  //
+    tmpchar[9] = *(p+3);                  //
+    p=(unsigned char *)&_angle3;
+    tmpchar[10] = *p;                      //第三个角度的低8位
+    tmpchar[11] = *(p+1);                  //第三个角度
+    tmpchar[12] = *(p+2);                  //
+    tmpchar[13] = *(p+3);                  //、
+    p=(unsigned char *)&_angle4;
+    tmpchar[14] = *p;                      //第三个角度的低8位
+    tmpchar[15] = *(p+1);                  //第三个角度
+    tmpchar[16] = *(p+2);                  //
+    tmpchar[17] = *(p+3);                  //
+	tmpchar[18] = 0xAA;                   //Check
+    tmpchar[19] = 0xAA;                   //End
+    //tmpchar[7] = 0xFE;                  //结束标志
+    //cout << "Send_Angle:"<<dec<<_angle1<<","<<dec<<_angle2<<endl;
+    //cout << "Send_data1:" <<hex<<(int)tmpchar[2]<<","<<hex<<(int)tmpchar[3]<<","<<hex<<(int)tmpchar[4]<<","<<hex<<(int)tmpchar[5]<<endl;
+    //cout << "Send_data2:" <<hex<<(int)tmpchar[6]<<","<<hex<<(int)tmpchar[7]<<","<<hex<<(int)tmpchar[8]<<","<<hex<<(int)tmpchar[9]<<endl;
+    //cout << "Send_data3:" <<hex<<(int)tmpchar[10]<<","<<hex<<(int)tmpchar[11]<<","<<hex<<(int)tmpchar[12]<<","<<hex<<(int)tmpchar[13]<<endl;
+	//cout << "Check:" << hex << (int)tmpchar[10] << endl;
+	for( send_num = 0; send_num < 20; send_num++)
+	{
+		if(!send(tmpchar + send_num))
+			return false;
+	}
+	//cout<<"Send successfully!"<<endl;
+    return true;
+}

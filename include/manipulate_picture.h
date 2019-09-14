@@ -8,8 +8,7 @@
 #ifndef __MANIPULATE_PICTURE_H__
 #define __MANIPULATE_PICTURE_H__
 
-#include "Header.h"
-#include "head.h"
+#include "header.h"
 
 int mainpulatePicture(Mat &source_image_directly_from_camera);
 

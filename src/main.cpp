@@ -9,13 +9,10 @@
  * @Description: 
  */
 
-#include "head.h"
+#include "header.h"
 #include "prepare_camera.h"
 #include "manipulate_picture.h"
-#include "ArmorDetector.hpp"
-#include "AngleCalculate.hpp"
 #include "Serial.hpp"
-#include "RMVideoCapture.hpp"
 #include "DxImageProc.h"
 #include "GxIAPI.h"
 
@@ -29,9 +26,6 @@ GX_FRAME_DATA g_frame_data = {0}; ///< 采集图像参数
 bool g_get_image = false;         ///< 采集线程是否结束的标志：true 运行；false 退出
 Mat source_image_directly_from_camera;
 uint32_t ret = 0; //API接口函数返回值
-#ifdef STM32
-Serialport stm32("/dev/ttyUSB0");
-#endif
 
 ////////////////////函数声明///////////
 int configSourceImage();

@@ -11,12 +11,12 @@
 #ifndef ANGLECALCULATE_HPP
 #define ANGLECALCULATE_HPP
 
-#include "Header.h"
+#include "header.h"
 
 class AngleCalculate
 {
     public:
-    void pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, ArmorData &point4data);
+    void pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data);
     
     private:
     

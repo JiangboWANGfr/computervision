@@ -6,7 +6,7 @@
 #define RED
 // #define BLUE
 
-// #define STM32
+#define STM32
 
 #define DEBUG0
 // #define DEBUG1

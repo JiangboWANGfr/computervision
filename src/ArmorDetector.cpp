@@ -13,7 +13,7 @@
 
 void ArmorDetector::initializeVariate()
 {
-    armordata.isGet = 0;
+    armordata.is_get = 0;
     armordata.shoot = 0;
     rectLists.clear();
     lightLists.clear();
@@ -35,7 +35,7 @@ bool judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea)
     return false;
 }
 
-void ArmorDetector::getCenters(cv::Mat &ip_Img, ArmorData &armor_data)
+void ArmorDetector::getCenters(cv::Mat &ip_Img, TargetData &armor_data)
 {
     ipImg = ip_Img;
     // 全局变量初始化
@@ -139,7 +139,7 @@ void ArmorDetector::getCenters(cv::Mat &ip_Img, ArmorData &armor_data)
 
     // 决策唯一装甲
     getArmor(ipImg);
-    armordata.isGet = 1;
+    armordata.is_get = 1;
     Point2f armorCenter;
     armorCenter = Point2f(0.5 * (lightLists[iRem[armorRem]].center.x + lightLists[jRem[armorRem]].center.x),
                           0.5 * (lightLists[iRem[armorRem]].center.y + lightLists[jRem[armorRem]].center.y));
@@ -149,7 +149,7 @@ void ArmorDetector::getCenters(cv::Mat &ip_Img, ArmorData &armor_data)
 
     // 计算三维信息
     AngleCalculate pnpor;
-    armordata.isBig = sbRem[armorRem];
+    armordata.is_big = sbRem[armorRem];
     pnpor.pnpSolver(lightLists[iRem[armorRem]], lightLists[jRem[armorRem]], armordata);
 
     armor_data = armordata;
