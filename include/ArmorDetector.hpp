@@ -36,9 +36,9 @@ private:
     Mat ipImg;
 
 public:
-    int mode;//用于判断是识别装甲板还是能量机关
+    int mode; //用于判断是识别装甲板还是能量机关
     ArmorDetector(){};
-    void getCenters(cv::Mat &ipImg, TargetData &armor_data);
+    void getCenters(cv::Mat &source_img, TargetData &armor_data);
 
 private:
     void colorThres(cv::Mat &ipImage, cv::Mat &opImage);
@@ -51,7 +51,7 @@ private:
     void xCmp(cv::RotatedRect &x1, cv::RotatedRect &x2);
     int whiteSums(cv::Mat &src);
     void drawRRects(cv::Mat &ipImg, std::vector<cv::RotatedRect> RectVectors);
-
+    bool ArmorDetector::judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea);
     void initializeVariate();
 };
 

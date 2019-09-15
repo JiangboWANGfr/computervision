@@ -10,6 +10,7 @@
  */
 #include "ArmorDetector.hpp"
 #include "AngleCalculate.hpp"
+#include "actions.h"
 
 void ArmorDetector::initializeVariate()
 {
@@ -24,7 +25,7 @@ void ArmorDetector::initializeVariate()
     armorRem = 0;
 }
 
-bool judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea)
+bool ArmorDetector::judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea)
 {
     if (((fabs(rRect.angle) < 45.0 && rRect.size.height > rRect.size.width) ||
          (fabs(rRect.angle) > 45.0 && rRect.size.width > rRect.size.height)) &&
@@ -35,9 +36,9 @@ bool judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea)
     return false;
 }
 
-void ArmorDetector::getCenters(cv::Mat &ip_Img, TargetData &armor_data)
+void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
 {
-    ipImg = ip_Img;
+    ipImg = source_img;
     // 全局变量初始化
     initializeVariate();
 
@@ -174,6 +175,11 @@ void ArmorDetector::colorThres(cv::Mat &ipImage, cv::Mat &opImage)
     Mat contourKernel = getStructuringElement(MORPH_ELLIPSE, Size(15, 15));
     Mat grayKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
     split(ipImage, splited);
+    for(auto i = splited.begin(); i != splited.end(); i++)
+    {
+        imshow("splited", *i);
+        waitKey(2000);
+    }
     cvtColor(ipImage, thres_whole, COLOR_BGR2GRAY);
 #ifdef BLUE
     threshold(thres_whole, thres_whole, 100, 255, THRESH_BINARY); //复活赛用的100
