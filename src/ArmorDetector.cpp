@@ -4,13 +4,18 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-08-31 16:10:29 +0800
+ * @LastEditTime: 2019-09-19 03:31:29
  * @LastEditors: 
  * @Description: 
  */
 #include "ArmorDetector.hpp"
 #include "AngleCalculate.hpp"
 #include "actions.h"
+
+ArmorDetector::ArmorDetector()
+{
+    initializeVariate();
+}
 
 void ArmorDetector::initializeVariate()
 {
@@ -44,7 +49,8 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
 
     // 图像预处理并寻找轮廓
     Mat edges;
-    colorThres(ipImg, edges);
+    colorThres(edges);
+    showPicture("edge", edges, 2);
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
     findContours(edges, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
@@ -161,12 +167,13 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
 // 待优化：19年全国赛采用的是青橙灯效的地面，该算法未涉及把青橙和红蓝区分开
 /**
  * @Author: 王占坤
- * @Description: 
- * @Param: 
+ * @Description: 提取灯条边界
+ * @Param: Mat ipImage  输入的图片
+ * @Param: Mat opImage  处理后的输出图片
  * @Return: 
  * @Throw: 
  */
-void ArmorDetector::colorThres(cv::Mat &ipImage, cv::Mat &opImage)
+void ArmorDetector::colorThres(cv::Mat &opImage)
 {
     Mat thres_whole;
     vector<Mat> splited;
@@ -174,13 +181,8 @@ void ArmorDetector::colorThres(cv::Mat &ipImage, cv::Mat &opImage)
     vector<vector<Point>> contours;
     Mat contourKernel = getStructuringElement(MORPH_ELLIPSE, Size(15, 15));
     Mat grayKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-    split(ipImage, splited);
-    for(auto i = splited.begin(); i != splited.end(); i++)
-    {
-        imshow("splited", *i);
-        waitKey(2000);
-    }
-    cvtColor(ipImage, thres_whole, COLOR_BGR2GRAY);
+    split(ipImg, splited);
+    cvtColor(ipImg, thres_whole, COLOR_BGR2GRAY);
 #ifdef BLUE
     threshold(thres_whole, thres_whole, 100, 255, THRESH_BINARY); //复活赛用的100
     subtract(splited[0], splited[2], binary);

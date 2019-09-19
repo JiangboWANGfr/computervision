@@ -1,10 +1,17 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 19:02:41
+ * @LastEditTime: 2019-09-14 19:02:41
+ * @LastEditors: your name
+ */
 #ifndef CONFIG_H
 #define CONFIG_H
 
 //#define watchdog
 
-#define RED
-// #define BLUE
+// #define RED
+#define BLUE
 
 #define STM32
 

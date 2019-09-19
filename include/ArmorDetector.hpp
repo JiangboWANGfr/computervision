@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-09-07 21:02:53 +0800
+ * @LastEditTime: 2019-09-19 03:30:11
  * @LastEditors: 
  * @Description: 
  */
@@ -37,11 +37,11 @@ private:
 
 public:
     int mode; //用于判断是识别装甲板还是能量机关
-    ArmorDetector(){};
+    ArmorDetector();
     void getCenters(cv::Mat &source_img, TargetData &armor_data);
 
 private:
-    void colorThres(cv::Mat &ipImage, cv::Mat &opImage);
+    void colorThres(cv::Mat &opImage);
     void getLights(void);
     void getArmors(cv::Mat &ipImg);
     void getArmor(cv::Mat &ipImg);
@@ -51,7 +51,7 @@ private:
     void xCmp(cv::RotatedRect &x1, cv::RotatedRect &x2);
     int whiteSums(cv::Mat &src);
     void drawRRects(cv::Mat &ipImg, std::vector<cv::RotatedRect> RectVectors);
-    bool ArmorDetector::judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea);
+    bool judgeRectangleIsRight(const RotatedRect &rRect, const float &rRectArea);
     void initializeVariate();
 };
 
