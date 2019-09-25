@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author:
  * @Date: 2019-09-13 19:49:23
- * @LastEditTime: 2019-09-25 16:22:25 +0800
+ * @LastEditTime: 2019-09-25 17:26:40 +0800
  * @LastEditors: Please set LastEditors
  */
 #include "manipulate_picture.h"
@@ -46,8 +46,10 @@ void writeIntoFilterDataCSV();
 
 int judgeTargetInsight(unsigned int &lost, bool &is_insight);
 
-int mainpulatePicture(Mat &source_image_directly_from_camera)
+int mainpulatePicture()
 {
+    Mat source_image_directly_from_camera = image_queue.front();
+    image_queue.pop();
     if (corps == SENTRY)
     {
         sentryMainpulatePicture(source_image_directly_from_camera);
@@ -66,7 +68,7 @@ int mainpulatePicture(Mat &source_image_directly_from_camera)
     }
 }
 
-void sentryManipulatePicture(Mat &source_image_directly_from_camera)
+void sentryMainpulatePicture(Mat &source_image_directly_from_camera)
 {
     initArmorData(armor_data);
     Mat img;

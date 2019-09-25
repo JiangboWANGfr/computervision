@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-09-25 16:14:27 +0800
+ * @LastEditTime: 2019-09-25 17:21:45 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -57,7 +58,10 @@ using namespace std;
 
 ////////////////////define/////////////////////
 
-///////////////////typedef//////////////////
+
+////////////////////typedef////////////////////
+
+///////////////////自定义数据类型//////////////////
 typedef enum CORPS
 {
     SENTRY = 1,   //哨兵
@@ -66,7 +70,6 @@ typedef enum CORPS
     UAV = 4       //无人机
 } CORPS;
 
-/////////////全局变量区//////////////
 typedef struct TargetData
 {
     bool is_get; //main<-ArmorDetector，ArmorData是否清零
@@ -98,5 +101,9 @@ typedef struct CarData
     float absAngleYaw;
     float absAnglePitch;
 } CarData;
+
+///////////////////全局变量//////////////////////
+
+extern queue<Mat> image_queue;
 
 #endif
