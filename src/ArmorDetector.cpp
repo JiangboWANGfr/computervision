@@ -47,26 +47,7 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
     // 全局变量初始化
     initializeVariate();
 
-    // 图像预处理并寻找轮廓
-    Mat edges;
-    colorThres(edges);
-    showPicture("edge", edges, 2);
-    vector<vector<Point>> contours;
-    vector<Vec4i> hierarchy;
-    findContours(edges, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-/*
-        findContours搭配效果
-        mode                    method                  then
-        0,1,2,3                 1,2,3,4                 (0,2or3or4)
-        0简洁,1,2,3点留下噪声点    1的点太多，2中，3,4少
-        method选用2时旋转矩形会出现斜图变直现象，3or4虽为斜图但斜的方向与灯条相反
-        此版本选用(0,2)即RETR_EXTERNAL和CHAIN_APPROX_SIMPLE
-    */
-#ifdef DEBUG3
-    cout << "contourSize = " << contours.size() << endl;
-// drawContours(edges,contours,-1,huahuaScalar,1,8,noArray(),INT_MAX,Point());
-// imshow("contourssss",edges);
-#endif
+    getContours();
 
     // 一轮粗筛选
     // rRectArea的最小面积越小代表识别距离越远，但噪声图形变多的可能性增大
@@ -94,8 +75,6 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
                 {
                     box.angle = box.angle;
                 }
-                // cout << "rectAngle0 = " << rRect.angle << endl;
-                // cout << "ellipseAngle = " << box.angle << endl;
 
                 // minAreaRect和fitEllipse角度相差不大时选fitEllipse来获得需求的精度，但相差较大时使用minAreaRect会更简洁粗暴
                 if (abs(rRect.angle - box.angle) < 13 || abs(rRect.angle - box.angle) > 80) //如果理解RotatedRect的话，会发现-0和-90是相近的
@@ -104,7 +83,6 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
                 }
             }
             rectLists.push_back(rRect);
-            // cout << "rectAngle = " << rRect.angle << endl << endl;
         }
     }
     if (rectLists.size() < 2)
@@ -160,6 +138,24 @@ void ArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
     pnpor.pnpSolver(lightLists[iRem[armorRem]], lightLists[jRem[armorRem]], armordata);
 
     armor_data = armordata;
+}
+
+int ArmorDetector::getContours()
+{
+     // 图像预处理并寻找轮廓
+    colorThres(edges);
+    showPicture("edge", edges, 2);
+    findContours(edges, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+/*
+        findContours搭配效果
+        mode                    method                  then
+        0,1,2,3                 1,2,3,4                 (0,2or3or4)
+        0简洁,1,2,3点留下噪声点    1的点太多，2中，3,4少
+        method选用2时旋转矩形会出现斜图变直现象，3or4虽为斜图但斜的方向与灯条相反
+        此版本选用(0,2)即RETR_EXTERNAL和CHAIN_APPROX_SIMPLE
+    */
+
+   
 }
 
 // 灯条为红蓝且高亮
