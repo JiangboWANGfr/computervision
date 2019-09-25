@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-09-09 22:45:36 +0800
+ * @LastEditTime: 2019-09-25 16:14:27 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -51,19 +51,20 @@
 // #include "Serialport.h"
 #include "DxImageProc.h"
 
-////////////////////define/////////////////////
-
-
-
-
-///////////////////typedef//////////////////
-
-
-
-
 //////////namespace/////////////
 using namespace cv;
 using namespace std;
+
+////////////////////define/////////////////////
+
+///////////////////typedef//////////////////
+typedef enum CORPS
+{
+    SENTRY = 1,   //哨兵
+    INFANTRY = 2, //步兵
+    HERO = 3,     //英雄
+    UAV = 4       //无人机
+} CORPS;
 
 /////////////全局变量区//////////////
 typedef struct TargetData
@@ -76,7 +77,7 @@ typedef struct TargetData
     float y;
     float z;
     float atocDistance; //ArmorDetector<-AngleCalculate，装甲板决策，main<-ArmorDetector
-    bool is_big;         //ArmorDetector->AngleCalculate，计算pnp
+    bool is_big;        //ArmorDetector->AngleCalculate，计算pnp
     struct TargetData operator=(const struct TargetData &a)
     {
         is_get = a.is_get;

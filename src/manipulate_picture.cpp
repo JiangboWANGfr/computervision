@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author:
  * @Date: 2019-09-13 19:49:23
- * @LastEditTime: 2019-09-13 21:59:29
+ * @LastEditTime: 2019-09-25 16:22:25 +0800
  * @LastEditors: Please set LastEditors
  */
 #include "manipulate_picture.h"
@@ -26,6 +26,14 @@ ArmorDetector armor_detector;
 TargetData armor_data;
 CarData carData;
 
+void sentryMainpulatePicture(Mat &source_image_directly_from_camera);
+
+void heroManipulatePicture(Mat &source_image_directly_from_camera);
+
+void infantryManipulatePicture(Mat &source_image_directly_from_camera);
+
+void UAVManipulatePicture(Mat &source_image_directly_from_camera);
+
 void initArmorData(TargetData &armorData);
 
 void lostTargetShortTime_toDo(bool is_insight);
@@ -38,8 +46,27 @@ void writeIntoFilterDataCSV();
 
 int judgeTargetInsight(unsigned int &lost, bool &is_insight);
 
-
 int mainpulatePicture(Mat &source_image_directly_from_camera)
+{
+    if (corps == SENTRY)
+    {
+        sentryMainpulatePicture(source_image_directly_from_camera);
+    }
+    else if (corps == HERO)
+    {
+        heroManipulatePicture(source_image_directly_from_camera);
+    }
+    else if (corps == INFANTRY)
+    {
+        infantryManipulatePicture(source_image_directly_from_camera);
+    }
+    else
+    {
+        UAVManipulatePicture(source_image_directly_from_camera);
+    }
+}
+
+void sentryManipulatePicture(Mat &source_image_directly_from_camera)
 {
     initArmorData(armor_data);
     Mat img;
