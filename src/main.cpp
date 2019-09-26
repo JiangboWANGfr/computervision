@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-25 17:24:06 +0800
+ * @LastEditTime: 2019-09-25 17:33:14 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -20,6 +20,8 @@
 /////////////////全局变量声明区//////////////
 GX_DEV_HANDLE camera_hd = NULL; ///< 相机句柄
 queue<Mat> image_queue;
+
+
 ///////////////////main///////////////
 
 int main()
@@ -38,4 +40,3 @@ int main()
     terminateProgram(camera_hd);
 }
 
-////////////////////函数实现////////////////////////
