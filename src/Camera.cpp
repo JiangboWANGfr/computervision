@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-09-28 10:57:47 +0800
+ * @LastEditTime: 2019-09-28 11:21:55 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -85,7 +85,7 @@ bool Camera::countNumberOfCameras()
 bool Camera::openFirstCamera()
 {
     status = GXOpenDevice(&open_param, &camera_handle);
-    cout << "camera_handle: "<< camera_handle << endl;
+    cout << "camera_handle: " << camera_handle << endl;
     if (status != GX_STATUS_SUCCESS)
     {
         printf("Failed to open camera.\n");
@@ -101,7 +101,7 @@ bool Camera::openFirstCamera()
 
 bool Camera::setORI()
 {
-    
+
     bool b_is_set_roi = true;
     //设置roi区域，设置时相机必须时停采状态
     if (b_is_set_roi)
@@ -154,7 +154,6 @@ bool Camera::setTRiggerSwitchToOff()
     return true;
 }
 
-
 int Camera::configFrame()
 {
     int64_t width = 0, height = 0;
@@ -182,8 +181,6 @@ int Camera::configFrame()
         source_image_directly_from_camera.create(height, width, CV_8UC1);
     }
 
-
-    
     mallocForSourceImage();
     int ret = mallocForSourceImage();
     if (ret != 0)
@@ -222,11 +219,10 @@ int Camera::mallocForSourceImage()
     return 0;
 }
 
-
 int Camera::close()
 {
     //为停止采集做准备
-    
+
     GX_STATUS status = GX_STATUS_SUCCESS;
     uint32_t ret = 0;
 
@@ -270,4 +266,44 @@ int Camera::close()
         status = GXCloseLib();
 
     return 0;
+}
+
+int Camera::start()
+{
+    status = GXSendCommand(camera_handle, GX_COMMAND_ACQUISITION_START);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+    }
+}
+
+Mat Camera::getFrame()
+{
+    if (g_frame_data.pImgBuf == NULL)
+    {
+        // to do
+    }
+    status = GXGetImage(camera_handle, &g_frame_data, 100);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+    }
+    else
+    {
+        if (g_frame_data.nStatus == GX_FRAME_STATUS_SUCCESS)
+        {
+            // printf("<Successful acquisition : Width: %d Height: %d >\n", g_frame_data.nWidth, g_frame_data.nHeight);
+            if (is_colorful)
+            {
+                DxRaw8toRGB24(g_frame_data.pImgBuf, m_rgb_image, g_frame_data.nWidth, g_frame_data.nHeight,
+                              RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(BAYERBG), false);
+                memcpy(source_image_directly_from_camera.data, m_rgb_image, g_frame_data.nHeight * g_frame_data.nWidth * 3);
+            }
+            else
+            {
+                memcpy(source_image_directly_from_camera.data, g_frame_data.pImgBuf, g_frame_data.nHeight * g_frame_data.nWidth);
+            }
+        }
+    }
+    return source_image_directly_from_camera.clone();
 }

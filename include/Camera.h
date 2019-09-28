@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:52:54 +0800
- * @LastEditTime: 2019-09-28 10:54:30 +0800
+ * @LastEditTime: 2019-09-28 11:22:10 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -53,6 +53,8 @@ public:
     int open();
     int configFrame();
     int close();
+    int start();
+    Mat getFrame();
 };
 
 #endif
