@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:52:54 +0800
- * @LastEditTime: 2019-09-28 11:22:10 +0800
+ * @LastEditTime: 2019-09-28 14:18:41 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -37,6 +37,7 @@ private:
 
 public:
     GX_DEV_HANDLE camera_handle = NULL; ///< 相机句柄
+    bool is_opened = false;
 
 private:
     int initializeCameraDevice();

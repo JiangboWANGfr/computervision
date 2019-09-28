@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-09-28 11:21:55 +0800
+ * @LastEditTime: 2019-09-28 14:18:58 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -24,11 +24,11 @@ int Camera::open()
 
     if (countNumberOfCameras() == false)
         return 0;
-
     if (camera_num <= 0)
     {
         printf("<No device>\n");
         status = GXCloseLib();
+        cout << "<Closed Device>" << endl;
         return 0;
     }
 
@@ -45,6 +45,10 @@ int Camera::open()
 
     if (setTRiggerSwitchToOff() == false)
         return 0;
+    
+    is_opened = true;
+    cout << "camera_handle: " << camera_handle << endl;
+    cout << "Success to open camera" << endl;
 }
 
 int Camera::initializeCameraDevice()
@@ -159,6 +163,7 @@ int Camera::configFrame()
     int64_t width = 0, height = 0;
     double expotime = 0;
     int64_t gain = 0;
+    cout << "ConfigFrame" << endl;
     GX_STATUS status = GXGetInt(camera_handle, GX_INT_WIDTH, &width);
     status = GXGetInt(camera_handle, GX_INT_HEIGHT, &height);
     status = GXGetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, &expotime);

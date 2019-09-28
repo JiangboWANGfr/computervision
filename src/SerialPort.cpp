@@ -16,8 +16,12 @@
 //         set_opt(115200, 8, 'N', 1);
 SerialPort::SerialPort(string port)
 {
-        open_port(port);
-        set_opt();
+    open_port(port);
+    set_opt();
+}
+
+SerialPort::SerialPort()
+{
 }
 
 //Serialport下的成员函数open_port()的实现；
@@ -26,23 +30,23 @@ int SerialPort::open_port(string port)
     // char *dev[]={"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2"};
     // fd = open( "/dev/ttyS0", O_RDWR|O_NOCTTY|O_NDELAY);
     // fd = open( "/dev/ttyUSB0", O_RDWR|O_NOCTTY|O_NDELAY);
-    fd = open(port.c_str() , O_RDWR|O_NOCTTY|O_NDELAY);
+    fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
     if (-1 == fd)
     {
-        printf("\n\e[31m\e[1m ERROR:打开串口%s失败 \e[0m\n\n",port.c_str());
-		return -1;
+        printf("\n\e[31m\e[1m ERROR:打开串口%s失败 \e[0m\n\n", port.c_str());
+        return -1;
     }
     else
     {
         fcntl(fd, F_SETFL, 0);
     }
 
-    if(fcntl(fd, F_SETFL, 0) < 0)
+    if (fcntl(fd, F_SETFL, 0) < 0)
         printf("fcntl failed!\n");
     else
-        printf("fcntl=%d\n",fcntl(fd, F_SETFL,0));
+        printf("fcntl=%d\n", fcntl(fd, F_SETFL, 0));
 
-    if(isatty(STDIN_FILENO)==0)
+    if (isatty(STDIN_FILENO) == 0)
         printf("standard input is not a terminal device\n");
     else
         printf("isatty success!\n");
@@ -52,24 +56,24 @@ int SerialPort::open_port(string port)
     return fd;
 }
 
-    /*设置串口属性：
+/*设置串口属性：
        fd: 文件描述符
        nSpeed: 波特率
        nBits: 数据位
        nEvent: 奇偶校验
        nStop: 停止位*/
-int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
+int SerialPort::set_opt(int nSpeed, int nBits, char nEvent, int nStop)
 {
-    struct termios newtio,oldtio;
-    if ( tcgetattr( fd,&oldtio) != 0)
+    struct termios newtio, oldtio;
+    if (tcgetattr(fd, &oldtio) != 0)
     {
         perror("SetupSerial error");
         return -1;
     }
-    bzero( &newtio, sizeof( newtio ) );
+    bzero(&newtio, sizeof(newtio));
     newtio.c_cflag |= CLOCAL | CREAD;
     newtio.c_cflag &= ~CSIZE;
-    switch( nBits )
+    switch (nBits)
     {
     case 7:
         newtio.c_cflag |= CS7;
@@ -77,11 +81,11 @@ int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
     case 8:
         newtio.c_cflag |= CS8;
         break;
-    //case 9:
-	//newtio.c_cflag |= CS9;
-	//break;
+        //case 9:
+        //newtio.c_cflag |= CS9;
+        //break;
     }
-    switch( nEvent )
+    switch (nEvent)
     {
     case 'O':
         newtio.c_cflag |= PARENB;
@@ -97,7 +101,7 @@ int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
         newtio.c_cflag &= ~PARENB;
         break;
     }
-    switch( nSpeed )
+    switch (nSpeed)
     {
     case 2400:
         cfsetispeed(&newtio, B2400);
@@ -121,16 +125,16 @@ int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
         break;
     }
 
-    if( nStop == 1 )
+    if (nStop == 1)
         newtio.c_cflag &= ~CSTOPB;
-    else if ( nStop == 2 )
+    else if (nStop == 2)
         newtio.c_cflag |= CSTOPB;
 
     newtio.c_cc[VTIME] = 0;
     newtio.c_cc[VMIN] = 0;
-    tcflush(fd,TCIFLUSH);
+    tcflush(fd, TCIFLUSH);
 
-    if((tcsetattr(fd,TCSANOW,&newtio))!=0)
+    if ((tcsetattr(fd, TCSANOW, &newtio)) != 0)
     {
         perror("com set error");
         return -1;
@@ -142,58 +146,58 @@ int SerialPort::set_opt(int nSpeed , int nBits, char nEvent , int nStop )
 bool SerialPort::send(char *str)
 {
     buffer = str;
-    if(fd < 0 || write(fd, buffer, 1) < 0)
+    if (fd < 0 || write(fd, buffer, 1) < 0)
     {
         perror("\e[31m\e[1m ERROR:串口通信失败 \e[0m");
-	
+
         return false;
     }
-    
+
     return true;
 }
 
 // 0xA5 | 0x5A | yaw_angle | pitch_angle | 0xAA | 0xAA
-bool SerialPort::sendAngle(float _angle1,float _angle2,float Dis, bool big,bool insight, bool get)
+bool SerialPort::sendAngle(float _angle1, float _angle2, float Dis, bool big, bool insight, bool get)
 {
-	char send_num=0;
+    char send_num = 0;
     unsigned char *p;
-    memset(tmpchar, 0x00, sizeof(tmpchar));     //对tempchar清零
-    tmpchar[0] = 0xA5;                          //起始标志
-	tmpchar[1] = 0x5A;                          
-    p=(unsigned char *)&_angle1;
-    tmpchar[2] = *p;                            
-    tmpchar[3] = *(p+1);                    
-    tmpchar[4] = *(p+2);                    
-    tmpchar[5] = *(p+3);                    
-    p=(unsigned char *)&_angle2;
-    tmpchar[6] = *p;                           
-    tmpchar[7] = *(p+1);                    
-    tmpchar[8] = *(p+2);                    
-    tmpchar[9] = *(p+3);
-    p=(unsigned char *)&Dis;
-    tmpchar[10] = *p;                            
-    tmpchar[11] = *(p+1);                    
-    tmpchar[12] = *(p+2);                    
-    tmpchar[13] = *(p+3);
+    memset(tmpchar, 0x00, sizeof(tmpchar)); //对tempchar清零
+    tmpchar[0] = 0xA5;                      //起始标志
+    tmpchar[1] = 0x5A;
+    p = (unsigned char *)&_angle1;
+    tmpchar[2] = *p;
+    tmpchar[3] = *(p + 1);
+    tmpchar[4] = *(p + 2);
+    tmpchar[5] = *(p + 3);
+    p = (unsigned char *)&_angle2;
+    tmpchar[6] = *p;
+    tmpchar[7] = *(p + 1);
+    tmpchar[8] = *(p + 2);
+    tmpchar[9] = *(p + 3);
+    p = (unsigned char *)&Dis;
+    tmpchar[10] = *p;
+    tmpchar[11] = *(p + 1);
+    tmpchar[12] = *(p + 2);
+    tmpchar[13] = *(p + 3);
     tmpchar[14] = big;
     tmpchar[15] = insight;
-    tmpchar[16] = get;                                             
-	tmpchar[17] = 0xAA;                         //Check
-    tmpchar[18] = 0xAA;                         //End
+    tmpchar[16] = get;
+    tmpchar[17] = 0xAA; //Check
+    tmpchar[18] = 0xAA; //End
 
     // cout << "Send_Angle:"<<dec<<_angle1<<","<<dec<<_angle2<<endl;
     // cout << "isget = " << get << endl;
     // cout << "is_big = " << big << endl;
     // cout << "Send_data:" <<hex<<(int)tmpchar[2]<<","<<hex<<(int)tmpchar[3]<<","<<hex<<(int)tmpchar[4]<<","<<hex<<(int)tmpchar[5]<<endl;
     // cout << "Send_data:" <<hex<<(int)tmpchar[6]<<","<<hex<<(int)tmpchar[7]<<","<<hex<<(int)tmpchar[8]<<","<<hex<<(int)tmpchar[9]<<endl;
-	// cout << "Check:" << hex << (int)tmpchar[10] << endl;
+    // cout << "Check:" << hex << (int)tmpchar[10] << endl;
 
-	for( send_num = 0; send_num < 19; send_num++)
-	{
-		if(!send(tmpchar + send_num))
-			return false;
-	}
-	// cout<<"Send successfully!"<<endl;
+    for (send_num = 0; send_num < 19; send_num++)
+    {
+        if (!send(tmpchar + send_num))
+            return false;
+    }
+    // cout<<"Send successfully!"<<endl;
     return true;
 }
 
@@ -202,16 +206,18 @@ void SerialPort::readMode(int &carMode)
 {
     int bytes;
     ioctl(fd, FIONREAD, &bytes);
-    if(bytes == 0) return;
-    bytes = read(fd,rData,6);
-    if(rData[0] == 0xA5)
+    if (bytes == 0)
+        return;
+    bytes = read(fd, rData, 6);
+    if (rData[0] == 0xA5)
     {
         carMode = rData[2];
-        printf("receive mode:%d\r\n",carMode);
+        printf("receive mode:%d\r\n", carMode);
     }
     ioctl(fd, FIONREAD, &bytes);
-    if(bytes>0){
-        read(fd,rData,bytes);
+    if (bytes > 0)
+    {
+        read(fd, rData, bytes);
     }
     // cout << "guapi is here !!! \n" << endl;
 }
@@ -219,26 +225,26 @@ void SerialPort::readMode(int &carMode)
 // 0xA5 | 0x5A | yaw_angle | pitch_angle | 0xAA | 0xAA
 uint8_t SerialPort::readAngle(CarData &cardata)
 {
-    
+
     int bytes;
     ioctl(fd, FIONREAD, &bytes);
-    if(bytes == 0)
+    if (bytes == 0)
         return 0;
-    bytes = read(fd,rData,12);
-    if(rData[0] == 0xA5 && rData[1] == 0x5A && rData[10]==0xAA)
+    bytes = read(fd, rData, 12);
+    if (rData[0] == 0xA5 && rData[1] == 0x5A && rData[10] == 0xAA)
     {
-        memcpy(&cardata.absAngleYaw,rData+2,sizeof(float));
-        memcpy(&cardata.absAnglePitch,rData+6,sizeof(float));
+        memcpy(&cardata.absAngleYaw, rData + 2, sizeof(float));
+        memcpy(&cardata.absAnglePitch, rData + 6, sizeof(float));
         //cout << "absY = " << cardata.absAngleYaw << "," << "absP = " << cardata.absAnglePitch << endl;
     }
-        return 1;
+    return 1;
     // ioctl(fd, FIONREAD, &bytes);
     // if(bytes>0){
     //     read(fd,rData,bytes);
     // }
 }
 
-SerialPort:: ~SerialPort()
+SerialPort::~SerialPort()
 {
     close(fd);
 }
@@ -249,48 +255,48 @@ SerialPort:: ~SerialPort()
 //              4.自检数据解算是否正确
 //              5.验证发送数据是否正确
 
-bool SerialPort::sendAngleDist(float _angle1,float _angle2,float _angle3,float _angle4)
+bool SerialPort::sendAngleDist(float _angle1, float _angle2, float _angle3, float _angle4)
 {
     char tmpchar[20];
-	char send_num=0;
+    char send_num = 0;
     unsigned char *p;
-    memset(tmpchar, 0x00, sizeof(tmpchar));    //对tempchar清零
-    tmpchar[0] = 0xA5;                                        //起始标志
-	tmpchar[1] = 0x5A;
-	//tmpchar[2] = 0x06;                                //the number of data bytes
-    p=(unsigned char *)&_angle1;
-    tmpchar[2] = *p;                      //第一个角度的低8位
-    tmpchar[3] = *(p+1);                  //第一个角度
-    tmpchar[4] = *(p+2);                  //
-    tmpchar[5] = *(p+3);                  //
-    p=(unsigned char *)&_angle2;
-    tmpchar[6] = *p;                      //第二个角度的低8位
-    tmpchar[7] = *(p+1);                  //第二个角度
-    tmpchar[8] = *(p+2);                  //
-    tmpchar[9] = *(p+3);                  //
-    p=(unsigned char *)&_angle3;
-    tmpchar[10] = *p;                      //第三个角度的低8位
-    tmpchar[11] = *(p+1);                  //第三个角度
-    tmpchar[12] = *(p+2);                  //
-    tmpchar[13] = *(p+3);                  //、
-    p=(unsigned char *)&_angle4;
-    tmpchar[14] = *p;                      //第三个角度的低8位
-    tmpchar[15] = *(p+1);                  //第三个角度
-    tmpchar[16] = *(p+2);                  //
-    tmpchar[17] = *(p+3);                  //
-	tmpchar[18] = 0xAA;                   //Check
-    tmpchar[19] = 0xAA;                   //End
-    //tmpchar[7] = 0xFE;                  //结束标志
-    //cout << "Send_Angle:"<<dec<<_angle1<<","<<dec<<_angle2<<endl;
-    //cout << "Send_data1:" <<hex<<(int)tmpchar[2]<<","<<hex<<(int)tmpchar[3]<<","<<hex<<(int)tmpchar[4]<<","<<hex<<(int)tmpchar[5]<<endl;
-    //cout << "Send_data2:" <<hex<<(int)tmpchar[6]<<","<<hex<<(int)tmpchar[7]<<","<<hex<<(int)tmpchar[8]<<","<<hex<<(int)tmpchar[9]<<endl;
-    //cout << "Send_data3:" <<hex<<(int)tmpchar[10]<<","<<hex<<(int)tmpchar[11]<<","<<hex<<(int)tmpchar[12]<<","<<hex<<(int)tmpchar[13]<<endl;
-	//cout << "Check:" << hex << (int)tmpchar[10] << endl;
-	for( send_num = 0; send_num < 20; send_num++)
-	{
-		if(!send(tmpchar + send_num))
-			return false;
-	}
-	//cout<<"Send successfully!"<<endl;
+    memset(tmpchar, 0x00, sizeof(tmpchar)); //对tempchar清零
+    tmpchar[0] = 0xA5;                      //起始标志
+    tmpchar[1] = 0x5A;
+    //tmpchar[2] = 0x06;                                //the number of data bytes
+    p = (unsigned char *)&_angle1;
+    tmpchar[2] = *p;       //第一个角度的低8位
+    tmpchar[3] = *(p + 1); //第一个角度
+    tmpchar[4] = *(p + 2); //
+    tmpchar[5] = *(p + 3); //
+    p = (unsigned char *)&_angle2;
+    tmpchar[6] = *p;       //第二个角度的低8位
+    tmpchar[7] = *(p + 1); //第二个角度
+    tmpchar[8] = *(p + 2); //
+    tmpchar[9] = *(p + 3); //
+    p = (unsigned char *)&_angle3;
+    tmpchar[10] = *p;       //第三个角度的低8位
+    tmpchar[11] = *(p + 1); //第三个角度
+    tmpchar[12] = *(p + 2); //
+    tmpchar[13] = *(p + 3); //、
+    p = (unsigned char *)&_angle4;
+    tmpchar[14] = *p;       //第三个角度的低8位
+    tmpchar[15] = *(p + 1); //第三个角度
+    tmpchar[16] = *(p + 2); //
+    tmpchar[17] = *(p + 3); //
+    tmpchar[18] = 0xAA;     //Check
+    tmpchar[19] = 0xAA;     //End
+                            //tmpchar[7] = 0xFE;                  //结束标志
+                            //cout << "Send_Angle:"<<dec<<_angle1<<","<<dec<<_angle2<<endl;
+                            //cout << "Send_data1:" <<hex<<(int)tmpchar[2]<<","<<hex<<(int)tmpchar[3]<<","<<hex<<(int)tmpchar[4]<<","<<hex<<(int)tmpchar[5]<<endl;
+                            //cout << "Send_data2:" <<hex<<(int)tmpchar[6]<<","<<hex<<(int)tmpchar[7]<<","<<hex<<(int)tmpchar[8]<<","<<hex<<(int)tmpchar[9]<<endl;
+                            //cout << "Send_data3:" <<hex<<(int)tmpchar[10]<<","<<hex<<(int)tmpchar[11]<<","<<hex<<(int)tmpchar[12]<<","<<hex<<(int)tmpchar[13]<<endl;
+    //cout << "Check:" << hex << (int)tmpchar[10] << endl;
+    for (send_num = 0; send_num < 20; send_num++)
+    {
+        if (!send(tmpchar + send_num))
+            return false;
+    }
+    //cout<<"Send successfully!"<<endl;
     return true;
 }

@@ -4,17 +4,18 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-28 11:36:24 +0800
+ * @LastEditTime: 2019-09-28 14:19:36 +0800
  * @LastEditors: 
  * @Description: 
  */
 
 #include "header.h"
-#include "manipulate_picture.h"
 #include "SerialPort.hpp"
 #include "DxImageProc.h"
 #include "GxIAPI.h"
 #include "Camera.h"
+#include "PictureManipulator.h"
+#include "SentryPictureManipulator.h"
 /////////////////全局变量声明区//////////////
 Camera cam;
 
@@ -27,16 +28,32 @@ void terminate_program();
 
 int main()
 {
+    SentryPictureManipulator spm;
+    PictureManipulator *pm = &spm;
     cout << "Initializion.........." << endl;
+    
     cam.open();
-    cout << "camera_handle: " << cam.camera_handle << endl;
-    cout << "Success to open camera" << endl;
+    if(cam.is_opened == false)
+    {
+        cout << "Faile to open camera." << endl;
+        return 0;
+    }
+    
     cam.configFrame();
     cout << "Success to config source Image" << endl;
     if (startReceiveImageThread() == false)
         return 0;
 
-    mainpulatePicture();
+    // mainpulatePicture();
+    while (true)
+    {
+        char a;
+        cin >> a;
+        if (image_queue.empty())
+            continue;
+        pm->manipulatePicture(image_queue.front());
+        image_queue.pop();
+    }
 
     terminate_program();
 }

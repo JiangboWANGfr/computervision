@@ -12,7 +12,7 @@
         {
             "type": "shell",
             "label": "cmake_release",
-            "command": "safe-rm -rf * && cmake -DCMAKE_BUILD_TYPE=Release .. && make",
+            "command": "safe-rm -rf * && cmake .. && make",
             "args": [],
             "options": {
                 "cwd": "build"
