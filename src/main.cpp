@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-28 14:31:03 +0800
+ * @LastEditTime: 2019-09-28 15:43:34 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -44,8 +44,6 @@ int main()
     // mainpulatePicture();
     while (true)
     {
-        char a;
-        cin >> a;
         if (image_queue.empty())
             continue;
         pm->manipulatePicture(image_queue.front());

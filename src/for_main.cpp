@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-09-28 14:29:54 +0800
+ * @LastEditTime: 2019-09-28 15:43:04 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -21,6 +21,7 @@ bool startReceiveImageThread(Camera& cam)
         cam.close();
         return false;
     }
+    cout << "Success to create the collection thread\n";
     return true;
 }
 
