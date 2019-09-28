@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-09-25 17:21:45 +0800
+ * @LastEditTime: 2019-09-28 12:00:51 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -46,6 +46,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/calib3d.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/videoio.hpp>
 
 //////////////其他//////////////
 #include "GxIAPI.h"
