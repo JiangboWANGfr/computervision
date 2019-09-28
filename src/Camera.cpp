@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-09-28 10:45:18 +0800
+ * @LastEditTime: 2019-09-28 10:57:47 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -17,7 +17,7 @@ Camera::~Camera()
 {
 }
 
-int Camera::prepareCamera()
+int Camera::open()
 {
     if (initializeCameraDevice() == false)
         return 0;
@@ -218,6 +218,56 @@ int Camera::mallocForSourceImage()
         printf("<Failed to allot memory>\n");
         return 0;
     }
+
+    return 0;
+}
+
+
+int Camera::close()
+{
+    //为停止采集做准备
+    
+    GX_STATUS status = GX_STATUS_SUCCESS;
+    uint32_t ret = 0;
+
+    //发送停采命令
+    status = GXSendCommand(camera_handle, GX_COMMAND_ACQUISITION_STOP);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+        return status;
+    }
+
+    // g_get_image = false;
+    // // ret = pthread_join(g_acquire_thread, NULL);
+    // if (ret != 0)
+    // {
+    //     printf("<Failed to release resources>\n");
+    //     return ret;
+    // }
+
+    // //释放buffer
+    // if (g_frame_data.pImgBuf != NULL)
+    // {
+    //     free(g_frame_data.pImgBuf);
+    //     g_frame_data.pImgBuf = NULL;
+    // }
+
+    //关闭设备
+    status = GXCloseDevice(camera_handle);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+        if (camera_handle != NULL)
+        {
+            camera_handle = NULL;
+        }
+        status = GXCloseLib();
+        return 0;
+    }
+    //释放库
+    else
+        status = GXCloseLib();
 
     return 0;
 }
