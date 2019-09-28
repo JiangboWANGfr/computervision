@@ -4,12 +4,12 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:35:15 +0800
- * @LastEditTime: 2019-08-31 10:35:15 +0800
+ * @LastEditTime: 2019-09-28 11:29:25 +0800
  * @LastEditors: 
  * @Description: 
  */
-#ifndef __SERIAL_H__
-#define __SERIAL_H__
+#ifndef __SERIAL_PORT_H__
+#define __SERIAL_PORT_H__
 
 #include "header.h"
 

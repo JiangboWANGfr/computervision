@@ -4,11 +4,11 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:34:55 +0800
- * @LastEditTime: 2019-08-31 10:34:55 +0800
+ * @LastEditTime: 2019-09-28 11:30:20 +0800
  * @LastEditors: 
  * @Description: 
  */
-#include "Serial.hpp"
+#include "SerialPort.hpp"
 
 //@brief:linux下的串口通信类的成员函数。
 //       open_port()成员函数可以打开一个串口，set_opt()更改参数。
