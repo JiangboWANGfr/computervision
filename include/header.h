@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-09-09 22:45:36 +0800
+ * @LastEditTime: 2019-09-25 17:21:45 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,21 +52,24 @@
 // #include "Serialport.h"
 #include "DxImageProc.h"
 
-////////////////////define/////////////////////
-
-
-
-
-///////////////////typedef//////////////////
-
-
-
-
 //////////namespace/////////////
 using namespace cv;
 using namespace std;
 
-/////////////全局变量区//////////////
+////////////////////define/////////////////////
+
+
+////////////////////typedef////////////////////
+
+///////////////////自定义数据类型//////////////////
+typedef enum CORPS
+{
+    SENTRY = 1,   //哨兵
+    INFANTRY = 2, //步兵
+    HERO = 3,     //英雄
+    UAV = 4       //无人机
+} CORPS;
+
 typedef struct TargetData
 {
     bool is_get; //main<-ArmorDetector，ArmorData是否清零
@@ -76,7 +80,7 @@ typedef struct TargetData
     float y;
     float z;
     float atocDistance; //ArmorDetector<-AngleCalculate，装甲板决策，main<-ArmorDetector
-    bool is_big;         //ArmorDetector->AngleCalculate，计算pnp
+    bool is_big;        //ArmorDetector->AngleCalculate，计算pnp
     struct TargetData operator=(const struct TargetData &a)
     {
         is_get = a.is_get;
@@ -97,5 +101,9 @@ typedef struct CarData
     float absAngleYaw;
     float absAnglePitch;
 } CarData;
+
+///////////////////全局变量//////////////////////
+
+extern queue<Mat> image_queue;
 
 #endif
