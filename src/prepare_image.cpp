@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-25 16:52:29 +0800
- * @LastEditTime: 2019-09-25 17:18:02 +0800
+ * @LastEditTime: 2019-09-28 10:49:51 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,7 +13,7 @@
 
 ///////////////////全局变量声明/////////////////////
 int64_t m_pixel_color = 0; ///< Bayer格式
-bool is_implemented;       //是否支持彩色
+bool is_colorful;       //是否支持彩色
 GX_DEV_HANDLE camera_handle; ///< 相机句柄
 bool g_get_image = false;         ///< 采集线程是否结束的标志：true 运行；false 退出
 Mat source_image_directly_from_camera;
@@ -26,76 +26,6 @@ GX_STATUS status;
 int mallocForSourceImage();
 bool startReceiveImageThread();
 void *getImageFromCamera(void *pParam);
-
-int configSourceImage(GX_DEV_HANDLE& camera_hd)
-{
-    camera_handle = camera_hd;
-    int64_t width = 0, height = 0;
-    double expotime = 0;
-    int64_t gain = 0;
-    GX_STATUS status = GXGetInt(camera_handle, GX_INT_WIDTH, &width);
-    status = GXGetInt(camera_handle, GX_INT_HEIGHT, &height);
-    status = GXGetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, &expotime);
-    status = GXGetInt(camera_handle, GX_INT_GAIN, &gain);
-    cout << "width = " << width << '\t' << "height = " << height << endl;
-    cout << "expotime = " << expotime << '\t' << "gain = " << gain << endl;
-    // 查询当前相机是否支持GX_ENUM_PIXEL_COLOR_FILTER
-    status = GXIsImplemented(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &is_implemented);
-    //支持彩色图像
-    if (is_implemented)
-    {
-        cout << "支持彩色" << endl;
-        status = GXGetEnum(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &m_pixel_color);
-        source_image_directly_from_camera.create(height, width, CV_8UC3);
-        m_rgb_image = new char[width * height * 3];
-    }
-    else
-    {
-        cout << "不支持彩色" << endl;
-        source_image_directly_from_camera.create(height, width, CV_8UC1);
-    }
-
-
-    
-    mallocForSourceImage();
-    int ret = mallocForSourceImage();
-    if (ret != 0)
-    {
-        printf("<Failed to prepare for acquire image>\n");
-        status = GXCloseDevice(camera_handle);
-        if (camera_handle != NULL)
-        {
-            camera_handle = NULL;
-        }
-        status = GXCloseLib();
-        return -1;
-    }
-}
-
-int mallocForSourceImage()
-{
-    GX_STATUS status = GX_STATUS_SUCCESS;
-    int64_t payload_size = 0;
-
-    status = GXGetInt(camera_handle, GX_INT_PAYLOAD_SIZE, &payload_size);
-    cout << "payload_size = " << payload_size << endl;
-    if (status != GX_STATUS_SUCCESS)
-    {
-        GetErrorString(status);
-        return status;
-    }
-
-    g_frame_data.pImgBuf = malloc(payload_size);
-    if (g_frame_data.pImgBuf == NULL)
-    {
-        printf("<Failed to allot memory>\n");
-        return 0;
-    }
-
-    return 0;
-}
-
-
 
 
 bool startReceiveImageThread()
@@ -145,7 +75,7 @@ void *getImageFromCamera(void *pParam)
             if (g_frame_data.nStatus == GX_FRAME_STATUS_SUCCESS)
             {
                 // printf("<Successful acquisition : Width: %d Height: %d >\n", g_frame_data.nWidth, g_frame_data.nHeight);
-                if (is_implemented)
+                if (is_colorful)
                 {
                     DxRaw8toRGB24(g_frame_data.pImgBuf, m_rgb_image, g_frame_data.nWidth, g_frame_data.nHeight,
                                   RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(BAYERBG), false);

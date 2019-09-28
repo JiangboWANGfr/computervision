@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:52:54 +0800
- * @LastEditTime: 2019-09-27 19:57:16 +0800
+ * @LastEditTime: 2019-09-28 10:49:05 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -28,6 +28,12 @@ private:
     int64_t m_gain = 200;            ///< 增益       识别数字时为850,分区赛用的500，复活赛用的200
 
     uint32_t camera_num;
+    int64_t m_pixel_color = 0;   ///< Bayer格式
+    bool is_colorful;            //是否支持彩色
+    bool g_get_image = false;    ///< 采集线程是否结束的标志：true 运行；false 退出
+    Mat source_image_directly_from_camera;
+    char *m_rgb_image = NULL;
+    GX_FRAME_DATA g_frame_data = {0}; ///< 采集图像参数
 
 public:
     GX_DEV_HANDLE camera_handle = NULL; ///< 相机句柄
@@ -39,12 +45,13 @@ private:
     bool setORI();
     bool setDeviceToContinuouslyAcquiredImage();
     bool setTRiggerSwitchToOff();
+    int mallocForSourceImage();
 
 public:
     Camera(/* args */);
     ~Camera();
     int prepareCamera();
+    int configFrame();
 };
-
 
 #endif

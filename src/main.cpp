@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-27 20:00:59 +0800
+ * @LastEditTime: 2019-09-28 10:46:00 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -18,19 +18,19 @@
 #include "prepare_image.h"
 #include "Camera.h"
 /////////////////全局变量声明区//////////////
-queue<Mat> image_queue;
+Camera cam;
 
+queue<Mat> image_queue;
 
 ///////////////////main///////////////
 
 int main()
 {
-    Camera cam;
     cout << "Initializion.........." << endl;
     cam.prepareCamera();
     cout << "camera_handle: " << cam.camera_handle << endl;
     cout << "Success to open camera" << endl;
-    configSourceImage(cam.camera_handle);
+    cam.configFrame();
     cout << "Success to config source Image" << endl;
     if (startReceiveImageThread() == false)
         return 0;
@@ -39,4 +39,3 @@ int main()
 
     terminateProgram(cam.camera_handle);
 }
-
