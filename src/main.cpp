@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-28 14:19:36 +0800
+ * @LastEditTime: 2019-09-28 14:31:03 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -16,14 +16,11 @@
 #include "Camera.h"
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
+#include "for_main.h"
 /////////////////全局变量声明区//////////////
 Camera cam;
 
 queue<Mat> image_queue;
-////////////////////函数声明//////////////
-bool startReceiveImageThread();
-void *getImageFromCamera(void *pParam);
-void terminate_program();
 ///////////////////main///////////////
 
 int main()
@@ -41,7 +38,7 @@ int main()
     
     cam.configFrame();
     cout << "Success to config source Image" << endl;
-    if (startReceiveImageThread() == false)
+    if (startReceiveImageThread(cam) == false)
         return 0;
 
     // mainpulatePicture();
@@ -55,35 +52,5 @@ int main()
         image_queue.pop();
     }
 
-    terminate_program();
-}
-
-bool startReceiveImageThread()
-{
-    //启动接收线程
-    pthread_t tid;
-    int ret = pthread_create(&tid, 0, getImageFromCamera, 0);
-    if (ret != 0)
-    {
-        printf("<Failed to create the collection thread>\n");
-        cam.close();
-        return false;
-    }
-    return true;
-}
-
-void *getImageFromCamera(void *pParam)
-{
-    pthread_detach(pthread_self());
-    GX_STATUS status = GX_STATUS_SUCCESS;
-    cam.start();
-    while (true)
-    {
-        image_queue.push(cam.getFrame());
-    }
-}
-
-void terminate_program()
-{
-    cam.close();
+    terminate_program(cam);
 }
