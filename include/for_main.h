@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:07 +0800
- * @LastEditTime: 2019-09-28 14:30:21 +0800
+ * @LastEditTime: 2019-09-29 07:32:06
  * @LastEditors: 
  * @Description: 改文件只允许main进行引用
  */
@@ -13,13 +13,14 @@
 
 #include "header.h"
 #include "actions.h"
+#include "PictureManipulator.h"
 #include "Camera.h"
 
 
 bool startReceiveImageThread(Camera& cam);
 void *getImageFromCamera(void *pParam);
 void terminate_program(Camera& cam);
-
+void mainpulatePicture(PictureManipulator* pm);
 
 
 

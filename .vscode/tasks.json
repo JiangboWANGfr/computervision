@@ -3,7 +3,7 @@
         {
             "type": "shell",
             "label": "cmake_debug",
-            "command": "safe-rm -rf * && cmake -DCMAKE_BUILD_TYPE=Debug .. && make",
+            "command": "rm -rf * && cmake -DCMAKE_BUILD_TYPE=Debug .. && make",
             "args": [],
             "options": {
                 "cwd": "build"
@@ -12,7 +12,7 @@
         {
             "type": "shell",
             "label": "cmake_release",
-            "command": "safe-rm -rf * && cmake .. && make",
+            "command": "rm -rf * && cmake .. && make",
             "args": [],
             "options": {
                 "cwd": "build"

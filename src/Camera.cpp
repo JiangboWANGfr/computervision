@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-09-28 14:18:58 +0800
+ * @LastEditTime: 2019-09-30 23:21:23
  * @LastEditors: 
  * @Description: 
  */
@@ -275,18 +275,23 @@ int Camera::close()
 
 int Camera::start()
 {
+    cout << "\n\n\n\n\n\nCamera_handle:  " << camera_handle << endl;
     status = GXSendCommand(camera_handle, GX_COMMAND_ACQUISITION_START);
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
+        return -1;
     }
+        cout << "\n\n\n\n Success to open camera" << endl;
+
+    return 0;
 }
 
 Mat Camera::getFrame()
 {
     if (g_frame_data.pImgBuf == NULL)
     {
-        // to do
+        cout << "Camera::getFrame g_frame_data.pImgBuf == NULL" << endl;
     }
     status = GXGetImage(camera_handle, &g_frame_data, 100);
     if (status != GX_STATUS_SUCCESS)
@@ -300,6 +305,7 @@ Mat Camera::getFrame()
             // printf("<Successful acquisition : Width: %d Height: %d >\n", g_frame_data.nWidth, g_frame_data.nHeight);
             if (is_colorful)
             {
+                cout << "Copy colorful image" << endl;
                 DxRaw8toRGB24(g_frame_data.pImgBuf, m_rgb_image, g_frame_data.nWidth, g_frame_data.nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(BAYERBG), false);
                 memcpy(source_image_directly_from_camera.data, m_rgb_image, g_frame_data.nHeight * g_frame_data.nWidth * 3);
@@ -310,5 +316,6 @@ Mat Camera::getFrame()
             }
         }
     }
+    // showPicture("source", source_image_directly_from_camera, 0.001);
     return source_image_directly_from_camera.clone();
 }

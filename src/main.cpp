@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-28 15:43:34 +0800
+ * @LastEditTime: 2019-09-30 23:24:52
  * @LastEditors: 
  * @Description: 
  */
@@ -25,30 +25,26 @@ queue<Mat> image_queue;
 
 int main()
 {
-    SentryPictureManipulator spm;
-    PictureManipulator *pm = &spm;
+    SentryPictureManipulator spm("/tty/USB0",
+                                 "../build/",
+                                 60,
+                                 640,
+                                 480);
     cout << "Initializion.........." << endl;
-    
+
     cam.open();
-    if(cam.is_opened == false)
+    if (cam.is_opened == false)
     {
         cout << "Faile to open camera." << endl;
         return 0;
     }
-    
+
     cam.configFrame();
     cout << "Success to config source Image" << endl;
     if (startReceiveImageThread(cam) == false)
         return 0;
 
-    // mainpulatePicture();
-    while (true)
-    {
-        if (image_queue.empty())
-            continue;
-        pm->manipulatePicture(image_queue.front());
-        image_queue.pop();
-    }
+    mainpulatePicture(&spm);
 
     terminate_program(cam);
 }

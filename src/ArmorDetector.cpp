@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-09-19 03:31:29
+ * @LastEditTime: 2019-09-29 07:31:29
  * @LastEditors: 
  * @Description: 
  */
@@ -144,7 +144,7 @@ int ArmorDetector::getContours()
 {
      // 图像预处理并寻找轮廓
     colorThres(edges);
-    showPicture("edge", edges, 2);
+    showPicture("edge", edges, 0.001);
     findContours(edges, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 /*
         findContours搭配效果

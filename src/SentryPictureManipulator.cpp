@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-09-28 13:22:14 +0800
+ * @LastEditTime: 2019-09-29 07:30:32
  * @LastEditors: 
  * @Description: 
  */
@@ -35,11 +35,10 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
 {
 
     initArmorData();
-    Mat img;
+    Mat img = source_image_directly_from_camera;
     unsigned int lost = 0;
     bool is_insight = false;
 
-    img = source_image_directly_from_camera;
     double start = clock();
     src_video << img; //保存图片
     armor_detector.getCenters(img, armor_data);
@@ -74,9 +73,6 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     showPicture("armor", img, 2);
     imshow("armor", img);
 #endif
-    //没有waitkey()，imshow()会出现问题，但是似乎并不影响识别，待测试
-    imshow("hello", source_image_directly_from_camera);
-    waitKey(1); //即使没有imshow也要有waitKey，否则出现锁不住跟不上的bug
 
     double end = clock();
     std::cout << "Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
