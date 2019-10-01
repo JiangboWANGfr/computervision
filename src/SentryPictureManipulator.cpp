@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-09-29 07:30:32
+ * @LastEditTime: 2019-09-30 23:34:52
  * @LastEditors: 
  * @Description: 
  */
@@ -59,9 +59,6 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     }
 
 #ifdef STM32
-    //步兵
-    stm32.sendAngleDist(armor_data.yaw_angle, armor_data.pitch_angle, armor_data.atocDistance, is_insight);
-
     //串口通信发送信息给电控stm32,哨兵
     stm32.sendAngle(armor_data.yaw_angle, armor_data.pitch_angle, armor_data.atocDistance,
                     armor_data.is_big, is_insight, armor_data.is_get);
@@ -75,7 +72,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
 #endif
 
     double end = clock();
-    std::cout << "Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
+    std::cout << "Manipulate Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
               << endl;
 }
 
