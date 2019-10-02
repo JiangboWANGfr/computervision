@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-01 22:08:25 -0700
+ * @LastEditTime: 2019-10-02 00:59:00 -0700
  * @LastEditors: 
  * @Description: 
  */
@@ -22,7 +22,7 @@ bool startReceiveImageThread(Camera *cam)
     if (ret != 0)
     {
         printf("<Failed to create the collection thread>\n");
-        terminateProgram(0);
+        terminateProgram(cam);
         return false;
     }
     cout << "Success to create the collection thread\n";
