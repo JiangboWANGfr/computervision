@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-09-28 12:00:51 +0800
+ * @LastEditTime: 2019-10-01 20:30:13 -0700
  * @LastEditors: 
  * @Description: 
  */
@@ -40,6 +40,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 
 //////////////OpenCV///////////////
 #include <opencv2/core.hpp>

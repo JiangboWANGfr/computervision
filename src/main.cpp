@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-09-30 23:24:52
+ * @LastEditTime: 2019-10-01 22:06:13 -0700
  * @LastEditors: 
  * @Description: 
  */
@@ -17,14 +17,15 @@
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "for_main.h"
-/////////////////全局变量声明区//////////////
-Camera cam;
 
 queue<Mat> image_queue;
+
 ///////////////////main///////////////
 
 int main()
 {
+    Camera cam;
+
     SentryPictureManipulator spm("/tty/USB0",
                                  "../build/",
                                  60,
@@ -39,12 +40,13 @@ int main()
         return 0;
     }
 
-    cam.configFrame();
+    cam.configFrame(640,480,6,8,1200,200);
     cout << "Success to config source Image" << endl;
-    if (startReceiveImageThread(cam) == false)
+    if (startReceiveImageThread(&cam) == false)
         return 0;
 
+    cout << "main::    mainpulate picture" << endl;
     mainpulatePicture(&spm);
 
-    terminate_program(cam);
+    terminateProgram(&cam);
 }

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-09-30 23:21:23
+ * @LastEditTime: 2019-10-01 21:34:59 -0700
  * @LastEditors: 
  * @Description: 
  */
@@ -15,8 +15,15 @@ Camera::Camera(/* args */)
 
 Camera::~Camera()
 {
+    free(g_frame_data.pImgBuf);
 }
-
+/**
+     * @Author: 王占坤
+     * @Description: 打开相机
+     * @Param: 
+     * @Return: 
+     * @Throw: 
+     */
 int Camera::open()
 {
     if (initializeCameraDevice() == false)
@@ -35,22 +42,25 @@ int Camera::open()
     //默认打开第1个设备
     if (openFirstCamera() == false)
         return 0;
-    if (setORI() == false)
-    {
-        return 0;
-    }
 
     if (setDeviceToContinuouslyAcquiredImage() == false)
         return 0;
 
     if (setTRiggerSwitchToOff() == false)
         return 0;
-    
+
     is_opened = true;
     cout << "camera_handle: " << camera_handle << endl;
     cout << "Success to open camera" << endl;
 }
 
+/**
+ * @Author: 王占坤
+ * @Description: 初始化设备打开参数open_param
+ * @Param: 
+ * @Return: 
+ * @Throw: 
+ */
 int Camera::initializeCameraDevice()
 {
     //初始化设备打开参数，默认打开序号为1的设备
@@ -60,7 +70,7 @@ int Camera::initializeCameraDevice()
     //初始化库
     status = GXInitLib();
 
-    cout << "初始化相机参数" << endl;
+    cout << "Camera::initializeCameraDevice    初始化相机参数" << endl;
 
     if (status != GX_STATUS_SUCCESS)
     {
@@ -68,7 +78,7 @@ int Camera::initializeCameraDevice()
         return false;
     }
 
-    cout << "成功初始化相机参数" << endl;
+    cout << "Camera::initializeCameraDevice    成功初始化相机参数" << endl;
     return true;
 }
 
@@ -103,37 +113,48 @@ bool Camera::openFirstCamera()
     return true;
 }
 
+/**
+ * @Author: 王占坤
+ * @Description: 设置感兴趣区域
+ * @Param: 
+ * @Return: 
+ * @Throw: 
+ */
 bool Camera::setORI()
 {
 
-    bool b_is_set_roi = true;
     //设置roi区域，设置时相机必须时停采状态
-    if (b_is_set_roi)
-    {
-        status = GXSetInt(camera_handle, GX_INT_WIDTH, m_roi_width);
-        status = GXSetInt(camera_handle, GX_INT_HEIGHT, m_roi_height);
-        status = GXSetInt(camera_handle, GX_INT_OFFSET_X, m_roi_offset_x);
-        status = GXSetInt(camera_handle, GX_INT_OFFSET_Y, m_roi_offset_y);
-        status = GXSetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, m_exposure_time);
-        status = GXSetInt(camera_handle, GX_INT_GAIN, m_gain);
-    }
+    status = GXSetInt(camera_handle, GX_INT_WIDTH, m_roi_width);
+    status = GXSetInt(camera_handle, GX_INT_HEIGHT, m_roi_height);
+    status = GXSetInt(camera_handle, GX_INT_OFFSET_X, m_roi_offset_x);
+    status = GXSetInt(camera_handle, GX_INT_OFFSET_Y, m_roi_offset_y);
+    status = GXSetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, m_exposure_time);
+    status = GXSetInt(camera_handle, GX_INT_GAIN, m_gain);
 
     return true;
 }
 
+/**
+ * @Author: 王占坤
+ * @Description: 设置采集模式为连续采集
+ * @Param: 
+ * @Return: 
+ * @Throw: 
+ */
 bool Camera::setDeviceToContinuouslyAcquiredImage()
 {
     //设置采集模式为连续采集
     status = GXSetEnum(camera_handle, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
     if (status != GX_STATUS_SUCCESS)
     {
-        GetErrorString(status);
-        status = GXCloseDevice(camera_handle);
-        if (camera_handle != NULL)
-        {
-            camera_handle = NULL;
-        }
-        status = GXCloseLib();
+        // GetErrorString(status);
+        // status = GXCloseDevice(camera_handle);
+        // if (camera_handle != NULL)
+        // {
+        //     camera_handle = NULL;
+        // }
+        // status = GXCloseLib();
+        close();
         return false;
     }
     return true;
@@ -158,16 +179,35 @@ bool Camera::setTRiggerSwitchToOff()
     return true;
 }
 
-int Camera::configFrame()
+/**
+     * @Author: 王占坤
+     * @Description: 对相机的每一帧图像进行配置
+     * @Param: int64_t width  图像横向大小
+     * @Param: int54_t height 图像纵向大小
+     * @Param: int offset_x 截取图像的偏置
+     * @Param: int offset_y  截取图像的偏置
+     * @Param: dpuuble expotime 曝光时间
+     * @Param: int64_t gain 增益
+     * @Return: 
+     * @Throw: 
+     */
+int Camera::configFrame(int64_t width,
+                        int64_t height,
+                        int offset_x,
+                        int offset_y,
+                        double expotime,
+                        int64_t gain)
 {
-    int64_t width = 0, height = 0;
-    double expotime = 0;
-    int64_t gain = 0;
     cout << "ConfigFrame" << endl;
-    GX_STATUS status = GXGetInt(camera_handle, GX_INT_WIDTH, &width);
-    status = GXGetInt(camera_handle, GX_INT_HEIGHT, &height);
-    status = GXGetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, &expotime);
-    status = GXGetInt(camera_handle, GX_INT_GAIN, &gain);
+
+    m_roi_width = width;
+    m_roi_height = height;
+    m_roi_offset_x = offset_x;
+    m_roi_offset_y = offset_y;
+    m_exposure_time = expotime;
+    m_gain = gain;
+    setORI();
+
     cout << "width = " << width << '\t' << "height = " << height << endl;
     cout << "expotime = " << expotime << '\t' << "gain = " << gain << endl;
     // 查询当前相机是否支持GX_ENUM_PIXEL_COLOR_FILTER
@@ -175,19 +215,19 @@ int Camera::configFrame()
     //支持彩色图像
     if (is_colorful)
     {
-        cout << "支持彩色" << endl;
+        cout << "Camera::configFrame    支持彩色" << endl;
         status = GXGetEnum(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &m_pixel_color);
         source_image_directly_from_camera.create(height, width, CV_8UC3);
         m_rgb_image = new char[width * height * 3];
     }
     else
     {
-        cout << "不支持彩色" << endl;
+        cout << "Camera::configFrame    不支持彩色" << endl;
         source_image_directly_from_camera.create(height, width, CV_8UC1);
     }
 
-    mallocForSourceImage();
     int ret = mallocForSourceImage();
+
     if (ret != 0)
     {
         printf("<Failed to prepare for acquire image>\n");
@@ -224,10 +264,16 @@ int Camera::mallocForSourceImage()
     return 0;
 }
 
+/**
+     * @Author: 王占坤
+     * @Description: 关闭相机
+     * @Param: 
+     * @Return: 
+     * @Throw: 
+     */
 int Camera::close()
 {
     //为停止采集做准备
-
     GX_STATUS status = GX_STATUS_SUCCESS;
     uint32_t ret = 0;
 
@@ -238,21 +284,6 @@ int Camera::close()
         GetErrorString(status);
         return status;
     }
-
-    // g_get_image = false;
-    // // ret = pthread_join(g_acquire_thread, NULL);
-    // if (ret != 0)
-    // {
-    //     printf("<Failed to release resources>\n");
-    //     return ret;
-    // }
-
-    // //释放buffer
-    // if (g_frame_data.pImgBuf != NULL)
-    // {
-    //     free(g_frame_data.pImgBuf);
-    //     g_frame_data.pImgBuf = NULL;
-    // }
 
     //关闭设备
     status = GXCloseDevice(camera_handle);
@@ -273,6 +304,13 @@ int Camera::close()
     return 0;
 }
 
+/**
+     * @Author: 王占坤
+     * @Description: 向相机发送开始获取图像命令
+     * @Param: 
+     * @Return: 
+     * @Throw: 
+     */
 int Camera::start()
 {
     cout << "\n\n\n\n\n\nCamera_handle:  " << camera_handle << endl;
@@ -282,11 +320,18 @@ int Camera::start()
         GetErrorString(status);
         return -1;
     }
-        cout << "\n\n\n\n Success to open camera" << endl;
+    cout << "\n\n\n\n Success to open camera" << endl;
 
     return 0;
 }
 
+/**
+     * @Author: 王占坤
+     * @Description: 获取图像
+     * @Param: 
+     * @Return: Mat
+     * @Throw: 
+     */
 Mat Camera::getFrame()
 {
     if (g_frame_data.pImgBuf == NULL)
@@ -305,7 +350,7 @@ Mat Camera::getFrame()
             // printf("<Successful acquisition : Width: %d Height: %d >\n", g_frame_data.nWidth, g_frame_data.nHeight);
             if (is_colorful)
             {
-                cout << "Copy colorful image" << endl;
+                // cout << "Copy colorful image" << endl;
                 DxRaw8toRGB24(g_frame_data.pImgBuf, m_rgb_image, g_frame_data.nWidth, g_frame_data.nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(BAYERBG), false);
                 memcpy(source_image_directly_from_camera.data, m_rgb_image, g_frame_data.nHeight * g_frame_data.nWidth * 3);
@@ -316,6 +361,6 @@ Mat Camera::getFrame()
             }
         }
     }
-    // showPicture("source", source_image_directly_from_camera, 0.001);
+    showPicture("source", source_image_directly_from_camera, 0.001);
     return source_image_directly_from_camera.clone();
 }
