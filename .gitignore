@@ -35,4 +35,4 @@
 *.udb
 
 # xmake
-.xmake/**
+**/.xmake/**

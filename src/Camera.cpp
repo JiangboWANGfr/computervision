@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-10-01 21:34:59 -0700
+ * @LastEditTime: 2019-10-05 07:10:37 -0700
  * @LastEditors: 
  * @Description: 
  */
@@ -100,6 +100,7 @@ bool Camera::openFirstCamera()
 {
     status = GXOpenDevice(&open_param, &camera_handle);
     cout << "camera_handle: " << camera_handle << endl;
+    GetErrorString(status);
     if (status != GX_STATUS_SUCCESS)
     {
         printf("Failed to open camera.\n");
