@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-09-28 13:22:07 +0800
+ * @LastEditTime: 2019-10-09 20:37:00 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -27,6 +27,9 @@ protected:
     CarData car_data;
 
     SerialPort stm32;
+
+private:
+    void adjustParameter();
 
 public:
     PictureManipulator(string serial_port_device,

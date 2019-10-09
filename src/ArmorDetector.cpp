@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-09-29 07:31:29
+ * @LastEditTime: 2019-10-09 20:45:27 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -171,31 +171,29 @@ int ArmorDetector::getContours()
  */
 void ArmorDetector::colorThres(cv::Mat &opImage)
 {
-    Mat thres_whole;
+    Mat gray_img;
     vector<Mat> splited;
-    Mat binary;
+    Mat single_color_img;
     vector<vector<Point>> contours;
     Mat contourKernel = getStructuringElement(MORPH_ELLIPSE, Size(15, 15));
     Mat grayKernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
     split(ipImg, splited);
-    cvtColor(ipImg, thres_whole, COLOR_BGR2GRAY);
+    cvtColor(ipImg, gray_img, COLOR_BGR2GRAY);
 #ifdef BLUE
-    threshold(thres_whole, thres_whole, 100, 255, THRESH_BINARY); //复活赛用的100
-    subtract(splited[0], splited[2], binary);
+    threshold(gray_img, gray_img, gray_thresh, 255, THRESH_BINARY); //复活赛用的100
+    subtract(splited[0], splited[2], single_color_img);
 #endif
 #ifdef RED
-    threshold(thres_whole, thres_whole, 60, 255, THRESH_BINARY); //复活赛场地暗，适应性训练录视频后调低了点阈值，一般来说红的值会小于蓝的
-    subtract(splited[2], splited[0], binary);
+    threshold(gray_img, gray_img, gray_thresh, 255, THRESH_BINARY); //复活赛场地暗，适应性训练录视频后调低了点阈值，一般来说红的值会小于蓝的
+    subtract(splited[2], splited[0], single_color_img);
     //复活赛地面和麦轮及其他金属件反光发黄，出现哨兵射击地面和队友麦轮的现象，通过绿通道去除反光
     threshold(splited[1], splited[1], 100, 255, THRESH_BINARY);
-    binary = binary - (binary & splited[1]);
+    single_color_img = single_color_img - (single_color_img & splited[1]);
 #endif
-    threshold(binary, binary, 150, 255, THRESH_BINARY); //150
-    dilate(binary, binary, contourKernel);              //膨胀内核整的这么大是为了保证无论云台转动多快binary都能包含thres_whole
-    dilate(thres_whole, thres_whole, grayKernel);       //识别极限由最小面积决定，膨胀让灯条变大，增加识别距离，但原理上会对pnp解算距离有影响
-    // imshow("binary",binary);
-    // imshow("thres_whole",thres_whole);
-    opImage = binary & thres_whole; //红或者蓝区域&高亮区域
+    threshold(single_color_img, single_color_img, single_color_thresh, 255, THRESH_BINARY); //150
+    dilate(single_color_img, single_color_img, contourKernel);              //膨胀内核整的这么大是为了保证无论云台转动多快single_color_img都能包含gray_img
+    dilate(gray_img, gray_img, grayKernel);       //识别极限由最小面积决定，膨胀让灯条变大，增加识别距离，但原理上会对pnp解算距离有影响
+    opImage = single_color_img & gray_img; //红或者蓝区域&高亮区域
 }
 
 // 离得远的矩形分成不同组，离得近的矩形分为一组，然后同组内选面积最大者作为代表矩形

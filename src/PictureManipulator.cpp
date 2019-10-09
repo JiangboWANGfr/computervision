@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:56 +0800
- * @LastEditTime: 2019-09-28 13:17:54 +0800
+ * @LastEditTime: 2019-10-09 20:49:51 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -40,8 +40,18 @@ PictureManipulator::PictureManipulator(string serial_port_device,
     }
     src_video.open(filename + "SRC.avi", CV_FOURCC('M', 'J', 'P', 'G'), fps, video_size);
     fin_video.open(filename + "FIN.avi", CV_FOURCC('M', 'J', 'P', 'G'), fps, video_size);
+
+    adjustParameter();
 }
 
 PictureManipulator::~PictureManipulator()
 {
+}
+
+void PictureManipulator::adjustParameter()
+{
+    string window_name = "Parameter";
+    namedWindow(window_name);
+    createTrackbar("Armordetector.gray_thresh", window_name, &armor_detector.gray_thresh, 255);
+    createTrackbar("ArmorDetector.single_color_img", window_name, &armor_detector.single_color_thresh, 255);
 }

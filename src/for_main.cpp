@@ -4,10 +4,11 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-02 00:59:00 -0700
+ * @LastEditTime: 2019-10-09 20:25:31 +0800
  * @LastEditors: 
  * @Description: 
  */
+
 #include "for_main.h"
 
 pthread_t ri_id;//接受图片的线程id

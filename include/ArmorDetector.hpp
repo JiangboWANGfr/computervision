@@ -4,25 +4,20 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-09-19 03:30:11
+ * @LastEditTime: 2019-10-09 20:46:56 +0800
  * @LastEditors: 
  * @Description: 
  */
-#ifndef ARMORDETECTOR_HPP
-#define ARMORDETECTOR_HPP
+#ifndef __ARMOR_DETECTOR_H__
+#define __ARMOR_DETECTOR_H__
 
 #include "header.h"
 
 class ArmorDetector
 {
 public:
-#ifdef BLUE
-    cv::Scalar huahuaScalar = cv::Scalar(255, 0, 0);
-#endif
-#ifdef RED
-    cv::Scalar huahuaScalar = cv::Scalar(0, 0, 255);
-#endif
-
+    int gray_thresh = 100;
+    int single_color_thresh = 150;
 private:
     vector<RotatedRect> rectLists, lightLists;
     vector<Point2f> armorCenters;
@@ -35,8 +30,15 @@ private:
 
     TargetData armordata;
 
-    Mat ipImg;//源图，图片内存空间相同，但是换了个名称
+    Mat ipImg; //源图，图片内存空间相同，但是换了个名称
     Mat edges;
+    
+#ifdef BLUE
+    cv::Scalar huahuaScalar = cv::Scalar(255, 0, 0);
+#endif
+#ifdef RED
+    cv::Scalar huahuaScalar = cv::Scalar(0, 0, 255);
+#endif
 
 public:
     int mode; //用于判断是识别装甲板还是能量机关
