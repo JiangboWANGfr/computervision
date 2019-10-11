@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-10-09 20:46:56 +0800
+ * @LastEditTime: 2019-10-09 21:02:34 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -41,7 +41,6 @@ private:
 #endif
 
 public:
-    int mode; //用于判断是识别装甲板还是能量机关
     ArmorDetector();
     void getCenters(cv::Mat &source_img, TargetData &armor_data);
 

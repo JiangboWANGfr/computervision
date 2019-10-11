@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-09 20:37:00 +0800
+ * @LastEditTime: 2019-10-09 21:01:43 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -28,9 +28,6 @@ protected:
 
     SerialPort stm32;
 
-private:
-    void adjustParameter();
-
 public:
     PictureManipulator(string serial_port_device,
                        string path,
@@ -39,6 +36,7 @@ public:
                        int height_video_size = 480);
     PictureManipulator();
     ~PictureManipulator();
+    void adjustParameter();
 
     virtual int manipulatePicture(Mat picture) = 0;
 };

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-09 20:25:31 +0800
+ * @LastEditTime: 2019-10-09 21:01:52 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -69,6 +69,7 @@ void terminateProgram(Camera* cam)
 
 bool mainpulatePicture(PictureManipulator *pm)
 {
+    pm->adjustParameter();
     while (true)
     {
         cout << "for_main::mainpulatePicture    mainpulate picture" << endl; //不能被注释掉，注释可能不会执行该函数，原因未知
