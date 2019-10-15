@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-01 20:30:13 -0700
+ * @LastEditTime: 2019-10-14 16:37:51 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -105,7 +105,5 @@ typedef struct CarData
 } CarData;
 
 ///////////////////全局变量//////////////////////
-
-extern queue<Mat> image_queue;
 
 #endif

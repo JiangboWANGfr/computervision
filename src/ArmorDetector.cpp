@@ -8,8 +8,8 @@
  * @LastEditors: 
  * @Description: 
  */
-#include "ArmorDetector.hpp"
-#include "AngleCalculate.hpp"
+#include "ArmorDetector.h"
+#include "AngleCalculate.h"
 #include "actions.h"
 
 ArmorDetector::ArmorDetector()

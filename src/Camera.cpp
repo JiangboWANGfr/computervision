@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-10-05 07:10:37 -0700
+ * @LastEditTime: 2019-10-15 09:52:15 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -50,8 +50,6 @@ int Camera::open()
         return 0;
 
     is_opened = true;
-    cout << "camera_handle: " << camera_handle << endl;
-    cout << "Success to open camera" << endl;
 }
 
 /**
@@ -314,14 +312,14 @@ int Camera::close()
      */
 int Camera::start()
 {
-    cout << "\n\n\n\n\n\nCamera_handle:  " << camera_handle << endl;
+    cout << "Camera::start    Camera_handle:  " << camera_handle << endl;
     status = GXSendCommand(camera_handle, GX_COMMAND_ACQUISITION_START);
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
         return -1;
     }
-    cout << "\n\n\n\n Success to open camera" << endl;
+    cout << "Camera::start    Success to start camera" << endl;
 
     return 0;
 }
@@ -362,6 +360,5 @@ Mat Camera::getFrame()
             }
         }
     }
-    showPicture("source", source_image_directly_from_camera, 0.001);
     return source_image_directly_from_camera.clone();
 }

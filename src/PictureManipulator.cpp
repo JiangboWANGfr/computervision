@@ -4,20 +4,20 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:56 +0800
- * @LastEditTime: 2019-10-09 21:00:42 +0800
+ * @LastEditTime: 2019-10-14 15:30:01 +0800
  * @LastEditors: 
  * @Description: 
  */
 
 #include "PictureManipulator.h"
 
-// PictureManipulator::PictureManipulator() : stm32()
-// {
-//     filename = "";
-//     fps = 0;
-//     width_video_size = 0;
-//     height_video_size = 0;
-// }
+PictureManipulator::PictureManipulator() : stm32()
+{
+    filename = "";
+    fps = 0;
+    width_video_size = 0;
+    height_video_size = 0;
+}
 
 PictureManipulator::PictureManipulator(string serial_port_device,
                                        string path,
