@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-17 21:01:28 +0800
+ * @LastEditTime: 2019-10-17 23:25:40 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -14,10 +14,6 @@
 Controller::Controller(Camera *camera, PictureManipulator *pmr)
     : cam(camera), pm(pmr)
 {
-    // pthread_mutex_init(&mutex);
-    pm->adjustParameter();
-    cam->start();
-    cout << "Controller::Controller    camera handle:    " << cam->camera_handle << endl;
 }
 
 Controller::~Controller()
@@ -41,6 +37,7 @@ void Controller::getImageFromCamera()
     if (is_ready_to_manipulate == 0)
     {
         double clone_start = clock();
+        src_video << source_img; //保存原始图像
         img_ready_to_manipulate = source_img.clone();
         is_ready_to_manipulate = 1;
         double clone_end = clock();
@@ -56,7 +53,60 @@ bool Controller::mainpulatePicture()
     if (is_ready_to_manipulate == 1)
     {
         pm->manipulatePicture(img_ready_to_manipulate);
+        fin_video << img_ready_to_manipulate; //保存处理后的图像
         is_ready_to_manipulate = 0;
+// #ifdef STM32
+//         //串口通信发送信息给电控stm32,哨兵
+//         stm32.sendAngle(pm->armor_data.yaw_angle, pm->armor_data.pitch_angle, pm->armor_data.atocDistance,
+//                         pm->armor_data.is_big, pm->armor_data.is_insight, pm->armor_data.is_get);
+// #endif
     }
     pthread_mutex_unlock(&mutex);
+}
+
+bool Controller::config(string serial_port,
+                        string path,
+                        double fps,
+                        int width,
+                        int height,
+                        int offset_x,
+                        int offset_y,
+                        double expotime,
+                        int64_t gain)
+{
+    stm32.open_port(serial_port);
+
+    cam->open();
+    if (cam->is_opened == false)
+    {
+        cout << "Faile to open camera." << endl;
+        return false;
+    }
+    cam->configFrame(width, height, offset_x, offset_y, expotime, gain);
+    cam->start();
+    cout << "Controller::Controller    camera handle:    " << cam->camera_handle << endl;
+
+    filename = path;
+    if (*filename.end() == '/')
+    {
+        filename += std::to_string(time(NULL));
+    }
+    else
+    {
+        filename += '/' + std::to_string(time(NULL));
+    }
+
+    video_size.height = height;
+    video_size.width = width;
+
+    src_video.open(filename + "SRC.avi", CV_FOURCC('M', 'J', 'P', 'G'), fps, video_size);
+    fin_video.open(filename + "FIN.avi", CV_FOURCC('M', 'J', 'P', 'G'), fps, video_size);
+}
+
+void Controller::adjustParameter()
+{
+    string window_name = "Parameter";
+    namedWindow(window_name);
+    createTrackbar("Armordetector.gray_thresh", window_name, &(pm->armor_detector.gray_thresh), 255);
+    createTrackbar("ArmorDetector.single_color_img", window_name, &(pm->armor_detector.single_color_thresh), 255);
 }

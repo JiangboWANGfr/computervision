@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:07 +0800
- * @LastEditTime: 2019-10-14 20:39:30 +0800
+ * @LastEditTime: 2019-10-17 23:24:27 +0800
  * @LastEditors: 
  * @Description: 改文件只允许main进行引用
  */
@@ -15,10 +15,20 @@
 #include "actions.h"
 #include "PictureManipulator.h"
 #include "Camera.h"
+#include "SerialPort.hpp"
 
 class Controller
 {
 private:
+    double fps;
+    Size video_size;
+    string filename;
+    int width_video_size, height_video_size; //用系统时间取名，防止同名文件自我覆盖
+    VideoWriter src_video, fin_video;
+    ofstream filterData; // 记录装甲数据输出为csv文件，方便建模分析
+
+    SerialPort stm32;
+
     bool is_get_image = true;
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
     int is_ready_to_manipulate = 0;
@@ -37,6 +47,16 @@ public:
     void getImageFromCamera();
     bool startReceiveImageThread(Camera *cam);
     bool mainpulatePicture();
+    bool config(string serial_port,
+                string path,
+                double fps,
+                int width,
+                int height,
+                int offset_x,
+                int offset_y,
+                double expotime,
+                int64_t gain);
+    void adjustParameter();
 };
 
 #endif

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-17 21:09:15 +0800
+ * @LastEditTime: 2019-10-17 23:15:13 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -23,19 +23,11 @@
 GxCamera cam;
 
 #ifdef SENTRY
-SentryPictureManipulator pm("/tty/USB0",
-                             "../build/",
-                             60,
-                             640,
-                             480);
+SentryPictureManipulator pm;
 #endif
 
 #ifdef INFANTRY
-InfantryPictureManipulator pm("/tty/USB0",
-                               "../build/",
-                               60,
-                               640,
-                               480);
+InfantryPictureManipulator pm;
 
 #endif
 
@@ -47,19 +39,8 @@ int terminateProgram();
 
 int main()
 {
-
-    cout << "Initializion.........." << endl;
-
-    cam.open();
-    if (cam.is_opened == false)
-    {
-        cout << "Faile to open camera." << endl;
-        return 0;
-    }
-
-    cam.configFrame(640, 480, 6, 8, 1200, 200);
-
     Controller controller(&cam, &pm); //必须要在配置好camera之后再生成该变量
+    controller.config("/tty/USB0","../build",60, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
     pthread_attr_t thread_attr;

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:52:54 +0800
- * @LastEditTime: 2019-10-17 10:37:22 +0800
+ * @LastEditTime: 2019-10-17 23:26:11 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -23,8 +23,8 @@ public:
     bool is_opened = false;
 
 public:
-    Camera(/* args */);
-    ~Camera();
+    Camera(/* args */){}
+    ~Camera(){}
     virtual int open() = 0;
     virtual int configFrame(int64_t width,
                     int64_t height,
