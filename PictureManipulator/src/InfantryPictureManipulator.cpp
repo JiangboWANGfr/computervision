@@ -4,18 +4,17 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-10-17 18:31:10 +0800
+ * @LastEditTime: 2019-10-17 21:57:34 +0800
  * @LastEditors: 
  * @Description: 
  */
+
+
 #include "InfantryPictureManipulator.h"
 #include "SivirDetector.h"
 
-int mode=3;
-int findmode=1;
-int getcaprsc=0;
+#ifdef INFANTRY
 
-VideoCapture cap;
 
 InfantryPictureManipulator::InfantryPictureManipulator(string serial_port_device,
                                                    string path,
@@ -28,6 +27,7 @@ InfantryPictureManipulator::InfantryPictureManipulator(string serial_port_device
                          width_video_size,
                          height_video_size)
 {
+    cout << "OK" << endl;
 }
 
 InfantryPictureManipulator::InfantryPictureManipulator()
@@ -38,183 +38,165 @@ InfantryPictureManipulator::~InfantryPictureManipulator()
 {
 }
 
+/**
+ * @Author: 王占坤
+ * @Description: 处理帧图像
+ * @Param: source_image_directly_from_camera————直接从摄像头读取的图片
+ * @Return: None
+ * @Throw: 
+ */
 int InfantryPictureManipulator::manipulatePicture(Mat source_image_directly_from_camera)
 {
-    Mat img1 = source_image_directly_from_camera;
-    cap.open("/dev/video0");
-    DetermineRecognitionMode();
 
-        if ( findmode == ARMOR_MODE )
-        {
-           IdentifyAramorMode(img1);
-           //videoWrtLYY<<frame;
-        }
-        else if (findmode==2)
-        {
-           IdentifyMode2(img1);
-           //videoWrtLYY<<frame;
-        }
+    initArmorData();
+    Mat img = source_image_directly_from_camera;
+    unsigned int lost = 0;
+    bool is_insight = false;
 
-    waitKey(1);
+    double start = clock();
+    src_video << img; //保存图片
+    armor_detector.getCenter(img, armor_data);
+    fin_video << img; //保存处理后的图片
+
+    //防止计数溢出
+    lost = lost < 2000 ? lost : 2000;
+
+    //目标丢失与否
+    judgeTargetInsight();
+
+    maybeLostTarget();
+
+    //敌人不在视野中，初始化数据
+    if (is_insight == false)
+    {
+        initArmorData();
+    }
+
+#ifdef STM32
+    //串口通信发送信息给电控stm32,哨兵
+    stm32.sendAngle(armor_data.yaw_angle, armor_data.pitch_angle, armor_data.atocDistance,
+                    armor_data.is_big, is_insight, armor_data.is_get);
+#endif
+
+    writeIntoFilterDataCSV();
+
+#ifdef DEBUG1
+    showPicture("armor", img, 2);
+    imshow("armor", img);
+#endif
+
+    double end = clock();
+    std::cout << "Manipulate Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
+              << endl;
 }
 
-//-------------------------------------------------
 /**
-\brief 判断识别模式
-\return void
-*/
-//-------------------------------------------------
-
-void InfantryPictureManipulator::DetermineRecognitionMode(){
-    stm32.readMode(mode);
-    if (mode == 1)
-    {
-        findmode=1;
-        armor_detector.mode = 1;//识别小装甲
-    }
-    if (mode == 2)
-    {
-        findmode=1;
-        armor_detector.mode = 2;//识别大装甲
-    } 
-    if (mode == 3)//大小都识别
-    {
-        findmode=1;
-        armor_detector.mode = 3;
-    }
-    if (mode == 4)//静止能量机关
-    {
-        findmode=2;
-        Sivir.mode=1;
-    }
-    if (mode == 5)//转动
-    {
-        findmode=2;
-        Sivir.mode=2;
-    }
-    /*if (mode == 7)//对方是红色
-    {
-        detector.isred = true;
-    }
-    if (mode == 8)
-    {
-        detector.isred = false;
-    }*/
-    armor_detector.isred = false;
-    //detector.mode = 3;
-    std::cout<<"mode:"<<mode<<endl;
-    std::cout<<"detector.mode:"<<armor_detector.mode<<endl;
+ * @Author: 王占坤
+ * @Description: ArmorData实体化对象初始化
+ * @Param: None
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryPictureManipulator::initArmorData()
+{
+    // 初始化armorData
+    armor_data.yaw_angle = 0.0f;
+    armor_data.pitch_angle = 0.0f;
+    armor_data.atocDistance = 0.0f;
+    armor_data.is_big = false;
+    armor_data.shoot = false;
 }
 
-//-------------------------------------------------
 /**
-\brief 寻找模式：ARAMO_RMODE
-\return void
-*/
-//-------------------------------------------------
-
-void InfantryPictureManipulator::IdentifyAramorMode(Mat &frame){
-    if (getcaprsc==1)//相机切换
-        {
-            getcaprsc=0;
-            cap.release();
-            std::cout<<"now mode:"<<mode<<endl;
-        }
-        //videoWrtL << frame;
-        armor_detector.getCenters(frame, armor_data);
-        // circle(frame,armor_detector.target.center,8,Scalar(255,0,0),2,8,0);
-        //videoWrtLYY << frame;
-
-
-        IdentifyTarget();
+ * @Author: 王占坤
+ * @Description: 短时间失去目标采取的行动
+ * @Param: None
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryPictureManipulator::lostTargetShortTime_toDo()
+{
+    // cout << "lost = " << lost << endl;
+    is_insight = true;
+    armor_data.yaw_angle = 0; //复活赛抛弃识别数字，对图像质量要求降低，识别算法很少丢帧故去掉滤��    armor_data.pitch_angle = armor_data.pitch_angle * 0;
+    // armor_data.yaw_angle = abs(armor_data.yaw_angle) > 0.01f ? armor_data.yaw_angle : 0.0f;
+    // armor_data.pitch_angle = abs(armor_data.pitch_angle) > 0.01f ? armor_data.pitch_angle : 0.0f;
 }
 
-//-------------------------------------------------
 /**
-\brief 寻找模式：2
-\return void
-*/
-//-------------------------------------------------
-
-void InfantryPictureManipulator::IdentifyMode2(Mat &frame){
-    if (getcaprsc==0)//相机切换
-        {
-            getcaprsc=1;
-            std::cout<<"now mode:"<<mode<<endl;
-            cap.open("/dev/video0");
-        }
-        cap >> frame;
-        //frame=srcframe.clone();
-        resize(frame,frame,Size(640,480));
-        //videoWrtL << frame;
-        Sivir.getResult(frame);
-        circle(frame,Sivir.target.center,8,Scalar(255,0,0),2,8,0); 
-        //videoWrtLYY << frame;         
-        //videoWrtLYY<<Sivir.src;
-
-        GetAramor();
+ * @Author: 王占坤
+ * @Description: 长时间丢失目标采取行动
+ * @Param: None
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryPictureManipulator::lostTargetLongTime_toDo()
+{
+    is_insight = true;
+    // armor_data.yaw_angle = 0.0f;
+    // armor_data.pitch_angle = 0.0f;
 }
 
-//-------------------------------------------------
 /**
-\brief 成功识别到装甲板
-\return void
-*/
-//-------------------------------------------------
+ * @Author: 王占坤
+ * @Description: 丢失目标后采取的行动以及更细判断
+ * @Param: None
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryPictureManipulator::maybeLostTarget()
+{
+    //丢失目标后的短暂寻找策略
+    int lostmin = 30;
+    int lostmax = 100; //根据自己的算法所需时间让云台停1.5s左右,复活赛时哨兵巡逻yaw��s转一圈，pitch轴搜索范��-30度，一圈俯����    if (lost < lostmin && lost > 0) //丢失时间很短，处理云台自身快速转动丢失目标问��    {
+    lostTargetShortTime_toDo();
 
-void InfantryPictureManipulator::GetAramor(){
-    if (Sivir.islost==false) std::cout<<"find the armor successfully!"<<endl;
-        float yaw,pitch;
-        yaw=Sivir.pnpresult.yaw;
-        pitch=Sivir.pnpresult.pitch;
-        std::cout<<"yaw:"<<yaw<<"  pitch:"<<pitch<<endl;
-        stm32.sendAngle(yaw,pitch);
-        //double afterfind=clock();
-        //cout<<"find sivir time:="<<(afterfind-now)/CLOCKS_PER_SEC * 1000<<"ms"<<endl;
-}
-
-//-------------------------------------------------
-/**
-\brief 识别目标
-\return void
-*/
-//-------------------------------------------------
-
-void InfantryPictureManipulator::IdentifyTarget(){
-    
-    int delay;
-    float yaw,pitch,dist;
-    float flag;
-    if (armor_detector.islost == false)
+    if (lost >= lostmin && lost < lostmax) //丢失时间较短，处理猫步或陀螺切换装甲板导致目标短暂消失问题
     {
-        // yaw=armor_detector.pnpresult.yaw;
-        // pitch=armor_detector.pnpresult.pitch;
-        // dist=armor_detector.pnpresult.dist/1000;
-        //cout<<"yaw:"<<yaw<<"  pitch:"<<pitch<<" dist:"<<dist<<endl;
-        flag=1.0;
-        delay=0;
+        lostTargetLongTime_toDo();
+    }
+    if (lost >= lostmax) //目标可能的确走了，即不在视野中，而不是因为没识别��
+    {
+        is_insight = false;
+    }
+}
+
+/**
+ * @Author: 王占坤
+ * @Description: 输出帧处理结果到csv文件
+ * @Param: None
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryPictureManipulator::writeIntoFilterDataCSV()
+{
+    //输出数据到csv文件，方便赛后检查数据是否异常，因为视频太快，其中某帧出问题的话，人可能看不出来有问题
+    filterData << (double)clock() / CLOCKS_PER_SEC << ","
+               << armor_data.yaw_angle << ","
+               << armor_data.pitch_angle << ","
+               << armor_data.atocDistance << endl;
+}
+
+/**
+ * @Author: 王占坤
+ * @Description: 判断视野中是否有装甲板
+ * @Param: None
+ * @Return: lost——！0丢失，0没丢，数字越大处理帧越多，丢失时间越长
+ * @Throw: 
+ */
+int InfantryPictureManipulator::judgeTargetInsight()
+{
+    if (armor_data.is_get == true)
+    {
+        lost = 0;
+        is_insight = true;
     }
     else
     {
-        if (delay<5)
-        {
-            yaw =  yaw;
-            pitch = pitch;
-            dist = dist;
-            flag = 1.0;
-            delay++;
-        }
-        else
-        {
-            // yaw=armor_detector.pnpresult.yaw;
-            // pitch=armor_detector.pnpresult.pitch;
-            // dist=armor_detector.pnpresult.dist/1000;
-            //cout<<"yaw:"<<yaw<<"  pitch:"<<pitch<<" dist:"<<dist<<endl;
-            flag=0.0;
-        }
+        lost++;
     }
-    stm32.sendAngleDist(yaw,pitch,dist,flag);
-    cout<<"flag:"<<flag<<endl;
-    //double afterfind=clock();
-    //cout<<"find armor time:="<<(afterfind-now)/CLOCKS_PER_SEC * 1000<<"ms"<<endl;
 }
+
+
+
+#endif

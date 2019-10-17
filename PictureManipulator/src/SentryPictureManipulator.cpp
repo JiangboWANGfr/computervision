@@ -4,11 +4,16 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-10-17 19:05:02 +0800
+ * @LastEditTime: 2019-10-17 21:09:53 +0800
  * @LastEditors: 
  * @Description: 
  */
+
+
 #include "SentryPictureManipulator.h"
+
+#ifdef SENTRY
+
 
 SentryPictureManipulator::SentryPictureManipulator(string serial_port_device,
                                                    string path,
@@ -41,7 +46,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
 
     double start = clock();
     src_video << img; //保存图片
-    armor_detector.getCenters(img, armor_data);
+    armor_detector.getCenter(img, armor_data);
     fin_video << img; //保存处理后的图片
 
     //防止计数溢出
@@ -140,3 +145,6 @@ int SentryPictureManipulator::judgeTargetInsight()
         lost++;
     }
 }
+
+
+#endif

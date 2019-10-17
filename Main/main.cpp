@@ -4,11 +4,12 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-17 18:56:21 +0800
+ * @LastEditTime: 2019-10-17 21:09:15 +0800
  * @LastEditors: 
  * @Description: 
  */
 
+#include "config.h"
 #include "header.h"
 #include "SerialPort.hpp"
 #include "DxImageProc.h"
@@ -17,14 +18,26 @@
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "Controller.h"
-#pragma comment(linker, "/STACK:102400000,102400000") 
+#include "InfantryPictureManipulator.h"
+#pragma comment(linker, "/STACK:102400000,102400000")
 GxCamera cam;
 
-SentryPictureManipulator spm("/tty/USB0",
+#ifdef SENTRY
+SentryPictureManipulator pm("/tty/USB0",
                              "../build/",
                              60,
                              640,
                              480);
+#endif
+
+#ifdef INFANTRY
+InfantryPictureManipulator pm("/tty/USB0",
+                               "../build/",
+                               60,
+                               640,
+                               480);
+
+#endif
 
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);
@@ -46,15 +59,13 @@ int main()
 
     cam.configFrame(640, 480, 6, 8, 1200, 200);
 
-    
-    Controller controller(&cam, &spm); //必须要在配置好camera之后再生成该变量
+    Controller controller(&cam, &pm); //必须要在配置好camera之后再生成该变量
 
     pthread_t ri_th, mp_th;
     pthread_attr_t thread_attr;
     pthread_attr_init(&thread_attr);
     pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 1024);
-
 
     int err = pthread_create(&mp_th, &thread_attr, startManipulatePictureThread, &controller);
 
@@ -66,7 +77,7 @@ int main()
         return -1;
     }
     //  启动接收线程
-     err = pthread_create(&ri_th, &thread_attr, startReceiveImageThread, &controller);
+    err = pthread_create(&ri_th, &thread_attr, startReceiveImageThread, &controller);
     if (err != 0)
     {
         cout << "main:: startReceiveImageThread failed" << endl;

@@ -4,14 +4,19 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 12:59:35 +0800
- * @LastEditTime: 2019-09-28 13:23:16 +0800
+ * @LastEditTime: 2019-10-17 21:08:15 +0800
  * @LastEditors: 
  * @Description: 
  */
+
+
 #ifndef __SENTRY_PICTURE_MANIPULATOR_H__
 #define __SENTRY_PICTURE_MANIPULATOR_H__
 #include "header.h"
 #include "PictureManipulator.h"
+
+#ifdef SENTRY
+
 class SentryPictureManipulator : public PictureManipulator
 {
 private:
@@ -41,5 +46,7 @@ public:
     ~SentryPictureManipulator();
     int manipulatePicture(Mat picture);
 };
+
+#endif
 
 #endif

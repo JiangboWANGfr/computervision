@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-10-17 18:48:03 +0800
+ * @LastEditTime: 2019-10-17 19:38:27 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -49,7 +49,7 @@ private:
 public:
     SentryArmorDetector();
     ~SentryArmorDetector();
-    void getCenters(cv::Mat &source_img, TargetData &armor_data);
+    void getCenter(cv::Mat &source_img, TargetData &armor_data);
 
 private:
     void initializeVariate();

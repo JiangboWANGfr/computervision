@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-17 18:56:43 +0800
+ * @LastEditTime: 2019-10-17 21:01:28 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -46,6 +46,7 @@ void Controller::getImageFromCamera()
         double clone_end = clock();
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
     }
+    showPicture("hello", img_ready_to_manipulate, 0.001);
     pthread_mutex_unlock(&mutex);
 }
 

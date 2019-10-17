@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-17 19:03:49 +0800
+ * @LastEditTime: 2019-10-17 19:35:28 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -14,6 +14,8 @@
 #include "ArmorDetector.h"
 #include "SerialPort.hpp"
 #include "SentryArmorDetector.h"
+#include "InfantryArmorDetector.h"
+
 class PictureManipulator
 {
 protected:
@@ -28,7 +30,7 @@ protected:
     SentryArmorDetector armor_detector;
 #endif
 #ifdef INFANTRY
-InfantryArmorDetector armor_detector;
+    InfantryArmorDetector armor_detector;
 #endif
 
     TargetData armor_data;

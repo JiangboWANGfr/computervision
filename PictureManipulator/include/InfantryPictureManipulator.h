@@ -2,9 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-07 18:20:39
- * @LastEditTime: 2019-10-12 21:00:40
+ * @LastEditTime: 2019-10-17 21:50:27 +0800
  * @LastEditors: Please set LastEditors
  */
+
+
 #ifndef __INFANTRY_PICTURE_MANIPULATOR_H__
 #define __INFANTRY_PICTURE_MANIPULATOR_H__
 
@@ -12,24 +14,41 @@
 #include "SivirDetector.h"
 #include "PictureManipulator.h"
 
+#ifdef INFANTRY
+
 class InfantryPictureManipulator : public PictureManipulator
 {
 private:
-    void DetermineRecognitionMode();
-    void IdentifyAramorMode(Mat &frame);
-    void IdentifyMode2(Mat &frame );
-    void GetAramor();
-    void IdentifyTarget();
-    SivirDetector Sivir;
+    bool is_insight;
+    int lost;
+    
+private:
+    void initArmorData();
+
+    void lostTargetShortTime_toDo();
+
+    void lostTargetLongTime_toDo();
+
+    void maybeLostTarget();
+
+    void writeIntoFilterDataCSV();
+
+    int judgeTargetInsight();
 
 public:
     InfantryPictureManipulator(string serial_port_device,
                              string path,
-                             double fps,
-                             int width_video_size,
-                             int height_video_size);
+                             double fps = 120,
+                             int width_video_size = 640,
+                             int height_video_size = 480);
     InfantryPictureManipulator();
     ~InfantryPictureManipulator();
     int manipulatePicture(Mat picture);
 };
+
+
+
+#endif
+
+
 #endif

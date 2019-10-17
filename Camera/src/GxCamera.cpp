@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-10-17 10:30:59 +0800
+ * @LastEditTime: 2019-10-17 20:49:39 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -64,7 +64,9 @@ int GxCamera::initializeCameraDevice()
     //初始化设备打开参数，默认打开序号为1的设备
     open_param.accessMode = GX_ACCESS_EXCLUSIVE;
     open_param.openMode = GX_OPEN_INDEX;
-    open_param.pszContent = "1";
+    open_param.pszContent = new char[10];
+    strcpy(open_param.pszContent, "1");
+    // open_param.pszContent = "1";
     //初始化库
     status = GXInitLib();
 

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-10-17 19:12:13 +0800
+ * @LastEditTime: 2019-10-17 19:38:42 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -44,7 +44,7 @@ bool SentryArmorDetector::judgeRectangleIsRight(const RotatedRect &rRect, const 
     return false;
 }
 
-void SentryArmorDetector::getCenters(cv::Mat &source_img, TargetData &armor_data)
+void SentryArmorDetector::getCenter(cv::Mat &source_img, TargetData &armor_data)
 {
     ipImg = source_img;
     // 全局变量初始化
