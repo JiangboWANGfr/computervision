@@ -4,18 +4,18 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:12 +0800
- * @LastEditTime: 2019-10-14 15:28:05 +0800
+ * @LastEditTime: 2019-10-17 19:11:48 +0800
  * @LastEditors: 
  * @Description: 
  */
-#include "AngleCalculate.h"
+#include "SentryAngleCalculate.h"
 
 Mat_<float> intrinsic_matrix_8_640 = (Mat_<float>(3, 3) << 1453.68113, 0, 329.79786-8,
                                                         0, 1453.28168, 251.06453-6,
                                                         0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
 vector<float> distCoeff_8_640 = { -0.07301, 0.18455, -0.00017, -0.00115, 0 };
 
-void AngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data)
+void SentryAngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data)
 {
     // 准备pnp所需四点的世界坐标系3D坐标,小装甲灯柱对中心宽134mm，大装甲灯柱对中心宽229mm，高55mm
     // 世界坐标系中心建立在装甲板中心

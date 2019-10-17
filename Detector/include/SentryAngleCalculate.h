@@ -4,16 +4,16 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:36:33 +0800
- * @LastEditTime: 2019-10-05 03:43:51 -0700
+ * @LastEditTime: 2019-10-17 19:10:26 +0800
  * @LastEditors: 
  * @Description: 
  */
-#ifndef __ANGLE_CALCULATE_H__
-#define __ANGLE_CALCULATE_H__
+#ifndef __SENTRY_ANGLE_CALCULATE_H__
+#define __SENTRY_ANGLE_CALCULATE_H__
 
 #include "header.h"
 
-class AngleCalculate
+class SentryAngleCalculate
 {
     public:
     void pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data);

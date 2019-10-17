@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-17 10:31:20 +0800
+ * @LastEditTime: 2019-10-17 18:56:21 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -46,6 +46,7 @@ int main()
 
     cam.configFrame(640, 480, 6, 8, 1200, 200);
 
+    
     Controller controller(&cam, &spm); //必须要在配置好camera之后再生成该变量
 
     pthread_t ri_th, mp_th;

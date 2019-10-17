@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-14 16:25:12 +0800
+ * @LastEditTime: 2019-10-17 19:03:49 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,6 +13,7 @@
 #include "header.h"
 #include "ArmorDetector.h"
 #include "SerialPort.hpp"
+#include "SentryArmorDetector.h"
 class PictureManipulator
 {
 protected:
@@ -22,7 +23,14 @@ protected:
     int width_video_size, height_video_size; //用系统时间取名，防止同名文件自我覆盖
     VideoWriter src_video, fin_video;
     ofstream filterData; // 记录装甲数据输出为csv文件，方便建模分析
-    ArmorDetector armor_detector;
+
+#ifdef SENTRY
+    SentryArmorDetector armor_detector;
+#endif
+#ifdef INFANTRY
+InfantryArmorDetector armor_detector;
+#endif
+
     TargetData armor_data;
     CarData car_data;
 

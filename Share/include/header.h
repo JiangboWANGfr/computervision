@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-14 16:37:51 +0800
+ * @LastEditTime: 2019-10-17 19:04:52 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -64,13 +64,13 @@ using namespace std;
 ////////////////////typedef////////////////////
 
 ///////////////////自定义数据类型//////////////////
-typedef enum CORPS
-{
-    SENTRY = 1,   //哨兵
-    INFANTRY = 2, //步兵
-    HERO = 3,     //英雄
-    UAV = 4       //无人机
-} CORPS;
+// typedef enum CORPS
+// {
+//     SENTRY = 1,   //哨兵
+//     INFANTRY = 2, //步兵
+//     HERO = 3,     //英雄
+//     UAV = 4       //无人机
+// } CORPS;
 
 typedef struct TargetData
 {
