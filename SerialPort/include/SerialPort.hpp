@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:35:15 +0800
- * @LastEditTime: 2019-09-28 11:29:25 +0800
+ * @LastEditTime: 2019-10-17 18:28:53 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -33,6 +33,7 @@ public:
         void readMode(int &carMode);
         uint8_t readAngle(CarData &cardata);
         bool sendAngleDist(float yaw_angle, float pitch_angle, float dist, float flag);
+        bool sendAngle(float _angle1,float _angle2);
 
 private:
         int fd;

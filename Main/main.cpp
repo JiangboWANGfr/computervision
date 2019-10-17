@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-14 20:31:57 +0800
+ * @LastEditTime: 2019-10-17 10:31:20 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,12 +13,12 @@
 #include "SerialPort.hpp"
 #include "DxImageProc.h"
 #include "GxIAPI.h"
-#include "Camera.h"
+#include "GxCamera.h"
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "Controller.h"
 #pragma comment(linker, "/STACK:102400000,102400000") 
-Camera cam;
+GxCamera cam;
 
 SentryPictureManipulator spm("/tty/USB0",
                              "../build/",

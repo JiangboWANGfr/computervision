@@ -4,16 +4,16 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-10-15 09:52:15 +0800
+ * @LastEditTime: 2019-10-17 10:30:59 +0800
  * @LastEditors: 
  * @Description: 
  */
-#include "Camera.h"
-Camera::Camera(/* args */)
+#include "GxCamera.h"
+GxCamera::GxCamera(/* args */)
 {
 }
 
-Camera::~Camera()
+GxCamera::~GxCamera()
 {
     free(g_frame_data.pImgBuf);
 }
@@ -24,7 +24,7 @@ Camera::~Camera()
      * @Return: 
      * @Throw: 
      */
-int Camera::open()
+int GxCamera::open()
 {
     if (initializeCameraDevice() == false)
         return 0;
@@ -59,7 +59,7 @@ int Camera::open()
  * @Return: 
  * @Throw: 
  */
-int Camera::initializeCameraDevice()
+int GxCamera::initializeCameraDevice()
 {
     //初始化设备打开参数，默认打开序号为1的设备
     open_param.accessMode = GX_ACCESS_EXCLUSIVE;
@@ -68,7 +68,7 @@ int Camera::initializeCameraDevice()
     //初始化库
     status = GXInitLib();
 
-    cout << "Camera::initializeCameraDevice    初始化相机参数" << endl;
+    cout << "GxCamera::initializeCameraDevice    初始化相机参数" << endl;
 
     if (status != GX_STATUS_SUCCESS)
     {
@@ -76,11 +76,11 @@ int Camera::initializeCameraDevice()
         return false;
     }
 
-    cout << "Camera::initializeCameraDevice    成功初始化相机参数" << endl;
+    cout << "GxCamera::initializeCameraDevice    成功初始化相机参数" << endl;
     return true;
 }
 
-bool Camera::countNumberOfCameras()
+bool GxCamera::countNumberOfCameras()
 {
     //获取枚举设备个数
     status = GXUpdateDeviceList(&camera_num, 1000);
@@ -94,7 +94,7 @@ bool Camera::countNumberOfCameras()
     return true;
 }
 
-bool Camera::openFirstCamera()
+bool GxCamera::openFirstCamera()
 {
     status = GXOpenDevice(&open_param, &camera_handle);
     cout << "camera_handle: " << camera_handle << endl;
@@ -119,7 +119,7 @@ bool Camera::openFirstCamera()
  * @Return: 
  * @Throw: 
  */
-bool Camera::setORI()
+bool GxCamera::setORI()
 {
 
     //设置roi区域，设置时相机必须时停采状态
@@ -140,7 +140,7 @@ bool Camera::setORI()
  * @Return: 
  * @Throw: 
  */
-bool Camera::setDeviceToContinuouslyAcquiredImage()
+bool GxCamera::setDeviceToContinuouslyAcquiredImage()
 {
     //设置采集模式为连续采集
     status = GXSetEnum(camera_handle, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
@@ -159,7 +159,7 @@ bool Camera::setDeviceToContinuouslyAcquiredImage()
     return true;
 }
 
-bool Camera::setTRiggerSwitchToOff()
+bool GxCamera::setTRiggerSwitchToOff()
 {
     //设置触发开关为OFF
     status = GXSetEnum(camera_handle, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_OFF);
@@ -190,7 +190,7 @@ bool Camera::setTRiggerSwitchToOff()
      * @Return: 
      * @Throw: 
      */
-int Camera::configFrame(int64_t width,
+int GxCamera::configFrame(int64_t width,
                         int64_t height,
                         int offset_x,
                         int offset_y,
@@ -214,14 +214,14 @@ int Camera::configFrame(int64_t width,
     //支持彩色图像
     if (is_colorful)
     {
-        cout << "Camera::configFrame    支持彩色" << endl;
+        cout << "GxCamera::configFrame    支持彩色" << endl;
         status = GXGetEnum(camera_handle, GX_ENUM_PIXEL_COLOR_FILTER, &m_pixel_color);
         source_image_directly_from_camera.create(height, width, CV_8UC3);
         m_rgb_image = new char[width * height * 3];
     }
     else
     {
-        cout << "Camera::configFrame    不支持彩色" << endl;
+        cout << "GxCamera::configFrame    不支持彩色" << endl;
         source_image_directly_from_camera.create(height, width, CV_8UC1);
     }
 
@@ -240,7 +240,7 @@ int Camera::configFrame(int64_t width,
     }
 }
 
-int Camera::mallocForSourceImage()
+int GxCamera::mallocForSourceImage()
 {
     GX_STATUS status = GX_STATUS_SUCCESS;
     int64_t payload_size = 0;
@@ -270,7 +270,7 @@ int Camera::mallocForSourceImage()
      * @Return: 
      * @Throw: 
      */
-int Camera::close()
+int GxCamera::close()
 {
     //为停止采集做准备
     GX_STATUS status = GX_STATUS_SUCCESS;
@@ -310,16 +310,16 @@ int Camera::close()
      * @Return: 
      * @Throw: 
      */
-int Camera::start()
+int GxCamera::start()
 {
-    cout << "Camera::start    Camera_handle:  " << camera_handle << endl;
+    cout << "GxCamera::start    GxCamera_handle:  " << camera_handle << endl;
     status = GXSendCommand(camera_handle, GX_COMMAND_ACQUISITION_START);
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
         return -1;
     }
-    cout << "Camera::start    Success to start camera" << endl;
+    cout << "GxCamera::start    Success to start camera" << endl;
 
     return 0;
 }
@@ -331,11 +331,11 @@ int Camera::start()
      * @Return: Mat
      * @Throw: 
      */
-Mat Camera::getFrame()
+Mat GxCamera::getFrame()
 {
     if (g_frame_data.pImgBuf == NULL)
     {
-        cout << "Camera::getFrame g_frame_data.pImgBuf == NULL" << endl;
+        cout << "GxCamera::getFrame g_frame_data.pImgBuf == NULL" << endl;
     }
     status = GXGetImage(camera_handle, &g_frame_data, 100);
     if (status != GX_STATUS_SUCCESS)

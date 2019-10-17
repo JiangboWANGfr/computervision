@@ -1,13 +1,3 @@
-/*
- * @Copyright: CS of BIT
- * @Author: 王占坤
- * @File name: 
- * @Version: 
- * @Date: 2019-09-28 14:37:22 +0800
- * @LastEditTime: 2019-09-28 14:37:22 +0800
- * @LastEditors: 
- * @Description: 
- */
 /*******************************************************************************************************************
 Copyright 2017 Dajiang Innovations Technology Co., Ltd (DJI)
 

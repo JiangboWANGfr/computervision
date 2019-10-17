@@ -1,20 +1,12 @@
-/*
- * @Copyright: CS of BIT
- * @Author: 王占坤
- * @File name: 
- * @Version: 
- * @Date: 2019-09-27 19:52:54 +0800
- * @LastEditTime: 2019-10-01 02:28:20 -0700
- * @LastEditors: 
- * @Description: 
- */
-#ifndef __CAMERA_H__
-#define __CAMERA_H__
+#ifndef __GX_CAMERA_H__
+#define __GX_CAMERA_H__
+
 
 #include "header.h"
 #include "actions.h"
+#include "Camera.h"
 
-class Camera
+class GxCamera : public Camera
 {
 private:
     GX_OPEN_PARAM open_param;
@@ -35,9 +27,6 @@ private:
     char *m_rgb_image = NULL;
     GX_FRAME_DATA g_frame_data = {0}; ///< 采集图像参数
 
-public:
-    GX_DEV_HANDLE camera_handle = NULL; ///< 相机句柄
-    bool is_opened = false;
 
 private:
     int initializeCameraDevice();
@@ -49,8 +38,8 @@ private:
     int mallocForSourceImage();
 
 public:
-    Camera(/* args */);
-    ~Camera();
+    GxCamera(/* args */);
+    ~GxCamera();
     int open();
     int configFrame(int64_t width,
                     int64_t height,
@@ -62,5 +51,6 @@ public:
     int start();
     Mat getFrame();
 };
+
 
 #endif

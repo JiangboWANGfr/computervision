@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-10-09 21:02:34 +0800
+ * @LastEditTime: 2019-10-17 18:30:17 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -18,7 +18,12 @@ class ArmorDetector
 public:
     int gray_thresh = 100;
     int single_color_thresh = 150;
+    int mode = 1;//步兵
+    int isred = 1;//步兵
+    int islost = 1;//步兵
+
 private:
+
     vector<RotatedRect> rectLists, lightLists;
     vector<Point2f> armorCenters;
     vector<int> iRem;  //用于记录装甲板中心对应的两个灯条是x顺序中的哪个
