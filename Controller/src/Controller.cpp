@@ -4,12 +4,14 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-18 13:39:01 +0800
+ * @LastEditTime: 2019-10-18 14:32:36 +0800
  * @LastEditors: 
  * @Description: 
  */
 
 #include "Controller.h"
+
+int Controller::num_of_controller = 0;
 
 /**
  * @Author: 王占坤
@@ -23,6 +25,8 @@
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
     : pm(pmr), cam1(camera1), cam2(camera2)
 {
+    num_of_controller++;
+    controller_handle = num_of_controller;
     bool is_opened = openCamera(cam1);
     if (is_opened == false)
     {
@@ -70,7 +74,7 @@ void Controller::getImageFromCamera()
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
     }
 #ifdef SHOW_PICTURE
-    showPicture("COntroller::getImageFromCamera  img_ready_to_manipulate", img_ready_to_manipulate, 1);
+    showPicture("COntroller::getImageFromCamera  img_ready_to_manipulate" + to_string(Controller::controller_handle), img_ready_to_manipulate, 1);
 #endif
     pthread_mutex_unlock(&mutex);
 }

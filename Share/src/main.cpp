@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 14:14:24 +0800
+ * @LastEditTime: 2019-10-18 14:21:25 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -22,10 +22,10 @@
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
 pthread_attr_t thread_attr;
-
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);
-void *mainThread(void *argc);
+void *mainThreadOne(void *argc);
+void *mainThreadTwo(void *argc);
 int terminateProgram();
 
 #ifdef SENTRY
@@ -38,7 +38,7 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
-    int err = pthread_create(&t, &thread_attr, mainThread, NULL);
+    int err = pthread_create(&t, &thread_attr, mainThreadOne, NULL);
     if (err != 0)
     {
         cout << "main:: startManipulatePictureThread failed" << endl;
@@ -46,9 +46,10 @@ int main()
                strerror(errno));
     }
 
+    err = pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
 
     char tmp;
-    cin >> tmp;//阻塞
+    cin >> tmp; //阻塞
     cout << "GAME OVER!" << endl;
     pthread_exit(NULL);
     terminateProgram();
@@ -56,13 +57,46 @@ int main()
 
 #endif
 
-void *mainThread(void *argc)
+void *mainThreadOne(void *argc)
 {
     pthread_detach(pthread_self());
     OrdinaryCamera cam2("/dev/video0");
     SentryPictureManipulator pm;
     GxCamera cam1("1");
-    Controller controller(&pm,&cam2);
+    // Controller controller(&pm,&cam2);
+    // Controller controller(&pm, &cam1, &cam2);
+    Controller controller(&pm, &cam1);
+    controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
+
+    pthread_t ri_th, mp_th;
+
+    int err = pthread_create(&mp_th, &thread_attr, startManipulatePictureThread, &controller);
+
+    if (err != 0)
+    {
+        cout << "main:: startManipulatePictureThread failed" << endl;
+        printf("error message :%s\n",
+               strerror(errno));
+    }
+    //  启动接收线程
+    err = pthread_create(&ri_th, &thread_attr, startReceiveImageThread, &controller);
+    if (err != 0)
+    {
+        cout << "main:: startReceiveImageThread failed" << endl;
+        printf("error message :%s\n",
+               strerror(errno));
+    }
+    char tmp;
+    cin >> tmp; //用于阻塞
+}
+
+void *mainThreadTwo(void *argc)
+{
+    pthread_detach(pthread_self());
+    OrdinaryCamera cam2("/dev/video0");
+    SentryPictureManipulator pm;
+    GxCamera cam1("1");
+    Controller controller(&pm, &cam2);
     // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);
     controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
@@ -87,8 +121,6 @@ void *mainThread(void *argc)
     }
     char tmp;
     cin >> tmp; //用于阻塞
-    // pthread_join(mp_th, NULL);
-    // pthread_join(ri_th, NULL);
 }
 
 void *startReceiveImageThread(void *ctrl)
