@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 13:44:12 +0800
+ * @LastEditTime: 2019-10-18 14:14:24 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -21,42 +21,53 @@
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
-
-OrdinaryCamera cam2("/dev/video0");
-
-GxCamera cam1("1");
-
-#ifdef SENTRY
-SentryPictureManipulator pm;
-#endif
-
-#ifdef INFANTRY
-InfantryPictureManipulator pm;
-#endif
-
-#ifdef HERO
-#endif
-
-#ifdef UAV
-#endif
+pthread_attr_t thread_attr;
 
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);
+void *mainThread(void *argc);
 int terminateProgram();
 
-///////////////////main///////////////
+#ifdef SENTRY
 
 int main()
 {
-    Controller controller(&pm, &cam1, &cam2);
+    //设置线程参数
+    pthread_attr_init(&thread_attr);
+    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
+
+    pthread_t t;
+    int err = pthread_create(&t, &thread_attr, mainThread, NULL);
+    if (err != 0)
+    {
+        cout << "main:: startManipulatePictureThread failed" << endl;
+        printf("error message :%s\n",
+               strerror(errno));
+    }
+
+
+    char tmp;
+    cin >> tmp;//阻塞
+    cout << "GAME OVER!" << endl;
+    pthread_exit(NULL);
+    terminateProgram();
+}
+
+#endif
+
+void *mainThread(void *argc)
+{
+    pthread_detach(pthread_self());
+    OrdinaryCamera cam2("/dev/video0");
+    SentryPictureManipulator pm;
+    GxCamera cam1("1");
+    Controller controller(&pm,&cam2);
+    // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);
     controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
-    pthread_attr_t thread_attr;
-    pthread_attr_init(&thread_attr);
-    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
-    pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 1024);
 
     int err = pthread_create(&mp_th, &thread_attr, startManipulatePictureThread, &controller);
 
@@ -65,7 +76,6 @@ int main()
         cout << "main:: startManipulatePictureThread failed" << endl;
         printf("error message :%s\n",
                strerror(errno));
-        return -1;
     }
     //  启动接收线程
     err = pthread_create(&ri_th, &thread_attr, startReceiveImageThread, &controller);
@@ -74,16 +84,11 @@ int main()
         cout << "main:: startReceiveImageThread failed" << endl;
         printf("error message :%s\n",
                strerror(errno));
-        // return -1;
     }
-
-    pthread_join(ri_th, NULL);
-    pthread_join(mp_th, NULL);
-    int tmp;
-    cin >> tmp;
-    cout << "GAME OVER!" << endl;
-    pthread_exit(NULL);
-    terminateProgram();
+    char tmp;
+    cin >> tmp; //用于阻塞
+    // pthread_join(mp_th, NULL);
+    // pthread_join(ri_th, NULL);
 }
 
 void *startReceiveImageThread(void *ctrl)
@@ -109,7 +114,7 @@ void *startManipulatePictureThread(void *ctrl)
 
 int terminateProgram()
 {
-    cam1.close();
+    // cam1.close();
     // cam2.close();
     return 0;
 }
