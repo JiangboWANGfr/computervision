@@ -21,6 +21,7 @@ class Controller
 {
 private:
     static int num_of_controller;
+    static pthread_mutex_t s_mutex;
     int controller_handle;
     double fps;
     Size video_size;

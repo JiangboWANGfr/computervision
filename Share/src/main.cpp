@@ -52,7 +52,6 @@ int main()
 
 void *mainThreadOne(void *argc)
 {
-    pthread_detach(pthread_self());
     OrdinaryCamera cam2("/dev/video0");
     SentryPictureManipulator pm;
     GxCamera cam1("1");
@@ -85,7 +84,6 @@ void *mainThreadOne(void *argc)
 
 void *mainThreadTwo(void *argc)
 {
-    pthread_detach(pthread_self());
     OrdinaryCamera cam2("/dev/video0");
     SentryPictureManipulator pm;
     GxCamera cam1("1");

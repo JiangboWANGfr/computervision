@@ -12,6 +12,8 @@
 #include "Controller.h"
 
 int Controller::num_of_controller = 0;
+pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 
 /**
  * @Author: 王占坤
@@ -25,10 +27,10 @@ int Controller::num_of_controller = 0;
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
     : pm(pmr), cam1(camera1), cam2(camera2)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&s_mutex);
     num_of_controller++;
-    pthread_mutex_unlock(&mutex);
     controller_handle = num_of_controller;
+    pthread_mutex_unlock(&s_mutex);
     bool is_opened = openCamera(cam1);
     if (is_opened == false)
     {
@@ -72,6 +74,7 @@ void Controller::getImageFromCamera()
         is_ready_to_manipulate = 1;
         double clone_end = clock();
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
+        cout << controller_handle << endl;
     }
 #ifdef SHOW_PICTURE
     showPicture("COntroller::getImageFromCamera  img_ready_to_manipulate" + to_string(Controller::controller_handle), img_ready_to_manipulate, 1);
