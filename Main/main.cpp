@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-17 23:15:13 +0800
+ * @LastEditTime: 2019-10-18 09:55:26 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -20,6 +20,10 @@
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
+
+
+
+
 GxCamera cam;
 
 #ifdef SENTRY
@@ -28,7 +32,12 @@ SentryPictureManipulator pm;
 
 #ifdef INFANTRY
 InfantryPictureManipulator pm;
+#endif
 
+#ifdef HERO
+#endif
+
+#ifdef UAV
 #endif
 
 void *startReceiveImageThread(void *ctrl);
@@ -40,7 +49,7 @@ int terminateProgram();
 int main()
 {
     Controller controller(&cam, &pm); //必须要在配置好camera之后再生成该变量
-    controller.config("/tty/USB0","../build",60, 640, 480, 6, 8, 1200, 200);
+    controller.config("/tty/USB0","./",120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
     pthread_attr_t thread_attr;

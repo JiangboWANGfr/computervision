@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-17 23:25:40 +0800
+ * @LastEditTime: 2019-10-18 09:49:44 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -37,13 +37,17 @@ void Controller::getImageFromCamera()
     if (is_ready_to_manipulate == 0)
     {
         double clone_start = clock();
+#ifdef SAVE_DATA
         src_video << source_img; //保存原始图像
+#endif
         img_ready_to_manipulate = source_img.clone();
         is_ready_to_manipulate = 1;
         double clone_end = clock();
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
     }
-    showPicture("hello", img_ready_to_manipulate, 0.001);
+#ifdef SHOW_PICTURE
+    showPicture("COntroller::getImageFromCamera  img_ready_to_manipulate", img_ready_to_manipulate, 1);
+#endif
     pthread_mutex_unlock(&mutex);
 }
 
@@ -53,13 +57,11 @@ bool Controller::mainpulatePicture()
     if (is_ready_to_manipulate == 1)
     {
         pm->manipulatePicture(img_ready_to_manipulate);
-        fin_video << img_ready_to_manipulate; //保存处理后的图像
+        // fin_video << img_ready_to_manipulate; //保存处理后的图像
         is_ready_to_manipulate = 0;
-// #ifdef STM32
-//         //串口通信发送信息给电控stm32,哨兵
-//         stm32.sendAngle(pm->armor_data.yaw_angle, pm->armor_data.pitch_angle, pm->armor_data.atocDistance,
-//                         pm->armor_data.is_big, pm->armor_data.is_insight, pm->armor_data.is_get);
-// #endif
+#ifdef STM32
+        stm32.send(pm->armor_data);
+#endif
     }
     pthread_mutex_unlock(&mutex);
 }

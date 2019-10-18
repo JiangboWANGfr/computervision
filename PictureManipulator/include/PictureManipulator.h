@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-17 23:21:02 +0800
+ * @LastEditTime: 2019-10-18 09:15:26 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -24,10 +24,10 @@ public:
 #endif
 #ifdef INFANTRY
     InfantryArmorDetector armor_detector;
+    TargetData sivir_data;
 #endif
 
     TargetData armor_data;
-    CarData car_data;
 
 public:
     PictureManipulator(string serial_port_device,

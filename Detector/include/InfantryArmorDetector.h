@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-07 20:29:23
- * @LastEditTime: 2019-10-17 21:56:25 +0800
+ * @LastEditTime: 2019-10-18 09:58:47 +0800
  * @LastEditors: Please set LastEditors
  */
 #ifndef _INFANTRY_ARMOR_DETECTOR_H_
@@ -11,6 +11,7 @@
 #include "header.h"
 #include "ArmorDetector.h"
 
+#ifdef INFANTRY
 typedef struct ARMOR
 {
     Point2f center;
@@ -111,5 +112,7 @@ public:
 
 
 
+
+#endif
 
 #endif

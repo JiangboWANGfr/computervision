@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-17 19:04:52 +0800
+ * @LastEditTime: 2019-10-18 09:12:43 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -97,12 +97,6 @@ typedef struct TargetData
     }
 
 } TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)
-
-typedef struct CarData
-{
-    float absAngleYaw;
-    float absAnglePitch;
-} CarData;
 
 ///////////////////全局变量//////////////////////
 

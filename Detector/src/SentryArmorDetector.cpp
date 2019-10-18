@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-10-17 19:38:42 +0800
+ * @LastEditTime: 2019-10-18 09:51:55 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -147,7 +147,6 @@ int SentryArmorDetector::getContours()
 {
     // 图像预处理并寻找轮廓
     colorThres(edges);
-    showPicture("edge", edges, 0.001);
     findContours(edges, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
     /*
         findContours搭配效果
