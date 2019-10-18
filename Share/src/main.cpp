@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 14:21:25 +0800
+ * @LastEditTime: 2019-10-18 14:52:57 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -38,15 +38,8 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
-    int err = pthread_create(&t, &thread_attr, mainThreadOne, NULL);
-    if (err != 0)
-    {
-        cout << "main:: startManipulatePictureThread failed" << endl;
-        printf("error message :%s\n",
-               strerror(errno));
-    }
-
-    err = pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
+    pthread_create(&t, &thread_attr, mainThreadOne, NULL);
+    pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
 
     char tmp;
     cin >> tmp; //阻塞

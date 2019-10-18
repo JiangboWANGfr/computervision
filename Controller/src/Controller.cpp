@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-18 14:32:36 +0800
+ * @LastEditTime: 2019-10-18 14:52:16 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -25,7 +25,9 @@ int Controller::num_of_controller = 0;
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
     : pm(pmr), cam1(camera1), cam2(camera2)
 {
+    pthread_mutex_lock(&mutex);
     num_of_controller++;
+    pthread_mutex_unlock(&mutex);
     controller_handle = num_of_controller;
     bool is_opened = openCamera(cam1);
     if (is_opened == false)
@@ -59,8 +61,6 @@ void Controller::getImageFromCamera()
 
     double start = clock();
     source_img = cam1->getFrame();
-    if (cam2 != nullptr)
-        showPicture("cam2", cam2->getFrame(), 1);
     pthread_mutex_lock(&mutex);
     if (is_ready_to_manipulate == 0)
     {
