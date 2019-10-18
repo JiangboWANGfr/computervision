@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:07 +0800
- * @LastEditTime: 2019-10-17 23:24:27 +0800
+ * @LastEditTime: 2019-10-18 11:52:04 +0800
  * @LastEditors: 
  * @Description: 改文件只允许main进行引用
  */
@@ -36,12 +36,14 @@ private:
     Mat img_ready_to_manipulate;
 
 public:
-    Camera *cam;
+    Camera *cam1, *cam2;
     PictureManipulator *pm;
 
 private:
+    bool openCamera(Camera *cam);
+
 public:
-    Controller(Camera *camera, PictureManipulator *pmr);
+    Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2 = nullptr);
     ~Controller();
 
     void getImageFromCamera();

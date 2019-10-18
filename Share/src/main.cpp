@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 10:05:48 +0800
+ * @LastEditTime: 2019-10-18 13:44:12 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -15,14 +15,16 @@
 #include "DxImageProc.h"
 #include "GxIAPI.h"
 #include "GxCamera.h"
+#include "OrdinaryCamera.h"
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
 
+OrdinaryCamera cam2("/dev/video0");
 
-GxCamera cam;
+GxCamera cam1("1");
 
 #ifdef SENTRY
 SentryPictureManipulator pm;
@@ -46,8 +48,9 @@ int terminateProgram();
 
 int main()
 {
-    Controller controller(&cam, &pm); //必须要在配置好camera之后再生成该变量
-    controller.config("/tty/USB0","./",120, 640, 480, 6, 8, 1200, 200);
+    Controller controller(&pm, &cam1, &cam2);
+    // Controller controller(&pm,&cam1);
+    controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
     pthread_attr_t thread_attr;
@@ -106,6 +109,7 @@ void *startManipulatePictureThread(void *ctrl)
 
 int terminateProgram()
 {
-    cam.close();
+    cam1.close();
+    // cam2.close();
     return 0;
 }

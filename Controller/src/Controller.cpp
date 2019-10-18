@@ -4,16 +4,39 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-18 09:49:44 +0800
+ * @LastEditTime: 2019-10-18 13:39:01 +0800
  * @LastEditors: 
  * @Description: 
  */
 
 #include "Controller.h"
 
-Controller::Controller(Camera *camera, PictureManipulator *pmr)
-    : cam(camera), pm(pmr)
+/**
+ * @Author: 王占坤
+ * @Description: 至少要有一个相机输入
+ * @Param: PictureManipulator *pmr  处理图片的类，输入为地址
+ * @Param: Camera *camera1  工业相机1或者普通相机
+ * @Param: Camera *camera2 工业相机2或者是普通相机，默认值为nullptr
+ * @Return: 
+ * @Throw: 
+ */
+Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
+    : pm(pmr), cam1(camera1), cam2(camera2)
 {
+    bool is_opened = openCamera(cam1);
+    if (is_opened == false)
+    {
+        cout << "Controller::config Failed to open cam1" << endl;
+    }
+    cout << "Controller::Controller    camera handle:    " << cam1->camera_handle << endl;
+    if (cam2 != nullptr)
+    {
+        is_opened = openCamera(cam2);
+        if (is_opened == false)
+        {
+            cout << "Controller::config Failed to open cam1" << endl;
+        }
+    }
 }
 
 Controller::~Controller()
@@ -31,8 +54,9 @@ void Controller::getImageFromCamera()
 {
 
     double start = clock();
-    source_img = cam->getFrame();
-
+    source_img = cam1->getFrame();
+    if (cam2 != nullptr)
+        showPicture("cam2", cam2->getFrame(), 1);
     pthread_mutex_lock(&mutex);
     if (is_ready_to_manipulate == 0)
     {
@@ -76,17 +100,15 @@ bool Controller::config(string serial_port,
                         double expotime,
                         int64_t gain)
 {
-    stm32.open_port(serial_port);
-
-    cam->open();
-    if (cam->is_opened == false)
+    cam1->configFrame(width, height, offset_x, offset_y, expotime, gain);
+    cam1->start();
+    if (cam2 != nullptr)
     {
-        cout << "Faile to open camera." << endl;
-        return false;
+        cam2->configFrame(width, height, offset_x, offset_y, expotime, gain);
+        cam2->start();
     }
-    cam->configFrame(width, height, offset_x, offset_y, expotime, gain);
-    cam->start();
-    cout << "Controller::Controller    camera handle:    " << cam->camera_handle << endl;
+
+    stm32.open_port(serial_port);
 
     filename = path;
     if (*filename.end() == '/')
@@ -111,4 +133,13 @@ void Controller::adjustParameter()
     namedWindow(window_name);
     createTrackbar("Armordetector.gray_thresh", window_name, &(pm->armor_detector.gray_thresh), 255);
     createTrackbar("ArmorDetector.single_color_img", window_name, &(pm->armor_detector.single_color_thresh), 255);
+}
+
+bool Controller::openCamera(Camera *cam)
+{
+    cam->open();
+    if (cam->is_opened == false)
+    {
+        return false;
+    }
 }
