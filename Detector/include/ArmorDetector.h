@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-10-17 19:38:08 +0800
+ * @LastEditTime: 2019-10-18 10:11:00 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -21,7 +21,7 @@ public:
     int mode = 1;   //步兵
     int isred = 1;  //步兵
     int islost = 1; //步兵
-    TargetData armordata;
+    TargetData armor_data;
 
 #ifdef BLUE
     cv::Scalar huahuaScalar = cv::Scalar(255, 0, 0);

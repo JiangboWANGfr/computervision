@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 09:55:26 +0800
+ * @LastEditTime: 2019-10-18 10:05:48 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -20,8 +20,6 @@
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
-
-
 
 
 GxCamera cam;

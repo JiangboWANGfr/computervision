@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-07 18:20:39
- * @LastEditTime: 2019-10-17 21:50:27 +0800
+ * @LastEditTime: 2019-10-18 10:09:36 +0800
  * @LastEditors: Please set LastEditors
  */
 
@@ -36,11 +36,6 @@ private:
     int judgeTargetInsight();
 
 public:
-    InfantryPictureManipulator(string serial_port_device,
-                             string path,
-                             double fps = 120,
-                             int width_video_size = 640,
-                             int height_video_size = 480);
     InfantryPictureManipulator();
     ~InfantryPictureManipulator();
     int manipulatePicture(Mat picture);
