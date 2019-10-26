@@ -19,11 +19,19 @@
 #include "SentryPictureManipulator.h"
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
+#include "HeroPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")
 GxCamera cam;
 
 #ifdef SENTRY
 SentryPictureManipulator pm("/tty/USB0",
+                             "../build/",
+                             60,
+                             640,
+                             480);
+#endif
+#ifdef Hero
+HeroPictureManipulator pm("/tty/USB0",
                              "../build/",
                              60,
                              640,
@@ -64,7 +72,6 @@ int main()
     pthread_t ri_th, mp_th;
     pthread_attr_t thread_attr;
     pthread_attr_init(&thread_attr);
-    pthread_attr_setdetachstate(&thread_attr, PTHREAD_CREATE_DETACHED);
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 1024);
 
     int err = pthread_create(&mp_th, &thread_attr, startManipulatePictureThread, &controller);

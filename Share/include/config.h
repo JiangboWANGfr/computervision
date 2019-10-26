@@ -2,15 +2,15 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 19:02:41
- * @LastEditTime: 2019-10-17 20:53:03 +0800
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2019-10-22 07:22:01
+ * @LastEditors: zzdr
  */
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// #define SENTRY
-#define INFANTRY
-// #define HERO
+//#define SENTRY
+//define INFANTRY
+#define Hero
 // #define UAV
 
 #define ARMOR_MODE  1

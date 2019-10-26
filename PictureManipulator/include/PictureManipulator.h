@@ -15,6 +15,7 @@
 #include "SerialPort.hpp"
 #include "SentryArmorDetector.h"
 #include "InfantryArmorDetector.h"
+#include "HeroArmorDetector.hpp"
 
 class PictureManipulator
 {
@@ -28,6 +29,9 @@ protected:
 
 #ifdef SENTRY
     SentryArmorDetector armor_detector;
+#endif
+#ifdef Hero 
+    HeroArmorDetector armor_detector;
 #endif
 #ifdef INFANTRY
     InfantryArmorDetector armor_detector;

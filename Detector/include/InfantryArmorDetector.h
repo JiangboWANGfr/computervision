@@ -11,6 +11,7 @@
 #include "header.h"
 #include "ArmorDetector.h"
 
+#ifdef INFANTRY
 typedef struct ARMOR
 {
     Point2f center;
@@ -112,4 +113,5 @@ public:
 
 
 
+#endif
 #endif
