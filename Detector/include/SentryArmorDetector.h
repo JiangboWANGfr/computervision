@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-10-17 19:38:27 +0800
+ * @LastEditTime: 2019-10-26 19:16:49
  * @LastEditors: 
  * @Description: 
  */
@@ -19,9 +19,6 @@ class SentryArmorDetector : public ArmorDetector
 public:
     int gray_thresh = 100;
     int single_color_thresh = 150;
-    int mode = 1;//步兵
-    int isred = 1;//步兵
-    int islost = 1;//步兵
 
 private:
 

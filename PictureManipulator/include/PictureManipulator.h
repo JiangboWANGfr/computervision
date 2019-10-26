@@ -29,6 +29,7 @@ protected:
 #ifdef SENTRY
     SentryArmorDetector armor_detector;
 #endif
+
 #ifdef INFANTRY
     InfantryArmorDetector armor_detector;
 #endif

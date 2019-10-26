@@ -1,64 +1,23 @@
 /*
- * @Description: 识别步兵，哨兵，英雄的装甲板
- * @Author: chen
- * @Date: 2019-09-24 21:55:34
- * @LastEditTime: 2019-10-17 22:04:14 +0800
- * @LastEditors: Please set LastEditors
+ * @Copyright: CS of BIT
+ * @Author: 孟文珩
+ * @File name: 
+ * @Version: 
+ * @Date: 2019-10-26 18:01:37
+ * @LastEditTime: 2019-10-26 19:07:36
+ * @LastEditors: 
+ * @Description: 
  */
 #include "InfantryArmorDetector.h"
-#define PI 3.14159265
 
 #ifdef INFANTRY
 
-
 #define PI 3.14159265
-
 int valu[6] = {1,2,3,4,5,6};
 
-InfantryArmorDetector::InfantryArmorDetector()
+//********************************************运行主体函数**********************************************//
+void InfantryArmorDetector::getCenter(Mat &src, TargetData &armor_data)
 {
-    islost=true;
-    isred=false;
-    mode=3;
-    roi.lefttop=Point2f(0,0);
-    roi.rwidth=src.cols;
-    roi.rheight=src.rows;
-    roi.level=1;
-    roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
-}
-
-InfantryArmorDetector::InfantryArmorDetector(Mat src0)
-{
-    src0.copyTo(src); 
-    islost=true;
-    isred=false;
-    mode=3;
-    roi.lefttop=Point2f(0,0);
-    roi.rwidth=src.cols;
-    roi.rheight=src.rows;
-    roi.level=1;
-    roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
-    pnpresult.yaw=0.0;
-    pnpresult.pitch=0.0;
-    pnpresult.dist=0.0;
-}
-
-void InfantryArmorDetector::getCenter(Mat &src0, TargetData &armor_data)
-{
-    // for(int i = 0;i < 6;i++)
-    // {
-    //     getSrcImage(src0);
-    //     //if (!roiimg.empty())
-    //     //imshow("roi",roiimg);
-    //     getBinaryImage();
-    //     imshow("bin"+std::to_string(i),binary);
-    //     getContours();
-    //     getTarget();
-    //     getPnP();
-    //     //imshow("out",outline);
-    //     imshow("last"+std::to_string(i),src);
-    // }
-    getSrcImage(src0);
     if (!roiimg.empty())
     imshow("roi",roiimg);
     getBinaryImage();
@@ -66,14 +25,18 @@ void InfantryArmorDetector::getCenter(Mat &src0, TargetData &armor_data)
     getContours();
     getTarget();
     getPnP();
+
+    //绘制装甲板中心
+    circle(src,target.center,8,Scalar(255,0,0),2,8,0);
 }
 
-//原图
-void InfantryArmorDetector::getSrcImage(Mat src0)
-{
-    src0.copyTo(src);
-}
-
+/**
+ * @Author: YY
+ * @Description: 将图像二值化为灰度图，并进行膨胀处理
+ * @Param: none
+ * @Return: void
+ * @Throw: 
+ */
 //二值化
 void InfantryArmorDetector::getBinaryImage()
 {
@@ -87,7 +50,7 @@ void InfantryArmorDetector::getBinaryImage()
     //蓝色处理
     else    gry=imgChannels.at(0)-imgChannels.at(2);
 
-    //原图遍历
+    //原图遍历，将roi区域外的图像矩阵置0，类似裁剪，减少threshold运行时间
     for (int row=0;row<src.rows;row++)
     {
         for (int col=0;col<src.cols;col++)
@@ -114,9 +77,9 @@ void InfantryArmorDetector::getContours()
     Point2f rect[4];
     src.copyTo(outline);
     findContours(binary, contours, hierarcy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    num=contours.size();//轮廓的数量
     vector<Rect> boundRect(contours.size());//最小外接正矩形的左上角点与矩形长宽集合
     vector<RotatedRect> box(contours.size());//最小外接矩形集合
-    num=contours.size();//轮廓的数量
     for (int i=0;i<num;i++)
     {
         //计算每个轮廓的最小外接斜矩形
@@ -137,159 +100,75 @@ void InfantryArmorDetector::getContours()
     for (int i=0;i<num;i++)
     {
         //输出最小外接斜矩形的角度和长宽
-        // cout<<"num "<<i<<": area="<<box[i].size.area()<<" angle="<<box[i].angle<<" a="<<box[i].size.height<<" b="<<box[i].size.width<<endl;
+        cout<<"num "<<i<<": area="<<box[i].size.area()<<" angle="<<box[i].angle<<" a="<<box[i].size.height<<" b="<<box[i].size.width<<endl;
     }
     memset(matchrank,0,sizeof(matchrank));
     for (int i=0;i<num;i++)
     {
         for (int j=i+1;j<num;j++)
         {   
+            //部分参数赋值，为了简化后续子判断函数传参
+            //角度
+            anglei=box[i].angle;
+            anglej=box[j].angle;
+            //面积
+            areai=box[i].size.area() > box[j].size.area() ? box[i].size.area() : box[j].size.area();
+            areaj=box[i].size.area() < box[j].size.area() ? box[i].size.area() : box[j].size.area();
+            //矩形中心连线长
+            double d=sqrt((box[i].center.x-box[j].center.x)*(box[i].center.x-box[j].center.x)+(box[i].center.y-box[j].center.y)*(box[i].center.y-box[j].center.y));
+            //数组位置
+            local_num_i = i;
+            local_num_j = j;
+            
             //去掉太斜的矩形
-            if ((box[i].size.width > box[i].size.height && box[i].angle>-70) || (box[i].size.width < box[i].size.height && box[i].angle<-20)) matchrank[i][j]-=10000;
-            if ((box[j].size.width > box[j].size.height && box[j].angle>-70) || (box[j].size.width < box[j].size.height && box[j].angle<-20)) matchrank[i][j]-=10000;
+            inclinationAngleFilter(box);
             //根据长宽筛选
-            double longi,shorti,longj,shortj;
-            longi=box[i].size.height;
-            shorti=box[i].size.width;
-            if (longi<shorti)
-            {
-                int temp=longi;
-                longi=shorti;
-                shorti=temp;
-            }
-            longj=box[j].size.height;
-            shortj=box[j].size.width;
-            if (longj<shortj)
-            {
-                int temp=longj;
-                longj=shortj;
-                shortj=temp;
-            }
-            if ((longi/shorti) <= 1.3 || (longj/shortj) <= 1.3) matchrank[i][j]-=10000;
-            else if ((longi/shorti) >= 9.5 || (longj/shortj) >= 9.5) matchrank[i][j]-=10000;
-            else if ((longi/shorti)>=4 && (longi/shorti)<=7 && (longj/shortj)>=4 && (longj/shortj)<=7)matchrank[i][j]+=100;
-            else if ((longi/shorti)>=3.5 && (longi/shorti)<=7.5 && (longj/shortj)>=3.5 && (longj/shortj)<=7.5) matchrank[i][j]+=80;
+            aspectRadioFilter(box);
             if (mode==3)
             {
                 //相对位置筛选           
-                if ((box[i].center.y-box[j].center.y)>1.5*longi || (box[i].center.y-box[j].center.y)>1.5*longj) matchrank[i][j]-=10000;
-                else if (abs(box[i].center.y-box[j].center.y)<3) matchrank[i][j] +=100;
-                else if (abs(box[i].center.y-box[j].center.y)<5) matchrank[i][j] +=50;
-                else if (abs(box[i].center.y-box[j].center.y)<8) matchrank[i][j] +=10;
-                //根据角度筛选
-                double anglei,anglej;
-                anglei=box[i].angle;
-                anglej=box[j].angle;
-                if (abs(anglei-anglej)<=5 || abs(anglei-anglej)>=85 ) matchrank[i][j]+=200;
-                else if (abs(anglei-anglej)<=7 || abs(anglei-anglej)>=83 ) matchrank[i][j]+=100;
-                else if (abs(anglei-anglej)<=13 || abs(anglei-anglej)>=77 ) matchrank[i][j]+=50;
-                //else if (abs(anglei-anglej)<=20 || abs(anglei-anglej)>=70 ) matchrank[i][j]+=5;
-                else matchrank[i][j]-=10000;
+                relativePositionFilter(box,mode_3);
+                //根据相对角度筛选
+                relativeTiltAngleFilter(mode_3);
                 //面积比
-                double areai=box[i].size.area();
-                double areaj=box[j].size.area();
-                double temparea;
-                if (areai<areaj)
-                {
-                    temparea=areai;
-                    areai=areaj;
-                    areaj=temparea;
-                }
-                if (areai< 10 || areaj<10) matchrank[i][j] -= 20000;
-                else if (areai/areaj>=4) matchrank[i][j] -= 10000;
-                else if (areai/areaj>=3) matchrank[i][j] -= 100;
-                else if (areai/areaj>1.75) matchrank[i][j] += 10;
-                else if (areai/areaj>1.5) matchrank[i][j] += 50;
-                else  matchrank[i][j] += 100;
+                areaRadioFilter(mode_3);
                 //连线长
-                double d=sqrt((box[i].center.x-box[j].center.x)*(box[i].center.x-box[j].center.x)+(box[i].center.y-box[j].center.y)*(box[i].center.y-box[j].center.y));
-                if(d >= longi * 4.7 || d >= longj * 4.7 || d<1.5*longi || d<.5*longi) matchrank[i][j] -= 10000;
+                //两个矩形中心的连线长度
+                if(d >= longi * 4.7 || d >= longj * 4.7 || d<1.5*longi || d<1.5*longi) matchrank[i][j] -= 10000;
                 else if (d <= longi * 4.7 && d <= longj * 4.7 && d>1.5*longi && d>1.5*longi) matchrank[i][j] += 100;
                 if (d >= longi * 3 || d >= longj * 3) dis[i][j]=0;//=1为小装甲
                 else dis[i][j]=1;
-                // cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
+                cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
             }
             else if (mode==1)
             {
-                isbig=false;
+                armor_data.is_big = false;
                 //相对位置筛选           
-                if ((box[i].center.y-box[j].center.y)>0.5*longi || (box[i].center.y-box[j].center.y)>0.5*longj) matchrank[i][j]-=10000;
-                else if (abs(box[i].center.y-box[j].center.y)<3) matchrank[i][j] +=100;
-                else if (abs(box[i].center.y-box[j].center.y)<5) matchrank[i][j] +=50;
-                else if (abs(box[i].center.y-box[j].center.y)<8) matchrank[i][j] +=10;
+                relativePositionFilter(box,mode_1);
                 //根据角度筛选
-                double anglei,anglej;
-                anglei=box[i].angle;
-                anglej=box[j].angle;
-                if (abs(anglei-anglej)<=5 || abs(anglei-anglej)>=85 ) matchrank[i][j]+=200;
-                else if (abs(anglei-anglej)<=8 || abs(anglei-anglej)>=82 ) matchrank[i][j]+=100;
-                else if (abs(anglei-anglej)<=15 || abs(anglei-anglej)>=75 ) matchrank[i][j]+=50;
-                else if (abs(anglei-anglej)<=18 || abs(anglei-anglej)>=72 ) matchrank[i][j]+=5;
-                else matchrank[i][j]-=10000;
+                relativeTiltAngleFilter(mode_1);
                 //面积比
-                double areai=box[i].size.area();
-                double areaj=box[j].size.area();
-                double temparea;
-                if (areai<areaj)
-                {
-                    temparea=areai;
-                    areai=areaj;
-                    areaj=temparea;
-                }
-                if (areai< 10 || areaj<10) matchrank[i][j] -= 20000;
-                else if (areai/areaj>=3) matchrank[i][j] -= 10000;
-                else if (areai/areaj>=2) matchrank[i][j] -= 100;
-                else if (areai/areaj>1.75) matchrank[i][j] += 10;
-                else if (areai/areaj>1.5) matchrank[i][j] += 50;
-                else  matchrank[i][j] += 100;
-                //连线长
-                //42 13
-                double d=sqrt((box[i].center.x-box[j].center.x)*(box[i].center.x-box[j].center.x)+(box[i].center.y-box[j].center.y)*(box[i].center.y-box[j].center.y));
+                areaRadioFilter(mode_1);
+                //中心连线长筛选
                 if (d >= longi * 7|| d >= longj * 7 || d<1.5*longi || d<1.5*longj) matchrank[i][j] -= 10000;
                 else if (d >= longi * 2.7 || d >= longj * 2.7 || d<1.5*longi || d<1.5*longi) matchrank[i][j] -= 10000;
                 else if (d <= longi * 2.7 && d <= longj * 2.7 && d>1.5*longi && d>1.5*longi) matchrank[i][j] += 100;
-                // cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
-               
+                cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
             }
             else
             {
-                isbig=true;
+                armor_data.is_big = true;
                 //相对位置筛选           
-                if ((box[i].center.y-box[j].center.y)>1.5*longi || (box[i].center.y-box[j].center.y)>1.5*longj) matchrank[i][j]-=10000;
-                else if (abs(box[i].center.y-box[j].center.y)<3) matchrank[i][j] +=100;
-                else if (abs(box[i].center.y-box[j].center.y)<5) matchrank[i][j] +=50;
-                else if (abs(box[i].center.y-box[j].center.y)<8) matchrank[i][j] +=10;
+                relativePositionFilter(box,mode_2);
                 //根据角度筛选
-                double anglei,anglej;
-                anglei=box[i].angle;
-                anglej=box[j].angle;
-                if (abs(anglei-anglej)<=5 || abs(anglei-anglej)>=85 ) matchrank[i][j]+=200;
-                else if (abs(anglei-anglej)<=7 || abs(anglei-anglej)>=83 ) matchrank[i][j]+=100;
-                else if (abs(anglei-anglej)<=13 || abs(anglei-anglej)>=77 ) matchrank[i][j]+=50;
-                else if (abs(anglei-anglej)<=20 || abs(anglei-anglej)>=70 ) matchrank[i][j]+=5;
-                else matchrank[i][j]-=10000;
+                relativeTiltAngleFilter(mode_2);
                 //面积比
-                double areai=box[i].size.area();
-                double areaj=box[j].size.area();
-                double temparea;
-                if (areai<areaj)
-                {
-                    temparea=areai;
-                    areai=areaj;
-                    areaj=temparea;
-                }
-                if (areai< 10 || areaj<10) matchrank[i][j] -= 20000;
-                else if (areai/areaj>=4) matchrank[i][j] -= 10000;
-                else if (areai/areaj>=3) matchrank[i][j] -= 100;
-                else if (areai/areaj>1.75) matchrank[i][j] += 10;
-                else if (areai/areaj>1.5) matchrank[i][j] += 50;
-                else  matchrank[i][j] += 100;
+                areaRadioFilter(mode_2);
                 //连线长
-                double d=sqrt((box[i].center.x-box[j].center.x)*(box[i].center.x-box[j].center.x)+(box[i].center.y-box[j].center.y)*(box[i].center.y-box[j].center.y));
                 if (d >= longi * 7|| d >= longj * 7 || d<1.5*longi || d<1.5*longj) matchrank[i][j] -= 10000;
                 else if (d >= longi * 5 || d >= longj * 5 || d<3*longi || d<3*longi) matchrank[i][j] -= 10000;
                 else if (d <= longi * 5 && d <= longj * 5 && d>3*longi && d>3*longi) matchrank[i][j] += 100;
-                // cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
+                cout<<"i j d:"<<i<<" "<<j<<" "<<d<<endl;
             }
         }
     }                                                                                 
@@ -297,54 +176,62 @@ void InfantryArmorDetector::getContours()
 
 void InfantryArmorDetector::getTarget()
 {
-    int maxpoint=-8000;
-    int besti=-1;
-    int bestj=-1;
+    //初始化
+    maxpoint=-8000;
+    besti=-1;
+    bestj=-1;
+    //遍历，得到最优组合并记录位置
     for (int i=0;i<num;i++)
         for (int j=i+1;j<num;j++)
         {
+            local_num_i = i;
+            local_num_j = j;
             // cout<<"matchrank "<<i<<" "<<j<<" :"<<matchrank[i][j]<<endl;
-            if (maxpoint<matchrank[i][j])
-            {
-                maxpoint=matchrank[i][j];
-                if (mode == 3) 
-                {
-                    //cout<<"判断为大"<<endl;
-                    if (dis[i][j]==1) isbig=false;
-                    else isbig=true;
-                }
-                else;
-                besti=i;
-                bestj=j;
-            }
+            // if (maxpoint<matchrank[i][j])
+            // {
+            //     maxpoint=matchrank[i][j];
+            //     if (mode == 3) 
+            //     {
+            //         //cout<<"判断为大"<<endl;
+            //         if (dis[i][j]==1) armor_data.is_big = false;
+            //         else armor_data.is_big = true;
+            //     }
+            //     else;
+            //     besti=i;
+            //     bestj=j;
+            // }
+            pickBest();
         }
+    //视野中没有装甲板
     if (besti==-1 || bestj==-1) 
     {
-        islost=true;
-        if (roi.lefttop.x - 10<=0) roi.lefttop.x=0;
-        else roi.lefttop.x -= 10;
-        if (roi.lefttop.y - 10<=0) roi.lefttop.y=0;
-        else roi.lefttop.y -= 10;
-        if (roi.lefttop.x + roi.rwidth + 20 > src.cols) roi.rwidth=src.cols-roi.lefttop.x;
-        else roi.rwidth=roi.rwidth + 20;
-        if (roi.lefttop.y + roi.rheight + 20 > src.rows) roi.rheight=src.rows-roi.lefttop.y;
-        else roi.rheight=roi.rheight + 20;
-        roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
+        // armor_data.is_get = false;
+        // if (roi.lefttop.x - 10<=0) roi.lefttop.x=0;
+        // else roi.lefttop.x -= 10;
+        // if (roi.lefttop.y - 10<=0) roi.lefttop.y=0;
+        // else roi.lefttop.y -= 10;
+        // if (roi.lefttop.x + roi.rwidth + 20 > src.cols) roi.rwidth=src.cols-roi.lefttop.x;
+        // else roi.rwidth=roi.rwidth + 20;
+        // if (roi.lefttop.y + roi.rheight + 20 > src.rows) roi.rheight=src.rows-roi.lefttop.y;
+        // else roi.rheight=roi.rheight + 20;
+        // roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
+        // return;
+        lostArmor();
         return;
     }
-    islost=false;
-    RotatedRect boxi;
-    RotatedRect boxj;
+
+    armor_data.is_get = true;
     boxi=minAreaRect(Mat(contours[besti]));
     boxj=minAreaRect(Mat(contours[bestj]));
     target.center=Point2f((boxi.center.x+boxj.center.x)/2,(boxi.center.y+boxj.center.y)/2);
-   // cout<<"i "<<besti<<" :x="<<boxi.center.x<<" y="<<boxi.center.y<<endl;
+    //cout<<"i "<<besti<<" :x="<<boxi.center.x<<" y="<<boxi.center.y<<endl;
     //cout<<"j "<<bestj<<" :x="<<boxj.center.x<<" y="<<boxj.center.y<<endl;
     //cout<<"target : x="<<target.center.x<<" y="<<target.center.y<<endl;
     circle(src,Point(target.center.x,target.center.y),5,Scalar(255,0,0),-1,8);
     circle(outline,Point(target.center.x,target.center.y),5,Scalar(255,0,0),-1,8);
     char tam[100]; 
-	//sprintf(tam, "(%0.0f,%0.0f)",target.center.x,target.center.y); 
+	//sprintf(tam, "(%0.0f,%0.0f)",target.center.x,target.center.y);
+    //在图片左上角输出计算后的信息
     putText(src, tam, Point(target.center.x, target.center.y), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,255),1);
     //获取周围四个点的坐标
     if (boxi.center.x > boxj.center.x)
@@ -418,7 +305,7 @@ void InfantryArmorDetector::getPnP()
     //按照顺时针圧入，左上是第一个点
     vector<Point3f> objP;
     Mat objM;
-    if (isbig){
+    if (armor_data.is_big){
         objP.clear();
         objP.push_back(Point3f(0,0,0));
         objP.push_back(Point3f(225,0,0));
@@ -511,7 +398,7 @@ void InfantryArmorDetector::getPnP()
     double drop=0.0;
     if (mode==1 || mode ==3)
     {
-        if (isbig){
+        if (armor_data.is_big){
             newx=m00*115+m01*27.5+m02*0+_t_matrix.at<double>(0,0)-20;//加往右
             newz=m20*115+m21*27.5+m22*0+_t_matrix.at<double>(2,0)+25;
             newx = newx - newz/2000*15;
@@ -534,7 +421,7 @@ void InfantryArmorDetector::getPnP()
         newx = newx - newz/2000*15;
         newy=m10*113+m11*27.5+m12*0+_t_matrix.at<double>(1,0)-60-50;//;//减往上-newz*newz/20000 -0.026x+88
     }
-    pnpresult.dist=newz;
+    armor_data.atocDistance = newz;
     char tam2[100]; 
 	sprintf(tam2, "center in cam(%0.0f,%0.0f,%0.0f)",newx,newy,newz); 
     putText(src, tam2, Point(15, 30), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255),1);
@@ -547,23 +434,23 @@ void InfantryArmorDetector::getPnP()
     vec[2]=newz;
     yaw=atan(vec[0]/vec[2])*180/PI;
     pitch=atan(vec[1]/vec[2])*180/PI;
-    if(abs(yaw)>0.02) pnpresult.yaw=yaw;
-    else pnpresult.yaw=0;
-    if(abs(pitch)>0.02) pnpresult.pitch=pitch;
-    else pnpresult.pitch=0;
-    if (islost==true)
+    if(abs(yaw)>0.02) armor_data.yaw_angle = yaw;
+    else armor_data.yaw_angle = 0;
+    if(abs(pitch)>0.02) armor_data.pitch_angle = pitch;
+    else armor_data.pitch_angle = 0;
+    if (armor_data.is_get == false)
     {
-        pnpresult.yaw=0;
-        pnpresult.pitch=0;
-        pnpresult.dist=0;
+        armor_data.yaw_angle = 0;
+        armor_data.pitch_angle = 0;
+        armor_data.atocDistance = 0;
     }
     //char tam3[100]; 
 	//sprintf(tam3, "tan yaw=%0.4f   tan pich=%0.4f",vec[0]/vec[2],vec[1]/vec[2]); 
     //putText(src, tam3, Point(15, 45), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255),1);
     char tam4[100]; 
-	sprintf(tam4, "yaw=%0.4f   pich=%0.4f",pnpresult.yaw,pnpresult.pitch); 
+	sprintf(tam4, "yaw=%0.4f   pich=%0.4f",armor_data.yaw_angle, armor_data.pitch_angle); 
     putText(src, tam4, Point(15, 60), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,0,255),1);
-    if (isbig){
+    if (armor_data.is_big){
         putText(src,"BIG ARMOR",Point(15, 75), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(0,255,0),1);
     }
     else
@@ -578,7 +465,155 @@ void InfantryArmorDetector::getPnP()
         putText(src,"BLUE ARMOR",Point(15, 90), FONT_HERSHEY_SIMPLEX, 0.4, cvScalar(255,0,0),1);
     }
 }
+//********************************************其他功能性函数********************************************//
 
+InfantryArmorDetector::InfantryArmorDetector()
+{
+    armor_data.is_get = false;
+    isred=false;
+    mode=3;
+    roi.lefttop=Point2f(0,0);
+    roi.rwidth=src.cols;
+    roi.rheight=src.rows;
+    roi.level=1;
+    roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
+}
 
+InfantryArmorDetector::InfantryArmorDetector(Mat &src)
+{
+    armor_data.is_get = false;
+    isred=false;
+    mode=3;
+    roi.lefttop=Point2f(0,0);
+    roi.rwidth=src.cols;
+    roi.rheight=src.rows;
+    roi.level=1;
+    roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
+}
+
+/**
+ * @Author: 孟文珩
+ * @Description: 用于观察各部分函数作用，以及调参。可同时显示6乃至更多张图片以便对比。
+ * @Param: src 原图
+ * @Param: armor_data 保存了筛选后得到的装甲板的所有数据，详情参见TargetData
+ * @Return: void
+ * @Throw: 
+ */
+void InfantryArmorDetector::debugGetCenter(Mat &src, TargetData &armor_data)
+{
+    for(int i = 0;i < 6;i++)
+    {
+        if (!roiimg.empty())
+        imshow("roi",roiimg);
+        getBinaryImage();
+        imshow("bin"+std::to_string(i),binary);
+        getContours();
+        getTarget();
+        getPnP();
+        imshow("out",outline);
+        imshow("last"+std::to_string(i),src);
+        waitKey(1000);  //延时1s
+    }
+}
+
+void InfantryArmorDetector::inclinationAngleFilter(vector<RotatedRect>& box)
+{
+    if ((box[local_num_i].size.width > box[local_num_i].size.height && box[local_num_i].angle>-70) || (box[local_num_i].size.width < box[local_num_i].size.height && box[local_num_i].angle<-20)) matchrank[local_num_i][local_num_j]-=10000;
+    if ((box[local_num_j].size.width > box[local_num_j].size.height && box[local_num_j].angle>-70) || (box[local_num_j].size.width < box[local_num_j].size.height && box[local_num_j].angle<-20)) matchrank[local_num_i][local_num_j]-=10000;
+}
+double InfantryArmorDetector::getLongSide(double side_1,double side_2)
+{
+    return side_1 > side_2 ? side_1 : side_2;
+}
+double InfantryArmorDetector::getShortSide(double side_1,double side_2)
+{
+    return side_1 < side_2 ? side_1 : side_2;
+}
+void InfantryArmorDetector::aspectRadioFilter(vector<RotatedRect>& box)
+{
+    //i排序
+    longi=getLongSide(box[local_num_i].size.height, box[local_num_i].size.width);
+    shorti=getShortSide(box[local_num_i].size.height, box[local_num_i].size.width);
+    //j排序
+    longj=getLongSide(box[local_num_j].size.height, box[local_num_j].size.width);
+    shortj=getShortSide(box[local_num_j].size.height, box[local_num_j].size.width);
+    //长宽比判断筛选
+    if ((longi/shorti) <= 1.3 || (longj/shortj) <= 1.3) matchrank[local_num_i][local_num_j]-=10000;
+    else if ((longi/shorti) >= 9.5 || (longj/shortj) >= 9.5) matchrank[local_num_i][local_num_j]-=10000;
+    else if ((longi/shorti)>=4 && (longi/shorti)<=7 && (longj/shortj)>=4 && (longj/shortj)<=7)matchrank[local_num_i][local_num_j]+=100;
+    else if ((longi/shorti)>=3.5 && (longi/shorti)<=7.5 && (longj/shortj)>=3.5 && (longj/shortj)<=7.5) matchrank[local_num_i][local_num_j]+=80;
+}
+void InfantryArmorDetector::relativePositionFilter(vector<RotatedRect>& box,ModeParam mode)
+{
+    if ((box[local_num_i].center.y-box[local_num_j].center.y)> mode.relative_position_radio *longi || (box[local_num_i].center.y-box[local_num_j].center.y)> mode.relative_position_radio *longj) matchrank[local_num_i][local_num_j]-=10000;
+    else if (abs(box[local_num_i].center.y-box[local_num_j].center.y)<3) matchrank[local_num_i][local_num_j] +=100;
+    else if (abs(box[local_num_i].center.y-box[local_num_j].center.y)<5) matchrank[local_num_i][local_num_j] +=50;
+    else if (abs(box[local_num_i].center.y-box[local_num_j].center.y)<8) matchrank[local_num_i][local_num_j] +=10;
+}
+void InfantryArmorDetector::relativeTiltAngleFilter(ModeParam mode)
+{
+    if (abs(anglei-anglej)<=mode.relative_angle[0][0] || abs(anglei-anglej)>=mode.relative_angle[0][1] ) matchrank[local_num_i][local_num_j]+=200;
+    else if (abs(anglei-anglej)<=mode.relative_angle[1][0] || abs(anglei-anglej)>=mode.relative_angle[1][1] ) matchrank[local_num_i][local_num_j]+=100;
+    else if (abs(anglei-anglej)<=mode.relative_angle[2][0] || abs(anglei-anglej)>=mode.relative_angle[2][1] ) matchrank[local_num_i][local_num_j]+=50;
+    else if (abs(anglei-anglej)<=mode.relative_angle[3][0] || abs(anglei-anglej)>=mode.relative_angle[3][1] ) matchrank[local_num_i][local_num_j]+=5;
+    else matchrank[local_num_i][local_num_j]-=10000;
+}
+void InfantryArmorDetector::areaRadioFilter(ModeParam mode)
+{
+    if (areai< mode.relative_area[0] || areaj< mode.relative_area[0]) matchrank[local_num_i][local_num_j] -= 20000;
+    else if (areai/areaj>= mode.relative_area[1]) matchrank[local_num_i][local_num_j] -= 10000;
+    else if (areai/areaj>= mode.relative_area[2]) matchrank[local_num_i][local_num_j] -= 100;
+    else if (areai/areaj> mode.relative_area[3]) matchrank[local_num_i][local_num_j] += 10;
+    else if (areai/areaj> mode.relative_area[4]) matchrank[local_num_i][local_num_j] += 50;
+    else  matchrank[local_num_i][local_num_j] += 100;
+}
+void InfantryArmorDetector::centerConnectionLengthFileterofMode_3(int i,int j)
+{
+    if(d >= longi * 4.7 || d >= longj * 4.7 || d<1.5*longi || d<1.5*longi) matchrank[i][j] -= 10000;
+    else if (d <= longi * 4.7 && d <= longj * 4.7 && d>1.5*longi && d>1.5*longi) matchrank[i][j] += 100;
+    if (d >= longi * 3 || d >= longj * 3) dis[i][j]=0;//=1为小装甲
+    else dis[i][j]=1;
+    // cout <<"i"<<i<<" —— "<<local_num_i<<endl;
+    // cout <<"j"<<j<<" —— "<<local_num_j<<endl;
+    // cout << "mode_3.center_distance[0] : " << mode_3.center_distance[0][0] << "  " << mode_3.center_distance[0][1] << endl;
+    // cout << "mode_3.center_distance[1] : " << mode_3.center_distance[1][0] << "  " << mode_3.center_distance[1][1] << endl;
+}
+void InfantryArmorDetector::centerConnectionLengthFileter(ModeParam mode)
+{
+    if (d >= longi * mode.center_distance[0][0]|| d >= longj * mode.center_distance[0][0] || d<longi * mode.center_distance[0][1] || d<longj * mode.center_distance[0][1]) matchrank[local_num_i][local_num_j] -= 10000;
+    else if (d >= longi * mode.center_distance[1][0] || d >= longj * mode.center_distance[1][0] || d<mode.center_distance[1][1]*longi || d<mode.center_distance[1][1]*longj) matchrank[local_num_i][local_num_j] -= 10000;
+    else if (d <= longi * mode.center_distance[1][0] && d <= longj * mode.center_distance[1][0] && d>mode.center_distance[1][1]*longi && d>mode.center_distance[1][1]*longj) matchrank[local_num_i][local_num_j] += 100;
+    cout<<"i j d:"<<local_num_j<<" "<<local_num_j<<" "<<d<<endl;
+}
+
+void InfantryArmorDetector::pickBest()
+{
+    cout<<"matchrank "<<local_num_i<<" "<<local_num_j<<" :"<< matchrank[local_num_i][local_num_j]<<endl;
+    if (maxpoint<matchrank[local_num_i][local_num_j])
+    {
+        maxpoint=matchrank[local_num_i][local_num_j];
+        if (mode == 3) 
+        {
+            if (dis[local_num_i][local_num_j]==1) armor_data.is_big = false;
+            else armor_data.is_big = true;
+        }
+        else;
+        besti = local_num_i;
+        bestj = local_num_j;
+    }
+}
+void InfantryArmorDetector::lostArmor()
+{
+    armor_data.is_get = false;
+    if (roi.lefttop.x - 10<=0) roi.lefttop.x=0;
+    else roi.lefttop.x -= 10;
+    if (roi.lefttop.y - 10<=0) roi.lefttop.y=0;
+    else roi.lefttop.y -= 10;
+    if (roi.lefttop.x + roi.rwidth + 20 > src.cols) roi.rwidth=src.cols-roi.lefttop.x;
+    else roi.rwidth=roi.rwidth + 20;
+    if (roi.lefttop.y + roi.rheight + 20 > src.rows) roi.rheight=src.rows-roi.lefttop.y;
+    else roi.rheight=roi.rheight + 20;
+    roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
+}
 
 #endif

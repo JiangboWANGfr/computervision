@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-17 21:09:15 +0800
+ * @LastEditTime: 2019-10-26 19:18:20
  * @LastEditors: 
  * @Description: 
  */
@@ -16,7 +16,6 @@
 #include "GxIAPI.h"
 #include "GxCamera.h"
 #include "PictureManipulator.h"
-#include "SentryPictureManipulator.h"
 #include "Controller.h"
 #include "InfantryPictureManipulator.h"
 #pragma comment(linker, "/STACK:102400000,102400000")

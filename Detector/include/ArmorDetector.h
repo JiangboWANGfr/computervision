@@ -21,7 +21,7 @@ public:
     int mode = 1;   //步兵
     int isred = 1;  //步兵
     int islost = 1; //步兵
-    TargetData armordata;
+    TargetData armor_data;
 
 #ifdef BLUE
     cv::Scalar huahuaScalar = cv::Scalar(255, 0, 0);
