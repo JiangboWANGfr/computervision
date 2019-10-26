@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-18 14:52:16 +0800
+ * @LastEditTime: 2019-10-26 18:50:00 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -25,7 +25,7 @@ pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
  * @Throw: 
  */
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
-    : pm(pmr), cam1(camera1), cam2(camera2)
+    : pm(pmr), cam1(camera1), cam2(camera2), client(SOCK_DGRAM, 8888, "127.0.0.1")
 {
     pthread_mutex_lock(&s_mutex);
     num_of_controller++;
@@ -49,6 +49,9 @@ Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2
 
 Controller::~Controller()
 {
+    //这里实际上需要实现num_of_controller,但是一旦需要实现，很多
+    //都需要进行更改，否则controller_handle就会出错
+    //因此不再实现
 }
 
 /**
@@ -90,6 +93,7 @@ bool Controller::mainpulatePicture()
         pm->manipulatePicture(img_ready_to_manipulate);
         // fin_video << img_ready_to_manipulate; //保存处理后的图像
         is_ready_to_manipulate = 0;
+        client.sendToServer((char*)&pm->armor_data);
 #ifdef STM32
         stm32.send(pm->armor_data);
 #endif

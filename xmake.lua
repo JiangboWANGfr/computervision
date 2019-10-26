@@ -7,6 +7,7 @@ includes("Detector")
 includes("PictureManipulator")
 includes("SerialPort")
 includes("Share")
+includes("Socket")
 
 
 target("ComputerVision")

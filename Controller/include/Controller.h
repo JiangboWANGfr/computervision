@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:07 +0800
- * @LastEditTime: 2019-10-18 14:38:21 +0800
+ * @LastEditTime: 2019-10-26 18:30:05 +0800
  * @LastEditors: 
  * @Description: 改文件只允许main进行引用
  */
@@ -16,13 +16,14 @@
 #include "PictureManipulator.h"
 #include "Camera.h"
 #include "SerialPort.hpp"
+#include "Socket.h"
 
 class Controller
 {
 private:
-    static int num_of_controller;
-    static pthread_mutex_t s_mutex;
-    int controller_handle;
+    static int num_of_controller;//controller句柄个数
+    static pthread_mutex_t s_mutex;//防止多线程同时创建controller
+    int controller_handle;//controller句柄
     double fps;
     Size video_size;
     string filename;
@@ -31,6 +32,7 @@ private:
     ofstream filterData; // 记录装甲数据输出为csv文件，方便建模分析
 
     SerialPort stm32;
+    Socket client;
 
     bool is_get_image = true;
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

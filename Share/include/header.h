@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-26 17:47:46 +0800
+ * @LastEditTime: 2019-10-26 18:20:22 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -25,7 +25,6 @@
 #include <queue>
 #include <stdio.h>
 #include <stdlib.h>
-#include <socket.h>
 
 #include <pthread.h>
 #include <thread>
@@ -42,6 +41,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/socket.h>
 
 //////////////OpenCV///////////////
 #include <opencv2/core.hpp>
