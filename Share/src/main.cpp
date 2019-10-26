@@ -38,7 +38,7 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
-    pthread_create(&t, &thread_attr, mainThreadOne, NULL);
+    // pthread_create(&t, &thread_attr, mainThreadOne, NULL);
     pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
 
     char tmp;
