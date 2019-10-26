@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-30 21:22:06 +0800
- * @LastEditTime: 2019-10-26 18:52:29 +0800
+ * @LastEditTime: 2019-10-26 19:01:44 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -64,7 +64,7 @@ void Socket::recvDataFromClient()
  */
 socketfd Socket::createSocket(int type, int protocol)
 {
-    socketfd skf = socket(AF_INET, SOCK_STREAM, 0);
+    socketfd skf = socket(AF_INET, this->mode, 0);
 
     if (skf == -1)
     {
