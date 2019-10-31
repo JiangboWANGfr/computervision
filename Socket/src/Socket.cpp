@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-30 21:22:06 +0800
- * @LastEditTime: 2019-10-26 19:01:44 +0800
+ * @LastEditTime: 2019-10-31 19:29:38 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -70,7 +70,6 @@ socketfd Socket::createSocket(int type, int protocol)
     {
         perror("socket");
         printf("create socket error: %s(errno: %d)\n", strerror(errno), errno);
-        // exit(1);
         return -1;
     }
     else
@@ -116,7 +115,6 @@ void Socket::bindSocketAddr(socketfd skf_socketfd, struct sockaddr *addr_sockadd
     if (res == -1) //失败
     {
         perror("bind");
-        exit(1);
     }
 }
 
@@ -134,7 +132,6 @@ void Socket::createListen(socketfd skf, int num)
     if (res == -1) //执行失败
     {
         perror("listen");
-        exit(1);
     }
 }
 
@@ -237,7 +234,6 @@ void Socket::createConnection(socketfd skf, struct sockaddr *serv_addr, size_t a
     {
         perror("connect");
         printf("create connection error: %s(errno: %d)\n", strerror(errno), errno);
-        exit(1);
     }
 }
 
@@ -256,7 +252,6 @@ socketfd Socket::acceptConnection(socketfd sfk, struct sockaddr *addr, socklen_t
     if (cli_skf == -1)
     {
         printf("accept socket error: %s(errno: %d)", strerror(errno), errno);
-        exit(1);
     }
     return cli_skf;
 }
@@ -282,7 +277,6 @@ int Socket::sendMSG(socketfd skf, char *buff, size_t n_bytes, int flag)
     if (num_of_sending_words == -1) //失败
     {
         printf("receive message error: %s(errno: %d)\n", strerror(errno), errno);
-        exit(1);
     }
     return 0;
 }
@@ -309,7 +303,6 @@ int Socket::receiveMSG(socketfd skf, char *buff, size_t n_bytes, int flag)
     if (num_of_reading_words == -1) //失败
     {
         printf("receive message error: %s(errno: %d)\n", strerror(errno), errno);
-        exit(0);
     }
 
     if (num_of_reading_words >= BUFFER_SIZE)
@@ -337,7 +330,6 @@ void Socket::writeBack(socketfd skf, const void *buff, size_t n_bytes, int flag)
         if (res == -1)
         {
             printf("write back error: %s(errno: %d)", strerror(errno), errno);
-            exit(0);
         }
     }
 }
