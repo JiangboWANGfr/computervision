@@ -4,10 +4,11 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-30 21:22:06 +0800
- * @LastEditTime: 2019-10-31 19:29:38 +0800
+ * @LastEditTime: 2019-10-31 19:35:45 +0800
  * @LastEditors: 
  * @Description: 
  */
+#ifndef __SOCKET_H__
 #include "Socket.h"
 #define BUFFER_SIZE 1024
 
@@ -41,6 +42,8 @@ Socket::~Socket()
 void Socket::startServer()
 {
     ser_skf = createSocket(this->mode, 0);
+    if(ser_skf == -1)
+        return;
     struct sockaddr_in ser_addr;
     initialzeSocketaddr(&ser_addr, ip, this->port);
     bindSocketAddr(ser_skf, (struct sockaddr *)&ser_addr, sizeof(ser_addr));
@@ -332,54 +335,6 @@ void Socket::writeBack(socketfd skf, const void *buff, size_t n_bytes, int flag)
             printf("write back error: %s(errno: %d)", strerror(errno), errno);
         }
     }
-}
-
-#ifdef TEST
-
-int main(int argc, char *argv[])
-{
-
-    // connect(int fd, (struct sockaddr *)&addr, socklen_t len_addr);
-
-    // char buff[1024];
-    // struct sockaddr_in addr;
-
-    // initialzeSocketaddr(&addr, NULL, PORT);
-
-    // socketfd server_socket, client_socket;
-
-    // server_socket = createSocket(SOCK_STREAM, 0);
-    // int reuse = 1;
-    // if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0)
-    // {
-    //     perror("setsockopet error \n");
-    //     return -1;
-    // }
-
-    // bindSocketAddr(server_socket, (struct sockaddr *)&addr, sizeof(addr));
-
-    // bindSocketAddr(server_socket, (struct sockaddr *)&addr, sizeof(addr));
-
-    // // printf("%d\n", listen(server_socket, 5));
-    // createListen(server_socket, 5);
-
-    // client_socket = acceptConnection(server_socket, (struct sockaddr *)NULL, 0);
-    // // acceptConnection(&client_socket, &server_socket, (struct sockaddr*)NULL, NULL);
-
-    // receiveMSG(client_socket, buff, 100, 0);
-    // printf("%s\n", buff);
-
-    // // sendMSG(client_socket, buff, 100, 0);
-
-    // printf("%s\n", buff);
-    // // writeBack(client_socket, buff, sizeof(buff), 0);
-
-    // close(client_socket);
-
-    // close(server_socket);
-    // // printf("hello world\n");
-
-    return 0;
 }
 
 #endif
