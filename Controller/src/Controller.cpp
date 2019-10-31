@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-26 18:50:00 +0800
+ * @LastEditTime: 2019-10-31 21:49:45 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,7 +13,6 @@
 
 int Controller::num_of_controller = 0;
 pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 
 /**
  * @Author: 王占坤
@@ -80,7 +79,7 @@ void Controller::getImageFromCamera()
         cout << controller_handle << endl;
     }
 #ifdef SHOW_PICTURE
-    showPicture("COntroller::getImageFromCamera  img_ready_to_manipulate" + to_string(Controller::controller_handle), img_ready_to_manipulate, 1);
+    showPicture("Controller::getImageFromCamera  img_ready_to_manipulate" + to_string(Controller::controller_handle), img_ready_to_manipulate, 1);
 #endif
     pthread_mutex_unlock(&mutex);
 }
@@ -91,9 +90,11 @@ bool Controller::mainpulatePicture()
     if (is_ready_to_manipulate == 1)
     {
         pm->manipulatePicture(img_ready_to_manipulate);
-        // fin_video << img_ready_to_manipulate; //保存处理后的图像
+#ifdef SAVE_DATA
+        fin_video << img_ready_to_manipulate; //保存处理后的图像
+#endif
         is_ready_to_manipulate = 0;
-        client.sendToServer((char*)&pm->armor_data);
+        client.sendToServer((char *)&pm->armor_data);
 #ifdef STM32
         stm32.send(pm->armor_data);
 #endif
