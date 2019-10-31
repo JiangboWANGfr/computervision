@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-18 14:52:57 +0800
+ * @LastEditTime: 2019-10-31 21:29:19 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -16,6 +16,7 @@
 #include "GxIAPI.h"
 #include "GxCamera.h"
 #include "OrdinaryCamera.h"
+#include "VirtualCamera.h"
 #include "PictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "Controller.h"
@@ -84,9 +85,9 @@ void *mainThreadOne(void *argc)
 
 void *mainThreadTwo(void *argc)
 {
-    OrdinaryCamera cam2("/dev/video0");
+    // OrdinaryCamera cam2("/dev/video0");
+    VirtualCamera cam2("./1572528438SRC.avi");
     SentryPictureManipulator pm;
-    GxCamera cam1("1");
     Controller controller(&pm, &cam2);
     // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);
