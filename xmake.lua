@@ -1,5 +1,6 @@
 add_syslinks("pthread","gxiapi")
 add_requires("opencv")
+add_defines("SENTRY")
 
 includes("Camera")
 includes("Controller")
