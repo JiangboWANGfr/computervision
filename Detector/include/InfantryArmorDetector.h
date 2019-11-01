@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-10-26 19:20:55
- * @LastEditTime: 2019-10-26 19:20:55
+ * @LastEditTime: 2019-10-31 22:08:54
  * @LastEditors: 
  * @Description: 
  */
@@ -58,7 +58,7 @@ private:
     void areaRadioFilter(ModeParam mode);
     void centerConnectionLengthFileterofMode_3(int i,int j);
     void centerConnectionLengthFileter(ModeParam mode);
-    void debugGetCenter(Mat &src0, TargetData &armor_data);
+    void debugGetCenter(Mat &src, TargetData &armor_data);
     void pickBest();
     void lostArmor();
 
@@ -83,7 +83,6 @@ private:
     RotatedRect boxj;
 
 private:
-    void getSrcImage(Mat src);
     void getBinaryImage();
     void getContours();
     void getTarget();

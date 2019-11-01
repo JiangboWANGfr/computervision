@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-10-26 20:03:45
+ * @LastEditTime: 2019-11-01 19:42:44
  * @LastEditors: 
  * @Description: 
  */
@@ -59,15 +59,15 @@ int InfantryPictureManipulator::verifyMode(int &mode, int &isred)
         case 5: findmode = SIVIR_MODE;
             break;      //转动
             
-        case 7: isred = true;
-            break;      //敌方是红色
-        case 8: isred = false;
-            break;
+        // case 7: isred = true;
+        //     break;      //敌方是红色
+        // case 8: isred = false;
+        //     break;
 
         default: break;
     }
     cout<<"mode: "<<mode<<endl;
-    cout<<"findmode: "<<findmode<<endl;
+    cout<<"findmode: "<<this->findmode<<endl;
 }
 
 void InfantryPictureManipulator::armorModeToDo(Mat srcimg)
@@ -83,8 +83,11 @@ int InfantryPictureManipulator::manipulatePicture(Mat srcimg)
 {
     initArmorData(armor_data);
     verifyMode(armor_detector.mode, armor_detector.isred);
-    if(findmode == ARMOR_MODE)
+    if(this->findmode == ARMOR_MODE)
+    {
         armorModeToDo(srcimg);
+    }
+        
     else 
         sivirModeToDo();
 }

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-10-26 18:01:37
- * @LastEditTime: 2019-10-26 19:07:36
+ * @LastEditTime: 2019-11-01 19:38:20
  * @LastEditors: 
  * @Description: 
  */
@@ -16,18 +16,16 @@
 int valu[6] = {1,2,3,4,5,6};
 
 //********************************************运行主体函数**********************************************//
-void InfantryArmorDetector::getCenter(Mat &src, TargetData &armor_data)
+void InfantryArmorDetector::getCenter(Mat &source_img, TargetData &armor_data)
 {
+    src = source_img;
     if (!roiimg.empty())
-    imshow("roi",roiimg);
+        imshow("roi",roiimg);
     getBinaryImage();
     //imshow("bin",binary);
     getContours();
     getTarget();
     getPnP();
-
-    //绘制装甲板中心
-    circle(src,target.center,8,Scalar(255,0,0),2,8,0);
 }
 
 /**
@@ -46,10 +44,15 @@ void InfantryArmorDetector::getBinaryImage()
     //分离三通道，BGR,0--B,2--R
     split(src,imgChannels);
     //红色处理
-    if (isred)  gry=imgChannels.at(2)-imgChannels.at(0);
+    if(this->isred)  
+    {
+        gry=imgChannels.at(2)-imgChannels.at(0);
+    }
     //蓝色处理
-    else    gry=imgChannels.at(0)-imgChannels.at(2);
-
+    else    
+    {
+        gry = imgChannels.at(0) - imgChannels.at(2);
+    }
     //原图遍历，将roi区域外的图像矩阵置0，类似裁剪，减少threshold运行时间
     for (int row=0;row<src.rows;row++)
     {
@@ -470,7 +473,7 @@ void InfantryArmorDetector::getPnP()
 InfantryArmorDetector::InfantryArmorDetector()
 {
     armor_data.is_get = false;
-    isred=false;
+    isred=true;
     mode=3;
     roi.lefttop=Point2f(0,0);
     roi.rwidth=src.cols;
@@ -482,7 +485,7 @@ InfantryArmorDetector::InfantryArmorDetector()
 InfantryArmorDetector::InfantryArmorDetector(Mat &src)
 {
     armor_data.is_get = false;
-    isred=false;
+    isred=true;
     mode=3;
     roi.lefttop=Point2f(0,0);
     roi.rwidth=src.cols;
