@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-10-31 21:29:19 +0800
+ * @LastEditTime: 2019-11-01 20:14:51 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -29,8 +29,6 @@ void *mainThreadOne(void *argc);
 void *mainThreadTwo(void *argc);
 int terminateProgram();
 
-#ifdef SENTRY
-
 int main()
 {
     //设置线程参数
@@ -39,6 +37,7 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
+    cout << "hello world" << endl;
     // pthread_create(&t, &thread_attr, mainThreadOne, NULL);
     pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
 
@@ -49,12 +48,15 @@ int main()
     terminateProgram();
 }
 
-#endif
-
 void *mainThreadOne(void *argc)
 {
     OrdinaryCamera cam2("/dev/video0");
+#ifdef SENTRY
     SentryPictureManipulator pm;
+#endif
+#ifdef INFANTRY
+    InfantryPictureManipulator pm;
+#endif
     GxCamera cam1("1");
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
@@ -85,9 +87,15 @@ void *mainThreadOne(void *argc)
 
 void *mainThreadTwo(void *argc)
 {
+    GxCamera cam2("1");
     // OrdinaryCamera cam2("/dev/video0");
-    VirtualCamera cam2("./1572528438SRC.avi");
+// VirtualCamera cam2("./1572528438SRC.avi");
+#ifdef SENTRY
     SentryPictureManipulator pm;
+#endif
+#ifdef INFANTRY
+    InfantryPictureManipulator pm;
+#endif
     Controller controller(&pm, &cam2);
     // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);

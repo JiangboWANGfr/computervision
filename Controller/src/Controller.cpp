@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-10-31 21:49:45 +0800
+ * @LastEditTime: 2019-11-01 20:18:08 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -90,6 +90,7 @@ bool Controller::mainpulatePicture()
     if (is_ready_to_manipulate == 1)
     {
         pm->manipulatePicture(img_ready_to_manipulate);
+        showPicture("after", img_ready_to_manipulate, 1);
 #ifdef SAVE_DATA
         fin_video << img_ready_to_manipulate; //保存处理后的图像
 #endif

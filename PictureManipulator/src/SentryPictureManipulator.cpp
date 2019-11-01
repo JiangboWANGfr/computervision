@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-10-17 23:24:40 +0800
+ * @LastEditTime: 2019-11-01 19:55:59 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -14,7 +14,7 @@
 
 #ifdef SENTRY
 
-SentryPictureManipulator::SentryPictureManipulator()
+SentryPictureManipulator::SentryPictureManipulator() : PictureManipulator()
 {
 }
 

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-10-26 19:20:55
- * @LastEditTime: 2019-10-31 22:08:54
+ * @LastEditTime: 2019-11-01 20:07:09 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -25,8 +25,8 @@ private:
     Mat roiimg;
     vector< vector<Point> > contours;
     int num;
-    float matchrank[1500][1500];
-    float dis[1500][1500];
+    float matchrank[100][100];
+    float dis[100][100];
     bool isbig;
 
 private:
@@ -99,6 +99,4 @@ public:
 
 
 #endif
-#endif
-
 #endif

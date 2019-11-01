@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-11-01 19:42:44
+ * @LastEditTime: 2019-11-01 19:55:50 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -16,21 +16,9 @@
 #ifdef INFANTRY
 
 
-InfantryPictureManipulator::InfantryPictureManipulator(string serial_port_device,
-                                                   string path,
-                                                   double fps,
-                                                   int width_video_size,
-                                                   int height_video_size)
-    : PictureManipulator(serial_port_device,
-                         path,
-                         fps,
-                         width_video_size,
-                         height_video_size)
+InfantryPictureManipulator::InfantryPictureManipulator() : PictureManipulator()
 {
-}
-
-InfantryPictureManipulator::InfantryPictureManipulator()
-{
+    cout << "InfantryPIctureManipulator::InfantryPictureManipulator success" << endl;
 }
 
 InfantryPictureManipulator::~InfantryPictureManipulator()
