@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-17 19:35:28 +0800
+ * @LastEditTime: 2019-10-18 09:15:26 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -18,26 +18,17 @@
 
 class PictureManipulator
 {
-protected:
-    double fps;
-    Size video_size;
-    string filename;
-    int width_video_size, height_video_size; //用系统时间取名，防止同名文件自我覆盖
-    VideoWriter src_video, fin_video;
-    ofstream filterData; // 记录装甲数据输出为csv文件，方便建模分析
-
+public:
 #ifdef SENTRY
     SentryArmorDetector armor_detector;
 #endif
 
 #ifdef INFANTRY
     InfantryArmorDetector armor_detector;
+    TargetData sivir_data;
 #endif
 
     TargetData armor_data;
-    CarData car_data;
-
-    SerialPort stm32;
 
 public:
     PictureManipulator(string serial_port_device,
@@ -45,9 +36,8 @@ public:
                        double fps = 120,
                        int width_video_size = 640,
                        int height_video_size = 480);
-    PictureManipulator();
-    ~PictureManipulator();
-    void adjustParameter();
+    PictureManipulator() {}
+    ~PictureManipulator() {}
 
     virtual int manipulatePicture(Mat picture) = 0;
 };

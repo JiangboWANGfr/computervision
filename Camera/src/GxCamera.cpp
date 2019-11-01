@@ -4,12 +4,15 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-10-17 20:49:39 +0800
+ * @LastEditTime: 2019-10-18 13:38:20 +0800
  * @LastEditors: 
  * @Description: 
  */
 #include "GxCamera.h"
-GxCamera::GxCamera(/* args */)
+
+#ifdef GX_CAMERA
+
+GxCamera::GxCamera(string camera_num) : Camera(camera_num)
 {
 }
 
@@ -65,7 +68,9 @@ int GxCamera::initializeCameraDevice()
     open_param.accessMode = GX_ACCESS_EXCLUSIVE;
     open_param.openMode = GX_OPEN_INDEX;
     open_param.pszContent = new char[10];
-    strcpy(open_param.pszContent, "1");
+    strcpy(open_param.pszContent, cam_name.c_str());
+    // cout << open_param.pszContent << endl;
+    // open_param.pszContent = cam_name.data();
     // open_param.pszContent = "1";
     //初始化库
     status = GXInitLib();
@@ -364,3 +369,6 @@ Mat GxCamera::getFrame()
     }
     return source_image_directly_from_camera.clone();
 }
+
+
+#endif

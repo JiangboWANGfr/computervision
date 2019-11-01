@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 12:59:35 +0800
- * @LastEditTime: 2019-10-17 21:08:15 +0800
+ * @LastEditTime: 2019-10-17 23:12:33 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -37,11 +37,6 @@ private:
     int judgeTargetInsight();
 
 public:
-    SentryPictureManipulator(string serial_port_device,
-                             string path,
-                             double fps = 120,
-                             int width_video_size = 640,
-                             int height_video_size = 480);
     SentryPictureManipulator();
     ~SentryPictureManipulator();
     int manipulatePicture(Mat picture);

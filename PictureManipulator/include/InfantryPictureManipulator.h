@@ -32,11 +32,6 @@ private:
 
 
 public:
-    InfantryPictureManipulator(string serial_port_device,
-                             string path,
-                             double fps = 120,
-                             int width_video_size = 640,
-                             int height_video_size = 480);
     InfantryPictureManipulator();
     ~InfantryPictureManipulator();
     int manipulatePicture(Mat srcimg);

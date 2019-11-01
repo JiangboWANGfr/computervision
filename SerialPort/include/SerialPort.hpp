@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:35:15 +0800
- * @LastEditTime: 2019-10-17 18:28:53 +0800
+ * @LastEditTime: 2019-10-18 09:28:37 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -27,13 +27,17 @@ public:
         ~SerialPort();
         int open_port(string port);
         int set_opt(int nSpeed = 115200, int nBits = 8, char nEvent = 'N', int nStop = 1);
+        bool send(TargetData td);
+        
+private:
         bool send(char *str);
         bool sendAngle(float yaw_angle, float pitch_angle, float Dis, bool big, bool insight, bool get);
 
         void readMode(int &carMode);
-        uint8_t readAngle(CarData &cardata);
         bool sendAngleDist(float yaw_angle, float pitch_angle, float dist, float flag);
         bool sendAngle(float _angle1,float _angle2);
+
+
 
 private:
         int fd;

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-10-17 21:09:53 +0800
+ * @LastEditTime: 2019-10-17 23:24:40 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,20 +13,6 @@
 #include "SentryPictureManipulator.h"
 
 #ifdef SENTRY
-
-
-SentryPictureManipulator::SentryPictureManipulator(string serial_port_device,
-                                                   string path,
-                                                   double fps,
-                                                   int width_video_size,
-                                                   int height_video_size)
-    : PictureManipulator(serial_port_device,
-                         path,
-                         fps,
-                         width_video_size,
-                         height_video_size)
-{
-}
 
 SentryPictureManipulator::SentryPictureManipulator()
 {
@@ -45,9 +31,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     bool is_insight = false;
 
     double start = clock();
-    src_video << img; //保存图片
     armor_detector.getCenter(img, armor_data);
-    fin_video << img; //保存处理后的图片
 
     //防止计数溢出
     lost = lost < 2000 ? lost : 2000;
@@ -63,11 +47,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
         initArmorData();
     }
 
-#ifdef STM32
-    //串口通信发送信息给电控stm32,哨兵
-    stm32.sendAngle(armor_data.yaw_angle, armor_data.pitch_angle, armor_data.atocDistance,
-                    armor_data.is_big, is_insight, armor_data.is_get);
-#endif
+
 
     writeIntoFilterDataCSV();
 
@@ -127,10 +107,10 @@ void SentryPictureManipulator::maybeLostTarget()
 void SentryPictureManipulator::writeIntoFilterDataCSV()
 {
     //输出数据到csv文件，方便赛后检查数据是否异常，因为视频太快，其中某帧出问题的话，人可能看不出来有问题
-    filterData << (double)clock() / CLOCKS_PER_SEC << ","
-               << armor_data.yaw_angle << ","
-               << armor_data.pitch_angle << ","
-               << armor_data.atocDistance << endl;
+    // filterData << (double)clock() / CLOCKS_PER_SEC << ","
+    //            << armor_data.yaw_angle << ","
+    //            << armor_data.pitch_angle << ","
+    //            << armor_data.atocDistance << endl;
 }
 
 int SentryPictureManipulator::judgeTargetInsight()
