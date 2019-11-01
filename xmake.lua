@@ -19,3 +19,5 @@ target("ComputerVision")
     --     target:add(find_package("opencv"))
     --     end)
     add_packages("opencv")
+
+set_languages("c99", "cxx11")
