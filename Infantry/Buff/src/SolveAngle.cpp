@@ -2,11 +2,11 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:47:22
- * @LastEditTime: 2019-11-02 10:42:50
+ * @LastEditTime: 2019-11-02 11:24:56
  * @LastEditors: Please set LastEditors
  */
 
-#include "solve_angle.h"
+#include "SolveAngle.h"
 
 using namespace cv;
 

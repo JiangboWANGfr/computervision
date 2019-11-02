@@ -22,7 +22,7 @@ endif()
 include_directories(${OpenCV_INCLUDE_DIRS} ../include)
 
 #第一个参数是项目文件夹名字，第二个参数是要跑的.cpp文件
-add_executable( SentryVision main.cpp buff_detect.cpp BuffDetector.cpp solve_angle.cpp)
+add_executable( SentryVision main.cpp BuffDetector.cpp SolveAngle.cpp)
 
 #链接库，第一个参数是项目文件夹名字，第二个参数是链接的库，我照抄网上的，我也不知为啥是这个库
 target_link_libraries( SentryVision ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT} libgxiapi.so )
