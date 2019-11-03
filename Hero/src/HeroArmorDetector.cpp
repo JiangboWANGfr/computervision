@@ -52,10 +52,11 @@ void HeroArmorDetector::setup()
 //裁剪图片，得到chasecenter表示中心点
 void HeroArmorDetector::cut(cv::Mat &g_srcImage)
 {
+    cout<<g_srcImage.size()<<endl;
     cv::Mat cutImage;
     cv::Point2i center_point;
     cv::Point2i cur_pt;
-
+    
     if (armor_location)
     {
         center_point.x = chasecenter.back().x;
@@ -98,7 +99,7 @@ void HeroArmorDetector::cut(cv::Mat &g_srcImage)
     {
         pre_pt.y = pre_pt.y - (cur_pt.y - 1024);
     }
-
+  
     srcImage = g_srcImage(Rect(pre_pt.x, pre_pt.y, width, height));
 }
 //改变亮度并卷积加强边缘
@@ -548,9 +549,7 @@ bool HeroArmorDetector::xCmp(float &x1, float &x2)
     setup();
     cut(source_img);
     Bright();
-    Bright(10, 200);
     BrighttoCanny();
-    BrighttoCanny(150);
     filter();
     armor_data.pitch_angle = pnpresult.pitch * 1 * -1 + pnpresult.z * 0.0005;
     armor_data.yaw_angle =pnpresult.yaw * 1 * 1;

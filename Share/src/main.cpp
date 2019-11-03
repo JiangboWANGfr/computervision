@@ -106,7 +106,7 @@ void *mainThreadTwo(void *argc)
     Controller controller(&pm, &cam2);
     // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);
-    controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
+    controller.config("/tty/USB0", "./", 120, 1280, 1024, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
 

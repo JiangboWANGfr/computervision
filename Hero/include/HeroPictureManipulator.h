@@ -17,7 +17,7 @@
 class HeroPictureManipulator : public PictureManipulator
 {
 private:
-    void writeIntoFilterDataCSV();
+    int loop_num = 0;
     int initArmorData(TargetData &armor_data);
 public:
     HeroPictureManipulator();
