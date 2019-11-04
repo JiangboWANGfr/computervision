@@ -1,11 +1,7 @@
 add_syslinks("pthread","gxiapi")
 add_requires("opencv")
 
-includes("Camera")
-includes("Controller")
-includes("SerialPort")  
-includes("Socket")
-includes("Infantry")
+includes("Share")
 
 target("ComputerVision")
     set_kind("binary")

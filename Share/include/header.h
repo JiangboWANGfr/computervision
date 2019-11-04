@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-17 19:04:52 +0800
+ * @LastEditTime: 2019-10-26 18:20:22 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -41,6 +41,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/socket.h>
 
 //////////////OpenCV///////////////
 #include <opencv2/core.hpp>
@@ -97,12 +98,6 @@ typedef struct TargetData
     }
 
 } TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)
-
-typedef struct CarData
-{
-    float absAngleYaw;
-    float absAnglePitch;
-} CarData;
 
 ///////////////////全局变量//////////////////////
 

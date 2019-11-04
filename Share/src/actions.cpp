@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 21:10:49 +0800
- * @LastEditTime: 2019-09-09 21:11:57 +0800
+ * @LastEditTime: 2019-10-18 09:50:15 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -18,14 +18,14 @@
  * @Description: 显示图片
  * @Param: string name 显示窗口名称
  * @Param: picture 需要显示的图片
- * @Param: time 显示时间，单位秒
+ * @Param: time 显示时间，单位ms
  * @Return: void
  * @Throw: 
  */
-void showPicture(string window_name, const Mat& picture, double time)
+void showPicture(string window_name, const Mat& picture, int time)
 {
     imshow(window_name, picture);
-    waitKey(time*1000);
+    waitKey(time);
 }
 
 

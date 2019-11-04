@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 11:30:27 +0800
- * @LastEditTime: 2019-09-09 23:02:33 +0800
+ * @LastEditTime: 2019-10-18 09:49:58 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -13,7 +13,7 @@
 
 #include "header.h"
 
-void showPicture(string window_name, const Mat &picture, double time);
+void showPicture(string window_name, const Mat &picture, int time);
 
 void GetErrorString(GX_STATUS error_status);
 
