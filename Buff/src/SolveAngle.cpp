@@ -2,13 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:47:22
- * @LastEditTime: 2019-11-02 11:24:56
+ * @LastEditTime: 2019-11-04 15:44:15 +0800
  * @LastEditors: Please set LastEditors
  */
 
 #include "SolveAngle.h"
 
-using namespace cv;
+#ifdef BUFF
 
 SolveAngle::SolveAngle(const char* file_path, float c_x, float c_y, float c_z, float barrel_y)
 {
@@ -302,3 +302,5 @@ void CodeRotateByX(double y, double z, double thetax, double& outy, double& outz
     outy = cos(rx) * y1 - sin(rx) * z1;
     outz = cos(rx) * z1 + sin(rx) * y1;
 }
+
+#endif

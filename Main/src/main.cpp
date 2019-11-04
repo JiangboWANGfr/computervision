@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-11-01 20:14:51 +0800
+ * @LastEditTime: 2019-11-04 15:46:30 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -22,7 +22,9 @@
 #include "InfantryPictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "HeroPictureManipulator.h"
+
 #pragma comment(linker, "/STACK:102400000,102400000")
+
 pthread_attr_t thread_attr;
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);

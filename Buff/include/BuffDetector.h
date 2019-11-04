@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-11-02 11:21:39
+ * @LastEditTime: 2019-11-04 15:42:05 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -17,6 +17,7 @@ galaxy_0.xml"
 
 #include "header.h"
 #include "SolveAngle.h"
+#ifdef BUFF
 
 #define BUFF_DETECT_DEBUG
 #ifdef BUFF_DETECT_DEBUG
@@ -269,4 +270,5 @@ public:
 
 double Point_distance(Point2f p1,Point2f p2);
 
+#endif
 #endif

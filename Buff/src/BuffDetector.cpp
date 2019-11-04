@@ -1,11 +1,45 @@
 /*
+ * @Author: WaltPeter
+ * @Date: 2019-10-30 17:25:08
+ * @LastEditTime: 2019-11-04 15:43:56 +0800
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
- * @Author: your name
- * @Date: 2019-10-12 17:07:34
- * @LastEditTime: 2019-10-12 17:07:34
- * @LastEditors: your name
+ * @FilePath: /MergeBuff/Detector/src/BuffDetector.cpp
  */
-#include "buff_detect.h"
+#include "BuffDetector.h"
+
+#ifdef BUFF
+
+void BuffDetectorWrapper::getCenter(Mat &img, TargetData &armor_data) {
+    BuffDetector buff_detector; 
+    command = buff_detector.BuffDetectTask(img, other_param); 
+    if(command)
+    {
+        buff_detector.getAngle(yaw, pitch);
+        distance = buff_detector.getDistance();
+        printf("Distance: %f, Yaw: %f, Pitch: %f\n", distance, yaw, pitch); 
+        armor_data.yaw_angle = yaw; 
+        armor_data.pitch_angle = pitch; 
+        armor_data.atocDistance = distance; 
+    }
+}
+
+void BuffDetectorWrapper::initializeParam() {
+    BuffDetector buff_detector; 
+    buff_detector.readXML(); 
+}
+
+float BuffDetectorWrapper::getYaw() {
+    return yaw; 
+}
+
+float BuffDetectorWrapper::getPitch() {
+    return pitch; 
+}
+
+float BuffDetectorWrapper::getDistance() { 
+    return distance; 
+}
 
 bool BuffDetector::DetectBuff(Mat& img, OtherParam other_param)
 {
@@ -271,7 +305,7 @@ int BuffDetector::BuffDetectTask(Mat& img, OtherParam other_param)
 
     }
     //    attack.run(find_flag,angle_x_,angle_y_,target_size,gimbal,direction_tmp);
-    command = auto_control.run(angle_x_, angle_y_, find_flag, diff_angle_);
+    command = 1;//auto_control.run(angle_x_, angle_y_, find_flag, diff_angle_);
 
     //    pro_predict_mode_flag = auto_control.GetProPredictFlag();
 
@@ -424,3 +458,5 @@ double Point_distance(Point2f p1,Point2f p2)
     double Dis=pow(pow((p1.x-p2.x),2)+pow((p1.y-p2.y),2),0.5);
     return Dis;
 }
+
+#endif

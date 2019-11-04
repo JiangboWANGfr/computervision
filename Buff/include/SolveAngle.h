@@ -2,14 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:23:32
- * @LastEditTime: 2019-11-02 11:39:19
+ * @LastEditTime: 2019-11-04 15:45:42 +0800
  * @LastEditors: Please set LastEditors
  */
 #pragma once
-#include <opencv2/opencv.hpp>
+#include "header.h"
 
-using namespace cv;
-using namespace std;
+#ifdef BUFF
 
 // 一阶ｋａｌｍａｎ滤波
 class Kalman1
@@ -161,3 +160,4 @@ void CodeRotateByZ(double x, double y, double thetaz, double& outx, double& outy
 void CodeRotateByY(double x, double z, double thetay, double& outx, double& outz);
 void CodeRotateByX(double y, double z, double thetax, double& outy, double& outz);
 
+#endif
