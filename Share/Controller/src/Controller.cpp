@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-11-01 20:18:08 +0800
+ * @LastEditTime: 2019-11-16 17:09:35 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -33,7 +33,8 @@ Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2
     bool is_opened = openCamera(cam1);
     if (is_opened == false)
     {
-        cout << "Controller::config Failed to open cam1" << endl;
+        cout << "Controller::config Failed to open camera" << endl;
+        exit(-1);
     }
     cout << "Controller::Controller    camera handle:    " << cam1->camera_handle << endl;
     if (cam2 != nullptr)
@@ -64,15 +65,16 @@ void Controller::getImageFromCamera()
 {
 
     double start = clock();
-    source_img = cam1->getFrame();
     pthread_mutex_lock(&mutex);
     if (is_ready_to_manipulate == 0)
     {
+        source_img = cam1->getFrame();
+
         double clone_start = clock();
 #ifdef SAVE_DATA
         src_video << source_img; //保存原始图像
 #endif
-        img_ready_to_manipulate = source_img.clone();
+        img_ready_to_manipulate = source_img;
         is_ready_to_manipulate = 1;
         double clone_end = clock();
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
@@ -151,8 +153,5 @@ void Controller::adjustParameter()
 bool Controller::openCamera(Camera *cam)
 {
     cam->open();
-    if (cam->is_opened == false)
-    {
-        return false;
-    }
+    return cam->is_opened;
 }
