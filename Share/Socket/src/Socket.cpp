@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-30 21:22:06 +0800
- * @LastEditTime: 2019-10-31 19:35:45 +0800
+ * @LastEditTime: 2019-11-16 16:59:06 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -17,7 +17,7 @@
  * @Description: 创建socket对象
  * @Param: int mode SOCK_STREAM是TCP模式，SOCK_DGRAM是UDP模式
  * @Param: int port 端口号
- * @Param: char* ip_addr ip地址
+ * @Param: char* ip_addr ip地址,请填写服务器ip地址。
  * @Return: 
  * @Throw: 
  */
@@ -41,14 +41,13 @@ Socket::~Socket()
  */
 void Socket::startServer()
 {
-    ser_skf = createSocket(this->mode, 0);
-    if(ser_skf == -1)
+    this->ser_skf = createSocket(this->mode, 0);
+    if(ser_skf == -1)//失败信息已输出
         return;
     struct sockaddr_in ser_addr;
-    initialzeSocketaddr(&ser_addr, ip, this->port);
+    initialzeSocketaddr(&ser_addr, this->ip, this->port);
     bindSocketAddr(ser_skf, (struct sockaddr *)&ser_addr, sizeof(ser_addr));
-    struct sockaddr_in client;
-    createListen(ser_skf, 200);
+    createListen(ser_skf, 1024);
     return;
 }
 
@@ -67,9 +66,9 @@ void Socket::recvDataFromClient()
  */
 socketfd Socket::createSocket(int type, int protocol)
 {
-    socketfd skf = socket(AF_INET, this->mode, 0);
+    socketfd skf = socket(type, this->mode, 0);
 
-    if (skf == -1)
+    if (skf == -1)//创建失败
     {
         perror("socket");
         printf("create socket error: %s(errno: %d)\n", strerror(errno), errno);
@@ -93,8 +92,8 @@ socketfd Socket::createSocket(int type, int protocol)
  */
 void Socket::initialzeSocketaddr(struct sockaddr_in *addr, char *ip_addr, int port)
 {
-    memset(addr, 0, sizeof(addr));
-    addr->sin_family = AF_INET;
+    memset(addr, 0, sizeof(struct sockaddr_in));
+    addr->sin_family = this->mode;
     addr->sin_port = htons(port);
     if (ip_addr == NULL)
         addr->sin_addr.s_addr = htonl(INADDR_ANY);
@@ -125,7 +124,7 @@ void Socket::bindSocketAddr(socketfd skf_socketfd, struct sockaddr *addr_sockadd
  * @Author: 王占坤
  * @Description: 对需要进行监听的socket开启监听
  * @Param: socketfd& skf, 需要进行监听的socket
- * @Param：int num, 最大监听数量
+ * @Param：int num, 最大等待接收消息的socket句柄的数量
  * @Return: void
  * @Throw: 
  */
@@ -213,7 +212,7 @@ int Socket::sendToServer(char *data)
     struct sockaddr_in ser_addr;
     initialzeSocketaddr(&ser_addr, this->ip, this->port);
     createConnection(skf, (struct sockaddr *)&ser_addr, sizeof(ser_addr));
-    sendMSG(skf, data, BUFFER_SIZE, 0);
+    sendMSG(skf, buf, sizeof(buf), 0);
     close(skf);
 }
 
@@ -247,7 +246,6 @@ void Socket::createConnection(socketfd skf, struct sockaddr *serv_addr, size_t a
  * @Return: 
  * @Throw: 
  */
-
 socketfd Socket::acceptConnection(socketfd sfk, struct sockaddr *addr, socklen_t len_addr)
 {
     //判断是否连接如果可以连接返回新建的

@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-01 10:03:32 +0800
- * @LastEditTime: 2019-10-26 18:27:18 +0800
+ * @LastEditTime: 2019-11-16 16:28:36 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -26,9 +26,11 @@ public:
     char data[1024];
 
 private:
+    //SOCK_STREAM是TCP模式，SOCK_DGRAM是UDP模式
     int mode;
     int port;
     char ip[100];
+    //服务器句柄
     socketfd ser_skf;
 
 private:
