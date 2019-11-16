@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-11-04 15:46:30 +0800
+ * @LastEditTime: 2019-11-16 16:59:57 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -40,7 +40,6 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
-    cout << "hello world" << endl;
     // pthread_create(&t, &thread_attr, mainThreadOne, NULL);
     pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
 
