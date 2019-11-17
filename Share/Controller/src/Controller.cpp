@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-11-16 17:09:35 +0800
+ * @LastEditTime: 2019-11-17 15:13:00 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -66,15 +66,14 @@ void Controller::getImageFromCamera()
 
     double start = clock();
     pthread_mutex_lock(&mutex);
+    source_img = cam1->getFrame();
     if (is_ready_to_manipulate == 0)
     {
-        source_img = cam1->getFrame();
-
         double clone_start = clock();
 #ifdef SAVE_DATA
         src_video << source_img; //保存原始图像
 #endif
-        img_ready_to_manipulate = source_img;
+        img_ready_to_manipulate = source_img.clone();
         is_ready_to_manipulate = 1;
         double clone_end = clock();
         cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;

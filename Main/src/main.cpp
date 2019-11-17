@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-11-17 15:04:04 +0800
+ * @LastEditTime: 2019-11-17 15:29:44 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -93,7 +93,7 @@ void *mainThreadOne(void *argc)
 void *mainThreadTwo(void *argc)
 {
     // GxCamera cam2("1");
-    OrdinaryCamera cam2("/dev/video0");
+    OrdinaryCamera cam2("/dev/video2");
 // VirtualCamera cam2("./1572528438SRC.avi");
 #ifdef SENTRY
     SentryPictureManipulator pm;
@@ -107,7 +107,7 @@ void *mainThreadTwo(void *argc)
     Controller controller(&pm, &cam2);
     // Controller controller(&pm, &cam1, &cam2);
     // Controller controller(&pm,&cam1);
-    controller.config("/tty/USB0", "./", 120, 1280, 1024, 6, 8, 1200, 200);
+    controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
 
