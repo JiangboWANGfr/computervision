@@ -18,8 +18,10 @@ int OrdinaryCamera::open()
     ord_cam.open(cam_name);
     if(ord_cam.isOpened() == false)
     {
+        this->is_opened = false;
         return -1;
     }
+    this->is_opened = true;
     return 0;
 }
 

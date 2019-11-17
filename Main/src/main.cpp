@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime: 2019-11-16 16:59:57 +0800
+ * @LastEditTime: 2019-11-17 15:04:04 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -92,8 +92,8 @@ void *mainThreadOne(void *argc)
 
 void *mainThreadTwo(void *argc)
 {
-    GxCamera cam2("1");
-    // OrdinaryCamera cam2("/dev/video0");
+    // GxCamera cam2("1");
+    OrdinaryCamera cam2("/dev/video0");
 // VirtualCamera cam2("./1572528438SRC.avi");
 #ifdef SENTRY
     SentryPictureManipulator pm;
