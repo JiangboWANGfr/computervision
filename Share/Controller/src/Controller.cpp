@@ -4,12 +4,14 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-11-17 15:13:00 +0800
+ * @LastEditTime: 2019-11-23 14:57:55 +0800
  * @LastEditors: 
  * @Description: 
  */
 
 #include "Controller.h"
+
+#include <chrono> //用于计算时间
 
 int Controller::num_of_controller = 0;
 pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -69,14 +71,15 @@ void Controller::getImageFromCamera()
     source_img = cam1->getFrame();
     if (is_ready_to_manipulate == 0)
     {
-        double clone_start = clock();
+        auto clone_start = chrono::system_clock::now();
 #ifdef SAVE_DATA
         src_video << source_img; //保存原始图像
 #endif
         img_ready_to_manipulate = source_img.clone();
         is_ready_to_manipulate = 1;
-        double clone_end = clock();
-        cout << "Clone time: " << (clone_end - clone_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
+        auto clone_end = chrono::system_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(clone_end - clone_start);
+        cout << "Clone time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
         cout << controller_handle << endl;
     }
 #ifdef SHOW_PICTURE
@@ -90,7 +93,15 @@ bool Controller::mainpulatePicture()
     pthread_mutex_lock(&mutex);
     if (is_ready_to_manipulate == 1)
     {
+        auto manipulate_start = chrono::system_clock::now();
+
         pm->manipulatePicture(img_ready_to_manipulate);
+
+        auto manipulate_end = chrono::system_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(manipulate_end - manipulate_start);
+        cout << "ManipulatePicture Time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
+        cout << controller_handle << endl;
+
         showPicture("after", img_ready_to_manipulate, 1);
 #ifdef SAVE_DATA
         fin_video << img_ready_to_manipulate; //保存处理后的图像
