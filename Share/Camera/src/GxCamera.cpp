@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-11-17 15:22:20 +0800
+ * @LastEditTime: 2019-11-23 14:06:50 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -24,42 +24,43 @@ GxCamera::~GxCamera()
      * @Author: 王占坤
      * @Description: 打开相机
      * @Param: 
-     * @Return: 
+     * @Return: -1无法打开，0打开成功
      * @Throw: 
      */
 int GxCamera::open()
 {
-    if (initializeCameraDevice() == false)
-        return 0;
+    if (initializeCameraDevice() == -1)
+        return -1;
 
-    if (countNumberOfCameras() == false)
-        return 0;
+    if (countNumberOfCameras() == -1)
+        return -1;
     if (camera_num <= 0)
     {
         printf("<No device>\n");
         status = GXCloseLib();
         cout << "<Closed Device>" << endl;
-        return 0;
+        return -1;
     }
 
     //默认打开第1个设备
-    if (openFirstCamera() == false)
-        return 0;
+    if (openFirstCamera() == -1)
+        return -1;
 
-    if (setDeviceToContinuouslyAcquiredImage() == false)
-        return 0;
+    if (setDeviceToContinuouslyAcquiredImage() == -1)
+        return -1;
 
-    if (setTRiggerSwitchToOff() == false)
-        return 0;
+    if (setTRiggerSwitchToOff() == -1)
+        return -1;
 
     is_opened = true;
+    return 0;
 }
 
 /**
  * @Author: 王占坤
  * @Description: 初始化设备打开参数open_param
  * @Param: 
- * @Return: 
+ * @Return: -1失败，0成功
  * @Throw: 
  */
 int GxCamera::initializeCameraDevice()
@@ -68,6 +69,7 @@ int GxCamera::initializeCameraDevice()
     open_param.accessMode = GX_ACCESS_EXCLUSIVE;
     open_param.openMode = GX_OPEN_INDEX;
     open_param.pszContent = new char[10];
+    memset(open_param.pszContent, 0, sizeof(char) * 10);
     strcpy(open_param.pszContent, cam_name.c_str());
     // cout << open_param.pszContent << endl;
     // open_param.pszContent = cam_name.data();
@@ -80,14 +82,14 @@ int GxCamera::initializeCameraDevice()
     if (status != GX_STATUS_SUCCESS)
     {
         GetErrorString(status);
-        return false;
+        return -1;
     }
 
     cout << "GxCamera::initializeCameraDevice    成功初始化相机参数" << endl;
-    return true;
+    return 0;
 }
 
-bool GxCamera::countNumberOfCameras()
+int GxCamera::countNumberOfCameras()
 {
     //获取枚举设备个数
     status = GXUpdateDeviceList(&camera_num, 1000);
@@ -95,13 +97,13 @@ bool GxCamera::countNumberOfCameras()
     {
         GetErrorString(status);
         status = GXCloseLib();
-        return false;
+        return -1;
     }
     cout << "number of cameras: " << camera_num << endl;
-    return true;
+    return 0;
 }
 
-bool GxCamera::openFirstCamera()
+int GxCamera::openFirstCamera()
 {
     status = GXOpenDevice(&open_param, &camera_handle);
     cout << "camera_handle: " << camera_handle << endl;
@@ -110,13 +112,13 @@ bool GxCamera::openFirstCamera()
     {
         printf("Failed to open camera.\n");
         status = GXCloseLib();
-        return false;
+        return -1;
     }
     else
     {
         printf("Success to open camera.\n");
     }
-    return true;
+    return 0;
 }
 
 /**
@@ -126,7 +128,7 @@ bool GxCamera::openFirstCamera()
  * @Return: 
  * @Throw: 
  */
-bool GxCamera::setORI()
+int GxCamera::setORI()
 {
 
     //设置roi区域，设置时相机必须时停采状态
@@ -137,7 +139,7 @@ bool GxCamera::setORI()
     status = GXSetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, m_exposure_time);
     status = GXSetInt(camera_handle, GX_INT_GAIN, m_gain);
 
-    return true;
+    return 0;
 }
 
 /**
@@ -147,7 +149,7 @@ bool GxCamera::setORI()
  * @Return: 
  * @Throw: 
  */
-bool GxCamera::setDeviceToContinuouslyAcquiredImage()
+int GxCamera::setDeviceToContinuouslyAcquiredImage()
 {
     //设置采集模式为连续采集
     status = GXSetEnum(camera_handle, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
@@ -161,12 +163,12 @@ bool GxCamera::setDeviceToContinuouslyAcquiredImage()
         // }
         // status = GXCloseLib();
         close();
-        return false;
+        return -1;
     }
-    return true;
+    return 0;
 }
 
-bool GxCamera::setTRiggerSwitchToOff()
+int GxCamera::setTRiggerSwitchToOff()
 {
     //设置触发开关为OFF
     status = GXSetEnum(camera_handle, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_OFF);
@@ -179,10 +181,10 @@ bool GxCamera::setTRiggerSwitchToOff()
             camera_handle = NULL;
         }
         status = GXCloseLib();
-        return false;
+        return -1;
     }
 
-    return true;
+    return 0;
 }
 
 /**

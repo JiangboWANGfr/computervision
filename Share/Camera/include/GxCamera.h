@@ -31,11 +31,11 @@ private:
 
 private:
     int initializeCameraDevice();
-    bool countNumberOfCameras();
-    bool openFirstCamera();
-    bool setORI();
-    bool setDeviceToContinuouslyAcquiredImage();
-    bool setTRiggerSwitchToOff();
+    int countNumberOfCameras();
+    int openFirstCamera();
+    int setORI();
+    int setDeviceToContinuouslyAcquiredImage();
+    int setTRiggerSwitchToOff();
     int mallocForSourceImage();
 
 public:
@@ -48,9 +48,9 @@ public:
                     int offset_y ,
                     double expotime,
                     int64_t gain);
-    int close();
     int start();
     Mat getFrame();
+    int close();
 };
 
 
