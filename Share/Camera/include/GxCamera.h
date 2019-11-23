@@ -30,12 +30,11 @@ private:
 
 
 private:
-    int initializeCameraDevice();
     int countNumberOfCameras();
-    int openFirstCamera();
-    int setORI();
+    int openCamera();
     int setDeviceToContinuouslyAcquiredImage();
     int setTRiggerSwitchToOff();
+    int setORI();
     int mallocForSourceImage();
 
 public:

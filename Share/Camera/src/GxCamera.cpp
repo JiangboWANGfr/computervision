@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-27 19:54:06 +0800
- * @LastEditTime: 2019-11-23 14:06:50 +0800
+ * @LastEditTime: 2019-11-23 14:22:32 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -14,11 +14,20 @@
 
 GxCamera::GxCamera(string camera_num) : Camera(camera_num)
 {
+    //初始化设备打开参数，默认打开序号为cam_name的设备
+    open_param.accessMode = GX_ACCESS_EXCLUSIVE;
+    open_param.openMode = GX_OPEN_INDEX;
+    open_param.pszContent = new char[10];
+    memset(open_param.pszContent, 0, sizeof(char) * 10);
+    strcpy(open_param.pszContent, cam_name.c_str());
+    //初始化库
+    GXInitLib();
 }
 
 GxCamera::~GxCamera()
 {
     free(g_frame_data.pImgBuf);
+    free(open_param.pszContent);
 }
 /**
      * @Author: 王占坤
@@ -29,9 +38,6 @@ GxCamera::~GxCamera()
      */
 int GxCamera::open()
 {
-    if (initializeCameraDevice() == -1)
-        return -1;
-
     if (countNumberOfCameras() == -1)
         return -1;
     if (camera_num <= 0)
@@ -43,7 +49,7 @@ int GxCamera::open()
     }
 
     //默认打开第1个设备
-    if (openFirstCamera() == -1)
+    if (openCamera() == -1)
         return -1;
 
     if (setDeviceToContinuouslyAcquiredImage() == -1)
@@ -56,136 +62,6 @@ int GxCamera::open()
     return 0;
 }
 
-/**
- * @Author: 王占坤
- * @Description: 初始化设备打开参数open_param
- * @Param: 
- * @Return: -1失败，0成功
- * @Throw: 
- */
-int GxCamera::initializeCameraDevice()
-{
-    //初始化设备打开参数，默认打开序号为1的设备
-    open_param.accessMode = GX_ACCESS_EXCLUSIVE;
-    open_param.openMode = GX_OPEN_INDEX;
-    open_param.pszContent = new char[10];
-    memset(open_param.pszContent, 0, sizeof(char) * 10);
-    strcpy(open_param.pszContent, cam_name.c_str());
-    // cout << open_param.pszContent << endl;
-    // open_param.pszContent = cam_name.data();
-    // open_param.pszContent = "1";
-    //初始化库
-    status = GXInitLib();
-
-    cout << "GxCamera::initializeCameraDevice    初始化相机参数" << endl;
-
-    if (status != GX_STATUS_SUCCESS)
-    {
-        GetErrorString(status);
-        return -1;
-    }
-
-    cout << "GxCamera::initializeCameraDevice    成功初始化相机参数" << endl;
-    return 0;
-}
-
-int GxCamera::countNumberOfCameras()
-{
-    //获取枚举设备个数
-    status = GXUpdateDeviceList(&camera_num, 1000);
-    if (status != GX_STATUS_SUCCESS)
-    {
-        GetErrorString(status);
-        status = GXCloseLib();
-        return -1;
-    }
-    cout << "number of cameras: " << camera_num << endl;
-    return 0;
-}
-
-int GxCamera::openFirstCamera()
-{
-    status = GXOpenDevice(&open_param, &camera_handle);
-    cout << "camera_handle: " << camera_handle << endl;
-    GetErrorString(status);
-    if (status != GX_STATUS_SUCCESS)
-    {
-        printf("Failed to open camera.\n");
-        status = GXCloseLib();
-        return -1;
-    }
-    else
-    {
-        printf("Success to open camera.\n");
-    }
-    return 0;
-}
-
-/**
- * @Author: 王占坤
- * @Description: 设置感兴趣区域
- * @Param: 
- * @Return: 
- * @Throw: 
- */
-int GxCamera::setORI()
-{
-
-    //设置roi区域，设置时相机必须时停采状态
-    status = GXSetInt(camera_handle, GX_INT_WIDTH, m_roi_width);
-    status = GXSetInt(camera_handle, GX_INT_HEIGHT, m_roi_height);
-    status = GXSetInt(camera_handle, GX_INT_OFFSET_X, m_roi_offset_x);
-    status = GXSetInt(camera_handle, GX_INT_OFFSET_Y, m_roi_offset_y);
-    status = GXSetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, m_exposure_time);
-    status = GXSetInt(camera_handle, GX_INT_GAIN, m_gain);
-
-    return 0;
-}
-
-/**
- * @Author: 王占坤
- * @Description: 设置采集模式为连续采集
- * @Param: 
- * @Return: 
- * @Throw: 
- */
-int GxCamera::setDeviceToContinuouslyAcquiredImage()
-{
-    //设置采集模式为连续采集
-    status = GXSetEnum(camera_handle, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
-    if (status != GX_STATUS_SUCCESS)
-    {
-        // GetErrorString(status);
-        // status = GXCloseDevice(camera_handle);
-        // if (camera_handle != NULL)
-        // {
-        //     camera_handle = NULL;
-        // }
-        // status = GXCloseLib();
-        close();
-        return -1;
-    }
-    return 0;
-}
-
-int GxCamera::setTRiggerSwitchToOff()
-{
-    //设置触发开关为OFF
-    status = GXSetEnum(camera_handle, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_OFF);
-    if (status != GX_STATUS_SUCCESS)
-    {
-        GetErrorString(status);
-        status = GXCloseDevice(camera_handle);
-        if (camera_handle != NULL)
-        {
-            camera_handle = NULL;
-        }
-        status = GXCloseLib();
-        return -1;
-    }
-
-    return 0;
-}
 
 /**
      * @Author: 王占坤
@@ -249,28 +125,6 @@ int GxCamera::configFrame(int64_t width,
     }
 }
 
-int GxCamera::mallocForSourceImage()
-{
-    GX_STATUS status = GX_STATUS_SUCCESS;
-    int64_t payload_size = 0;
-
-    status = GXGetInt(camera_handle, GX_INT_PAYLOAD_SIZE, &payload_size);
-    cout << "payload_size = " << payload_size << endl;
-    if (status != GX_STATUS_SUCCESS)
-    {
-        GetErrorString(status);
-        return status;
-    }
-
-    g_frame_data.pImgBuf = malloc(payload_size);
-    if (g_frame_data.pImgBuf == NULL)
-    {
-        printf("<Failed to allot memory>\n");
-        return 0;
-    }
-
-    return 0;
-}
 
 /**
      * @Author: 王占坤
@@ -372,5 +226,120 @@ Mat GxCamera::getFrame()
     return source_image_directly_from_camera.clone();
 }
 
+
+int GxCamera::countNumberOfCameras()
+{
+    //获取枚举设备个数
+    status = GXUpdateDeviceList(&camera_num, 1000);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+        status = GXCloseLib();
+        return -1;
+    }
+    cout << "number of cameras: " << camera_num << endl;
+    return 0;
+}
+
+int GxCamera::openCamera()
+{
+    status = GXOpenDevice(&open_param, &camera_handle);
+    cout << "camera_handle: " << camera_handle << endl;
+    GetErrorString(status);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        printf("Failed to open camera.\n");
+        status = GXCloseLib();
+        return -1;
+    }
+    else
+    {
+        printf("Success to open camera.\n");
+    }
+    return 0;
+}
+
+
+/**
+ * @Author: 王占坤
+ * @Description: 设置采集模式为连续采集
+ * @Param: 
+ * @Return: 
+ * @Throw: 
+ */
+int GxCamera::setDeviceToContinuouslyAcquiredImage()
+{
+    //设置采集模式为连续采集
+    status = GXSetEnum(camera_handle, GX_ENUM_ACQUISITION_MODE, GX_ACQ_MODE_CONTINUOUS);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        close();
+        return -1;
+    }
+    return 0;
+}
+
+int GxCamera::setTRiggerSwitchToOff()
+{
+    //设置触发开关为OFF
+    status = GXSetEnum(camera_handle, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_OFF);
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+        status = GXCloseDevice(camera_handle);
+        if (camera_handle != NULL)
+        {
+            camera_handle = NULL;
+        }
+        status = GXCloseLib();
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @Author: 王占坤
+ * @Description: 设置感兴趣区域
+ * @Param: 
+ * @Return: 
+ * @Throw: 
+ */
+int GxCamera::setORI()
+{
+    //设置roi区域，设置时相机必须时停采状态
+    status = GXSetInt(camera_handle, GX_INT_WIDTH, m_roi_width);
+    status = GXSetInt(camera_handle, GX_INT_HEIGHT, m_roi_height);
+    status = GXSetInt(camera_handle, GX_INT_OFFSET_X, m_roi_offset_x);
+    status = GXSetInt(camera_handle, GX_INT_OFFSET_Y, m_roi_offset_y);
+    status = GXSetFloat(camera_handle, GX_FLOAT_EXPOSURE_TIME, m_exposure_time);
+    status = GXSetInt(camera_handle, GX_INT_GAIN, m_gain);
+
+    return 0;
+}
+
+
+int GxCamera::mallocForSourceImage()
+{
+    GX_STATUS status = GX_STATUS_SUCCESS;
+    int64_t payload_size = 0;
+
+    status = GXGetInt(camera_handle, GX_INT_PAYLOAD_SIZE, &payload_size);
+    cout << "payload_size = " << payload_size << endl;
+    if (status != GX_STATUS_SUCCESS)
+    {
+        GetErrorString(status);
+        return status;
+    }
+
+    g_frame_data.pImgBuf = malloc(payload_size);
+    if (g_frame_data.pImgBuf == NULL)
+    {
+        printf("<Failed to allot memory>\n");
+        return 0;
+    }
+
+    return 0;
+}
 
 #endif
