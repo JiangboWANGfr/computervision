@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-11-01 19:55:59 +0800
+ * @LastEditTime: 2019-11-23 14:56:23 +0800
  * @LastEditors: 
  * @Description: 
  */
@@ -30,7 +30,6 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     unsigned int lost = 0;
     bool is_insight = false;
 
-    double start = clock();
     armor_detector.getCenter(img, armor_data);
 
     //防止计数溢出
@@ -55,10 +54,6 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     showPicture("armor", img, 2);
     imshow("armor", img);
 #endif
-
-    double end = clock();
-    std::cout << "Manipulate Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
-              << endl;
 }
 
 void SentryPictureManipulator::initArmorData()
