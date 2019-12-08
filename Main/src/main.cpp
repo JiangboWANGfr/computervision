@@ -92,8 +92,8 @@ void *mainThreadOne(void *argc)
 
 void *mainThreadTwo(void *argc)
 {
-    // GxCamera cam2("1");
-    OrdinaryCamera cam2("/dev/video2");
+    GxCamera cam2("1");
+    // OrdinaryCamera cam2("/dev/video2");
 // VirtualCamera cam2("./1572528438SRC.avi");
 #ifdef SENTRY
     SentryPictureManipulator pm;

@@ -67,8 +67,8 @@ void Controller::getImageFromCamera()
 {
 
     double start = clock();
-    pthread_mutex_lock(&mutex);
     source_img = cam1->getFrame();
+    pthread_mutex_lock(&mutex);
     if (is_ready_to_manipulate == 0)
     {
         auto clone_start = chrono::system_clock::now();
@@ -101,8 +101,9 @@ bool Controller::mainpulatePicture()
         auto duration = chrono::duration_cast<chrono::microseconds>(manipulate_end - manipulate_start);
         cout << "ManipulatePicture Time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
         cout << controller_handle << endl;
-
+#ifdef SHOW_PICTURE
         showPicture("after", img_ready_to_manipulate, 1);
+#endif
 #ifdef SAVE_DATA
         fin_video << img_ready_to_manipulate; //保存处理后的图像
 #endif
