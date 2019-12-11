@@ -66,7 +66,7 @@ void Socket::recvDataFromClient()
  */
 socketfd Socket::createSocket(int type, int protocol)
 {
-    socketfd skf = socket(type, this->mode, 0);
+    socketfd skf = socket(AF_INET, this->mode, 0);
 
     if (skf == -1)//创建失败
     {
@@ -93,7 +93,7 @@ socketfd Socket::createSocket(int type, int protocol)
 void Socket::initialzeSocketaddr(struct sockaddr_in *addr, char *ip_addr, int port)
 {
     memset(addr, 0, sizeof(struct sockaddr_in));
-    addr->sin_family = this->mode;
+    addr->sin_family = AF_INET;
     addr->sin_port = htons(port);
     if (ip_addr == NULL)
         addr->sin_addr.s_addr = htonl(INADDR_ANY);
@@ -212,7 +212,7 @@ int Socket::sendToServer(char *data)
     struct sockaddr_in ser_addr;
     initialzeSocketaddr(&ser_addr, this->ip, this->port);
     createConnection(skf, (struct sockaddr *)&ser_addr, sizeof(ser_addr));
-    sendMSG(skf, buf, sizeof(buf), 0);
+    sendMSG(skf, buf, strlen(buf), 0);
     close(skf);
 }
 
@@ -277,7 +277,7 @@ int Socket::sendMSG(socketfd skf, char *buff, size_t n_bytes, int flag)
     int num_of_sending_words = send(skf, buff, n_bytes, flag);
     if (num_of_sending_words == -1) //失败
     {
-        printf("receive message error: %s(errno: %d)\n", strerror(errno), errno);
+        printf("send message error: %s(errno: %d)\n", strerror(errno), errno);
     }
     return 0;
 }

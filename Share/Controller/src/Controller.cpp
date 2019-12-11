@@ -26,7 +26,7 @@ pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
  * @Throw: 
  */
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
-    : pm(pmr), cam1(camera1), cam2(camera2), client(SOCK_DGRAM, 8888, "127.0.0.1")
+    : pm(pmr), cam1(camera1), cam2(camera2), client(SOCK_STREAM, 8848, "127.0.0.1")
 {
     pthread_mutex_lock(&s_mutex);
     num_of_controller++;
