@@ -1,5 +1,11 @@
 #include "SerialPort.hpp"
 
+SerialPort::SerialPort(string port, int n_speed, int n_bits, char n_event, int n_stop)
+{
+    open_port(port);
+    set_opt(n_speed, n_bits, n_event, n_stop);
+}
+
 //@brief:linux下的串口通信类的成员函数。
 //       open_port()成员函数可以打开一个串口，set_opt()更改参数。
 //@example:open_port("/dev/ttyUSB0");
@@ -137,9 +143,8 @@ int SerialPort::set_opt(int nSpeed, int nBits, char nEvent, int nStop)
     return 0;
 }
 
-bool SerialPort::send(TargetData td)
+bool SerialPort::send(TargetData& td)
 {
-    int size = sizeof(td);
     char *p = new char[2 + 2]; //两个起始位，两个结束位
     //设置开始结束标志
     p[0] = 0xA5;
@@ -147,22 +152,21 @@ bool SerialPort::send(TargetData td)
     p[1] = 0x5A;
     send(p + 1);
     char *data = (char *)(&td);
-    for (int i = 0; i < size; i++)
+    int len = sizeof(TargetData);
+    for (int i = 0; i < len; i++)
     {
-        // p[i + 2] = data[i];
-        send(data+i);
+        send(data + i);
     }
 
-    p[size + 4 - 2] = 0xAA;
-    send(p + size + 4 - 2);
-    p[size + 4 - 1] = 0xAA;
-    send(p + size + 4 - 1);
+    p[2] = 0xAA;
+    send(p + 2);
+    p[3] = 0xAA;
+    send(p + 3);
 }
 
 bool SerialPort::send(char *str)
 {
-    buffer = str;
-    if (fd < 0 || write(fd, buffer, 1) < 0)
+    if (fd < 0 || write(fd, str, 1) < 0)
     {
         perror("\e[31m\e[1m ERROR:串口通信失败 \e[0m");
         return false;

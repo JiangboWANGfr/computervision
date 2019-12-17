@@ -22,22 +22,21 @@
 class SerialPort
 {
 public:
+        SerialPort(string port, int n_speed, int n_bits, char n_event, int n_stop);
         SerialPort(string port); //定义Serialport类的成员函数，
         SerialPort();
         ~SerialPort();
         int open_port(string port);
         int set_opt(int nSpeed = 115200, int nBits = 8, char nEvent = 'N', int nStop = 1);
-        bool send(TargetData td);
-        
+        bool send(TargetData& td);
+
 private:
         bool send(char *str);
         bool sendAngle(float yaw_angle, float pitch_angle, float Dis, bool big, bool insight, bool get);
 
         void readMode(int &carMode);
         bool sendAngleDist(float yaw_angle, float pitch_angle, float dist, float flag);
-        bool sendAngle(float _angle1,float _angle2);
-
-
+        bool sendAngle(float _angle1, float _angle2);
 
 private:
         int fd;
