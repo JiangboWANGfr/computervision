@@ -8,9 +8,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define SENTRY
+// #define SENTRY
 // #define BUFF
-// #define INFANTRY
+#define INFANTRY
 // #define Hero
 // #define UAV
 
@@ -20,7 +20,8 @@
 #define RED
 // #define BLUE
 
-// #define STM32
+#define STM32
+#define SOCKET_COMMUNICATION
 
 #define SHOW_PICTURE
 // #define SAVE_DATA

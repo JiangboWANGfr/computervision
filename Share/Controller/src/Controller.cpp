@@ -16,6 +16,13 @@
 int Controller::num_of_controller = 0;
 pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#ifdef SOCKET_COMMUNICATION
+Socket Controller::client(SOCK_STREAM, 8848, "127.0.0.1");
+#endif
+#ifdef STM32
+SerialPort Controller::stm32;
+#endif
+
 /**
  * @Author: 王占坤
  * @Description: 至少要有一个相机输入
@@ -26,7 +33,7 @@ pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
  * @Throw: 
  */
 Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2)
-    : pm(pmr), cam1(camera1), cam2(camera2), client(SOCK_STREAM, 8848, "127.0.0.1")
+    : pm(pmr), cam1(camera1), cam2(camera2)
 {
     pthread_mutex_lock(&s_mutex);
     num_of_controller++;
@@ -108,7 +115,9 @@ bool Controller::mainpulatePicture()
         fin_video << img_ready_to_manipulate; //保存处理后的图像
 #endif
         is_ready_to_manipulate = 0;
+#ifdef SOCKET_COMMUNICATION
         client.sendToServer((char *)&pm->armor_data);
+#endif
 #ifdef STM32
         stm32.send(pm->armor_data);
 #endif
@@ -133,8 +142,9 @@ bool Controller::config(string serial_port,
         cam2->configFrame(width, height, offset_x, offset_y, expotime, gain);
         cam2->start();
     }
-
+#ifdef STM32
     stm32.open_port(serial_port);
+#endif
 
     filename = path;
     if (*filename.end() == '/')

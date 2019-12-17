@@ -21,18 +21,28 @@
 class Controller
 {
 private:
-    static int num_of_controller;//controller句柄个数
-    static pthread_mutex_t s_mutex;//防止多线程同时创建controller
-    int controller_handle;//controller句柄
+    //controller句柄个数
+    static int num_of_controller;
+    //防止多线程同时创建controller
+    static pthread_mutex_t s_mutex;
+#ifdef STM32
+    static SerialPort stm32;
+#endif
+#ifdef SOCKET_COMMUNICATION
+    static Socket client;
+#endif
+
+private:
+    //controller句柄,记录是第几个被创建的
+    int controller_handle;
     double fps;
     Size video_size;
     string filename;
-    int width_video_size, height_video_size; //用系统时间取名，防止同名文件自我覆盖
+    int width_video_size, height_video_size;
+    //用系统时间取名，防止同名文件自我覆盖
     VideoWriter src_video, fin_video;
-    ofstream filterData; // 记录装甲数据输出为csv文件，方便建模分析
-
-    SerialPort stm32;
-    Socket client;
+    // 记录装甲数据输出为csv文件，方便建模分析
+    ofstream filterData;
 
     bool is_get_image = true;
     pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
