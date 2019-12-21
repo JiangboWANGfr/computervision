@@ -66,7 +66,7 @@ void *mainThreadOne(void *argc)
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
     Controller controller(&pm, &cam1);
-    controller.config("/tty/USB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
+    controller.config("/dev/ttyUSB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
 
     pthread_t ri_th, mp_th;
 

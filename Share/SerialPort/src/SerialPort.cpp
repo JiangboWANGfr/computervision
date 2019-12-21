@@ -29,8 +29,8 @@ int SerialPort::open_port(string port)
 {
     // char *dev[]={"/dev/ttyS0","/dev/ttyS1","/dev/ttyS2"};
     // fd = open( "/dev/ttyS0", O_RDWR|O_NOCTTY|O_NDELAY);
-    // fd = open( "/dev/ttyUSB0", O_RDWR|O_NOCTTY|O_NDELAY);
-    fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+    fd = open( "/dev/ttyUSB0", O_RDWR|O_NOCTTY|O_NDELAY);
+    // fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
     if (-1 == fd)
     {
         printf("\n\e[31m\e[1m ERROR:打开串口%s失败 \e[0m\n\n", port.c_str());

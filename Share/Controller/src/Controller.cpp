@@ -120,6 +120,7 @@ bool Controller::mainpulatePicture()
 #endif
 #ifdef STM32
         stm32.send(pm->armor_data);
+        // stm32.sendAngle(1,2);
 #endif
     }
     pthread_mutex_unlock(&mutex);
