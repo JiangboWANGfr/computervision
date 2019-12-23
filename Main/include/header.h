@@ -4,8 +4,8 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:58 +0800
- * @LastEditTime: 2019-10-26 18:20:22 +0800
- * @LastEditors: 
+ * @LastEditTime : 2019-12-23 21:48:11
+ * @LastEditors  : zzdr
  * @Description: 
  */
 #ifndef __HEADER_H__
@@ -84,6 +84,18 @@ typedef struct TargetData
     float z;
     float atocDistance; //ArmorDetector<-AngleCalculate，装甲板决策，main<-ArmorDetector
     bool is_big;        //ArmorDetector->AngleCalculate，计算pnp
+    TargetData()
+    {
+        is_get = false;
+        shoot = false;
+        yaw_angle = 0;
+        pitch_angle = 0;
+        x = 0;
+        y = 0;
+        z = 0;
+        atocDistance = 0;
+        is_big = false;
+    }
     struct TargetData operator=(const struct TargetData &a)
     {
         is_get = a.is_get;
@@ -95,6 +107,16 @@ typedef struct TargetData
         z = a.z;
         atocDistance = a.atocDistance;
         is_big = a.is_big;
+    }
+    void print()
+    {
+        cout << "\t\tx=" << x << "\n"
+            << "\t\t\ty=" << y << "\n"
+            << "\t\t\tz=" << z << "\n"
+            << "\t\tatocDistance=" << atocDistance << "\n"
+            << "\t\t\tis_get:" << is_get << "\n"
+            << "\t\tyaw_angle=" << yaw_angle << "\n"
+            << "\t\tpitch_angle=" << pitch_angle << "\n";
     }
 
 } TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)

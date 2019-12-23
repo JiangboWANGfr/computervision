@@ -4,8 +4,8 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 14:23:00 +0800
- * @LastEditTime: 2019-11-23 14:57:55 +0800
- * @LastEditors: 
+ * @LastEditTime : 2019-12-23 21:48:33
+ * @LastEditors  : zzdr
  * @Description: 
  */
 
@@ -122,6 +122,7 @@ bool Controller::mainpulatePicture()
         stm32.send(pm->armor_data);
         // stm32.sendAngle(1,2);
 #endif
+        // pm->armor_data.print();
     }
     pthread_mutex_unlock(&mutex);
 }

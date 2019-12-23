@@ -4,8 +4,8 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:02 +0800
- * @LastEditTime: 2019-10-18 09:51:55 +0800
- * @LastEditors: 
+ * @LastEditTime : 2019-12-23 21:56:32
+ * @LastEditors  : zzdr
  * @Description: 
  */
 #include "SentryArmorDetector.h"
@@ -141,6 +141,7 @@ void SentryArmorDetector::getCenter(cv::Mat &source_img, TargetData &armor_data)
     pnpor.pnpSolver(lightLists[iRem[armorRem]], lightLists[jRem[armorRem]], armordata);
 
     armor_data = armordata;
+    armordata.print();
 }
 
 int SentryArmorDetector::getContours()
