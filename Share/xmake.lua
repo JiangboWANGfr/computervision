@@ -7,7 +7,7 @@ includes("SerialPort")
 includes("Socket")
 includes("Interface")
 
-target("ComputerVision")
+target("CV")
     set_kind("binary")
     set_rules("mode.debug", "mode.release")
     set_optimize("fastest")
