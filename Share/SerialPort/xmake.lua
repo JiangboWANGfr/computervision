@@ -4,7 +4,7 @@ add_requires("opencv")
 includes("Share")
 includes("Camera")
 
-target("CV")
+target("ComputerVision")
     set_kind("binary")
     set_rules("mode.debug", "mode.release")
     set_optimize("fastest")

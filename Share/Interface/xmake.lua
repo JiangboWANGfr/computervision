@@ -1,7 +1,7 @@
 add_syslinks("pthread","gxiapi")
 add_requires("opencv")
 
-target("CV")
+target("ComputerVision")
     set_kind("binary")
     set_rules("mode.debug", "mode.release")
     set_optimize("fastest")

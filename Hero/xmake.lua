@@ -10,7 +10,7 @@ add_requires("opencv")
 -- includes("Socket")
 
 
-target("CV")
+target("ComputerVision")
     set_kind("hero")
     set_rules("mode.debug", "mode.release")
     set_optimize("fastest")
