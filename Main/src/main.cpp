@@ -28,9 +28,8 @@
 pthread_attr_t thread_attr;
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);
-void *sendMSGThread(void* ctrl);
+void *sendMSGThread(void *ctrl);
 void *mainThreadOne(void *argc);
-void *mainThreadTwo(void *argc);
 int terminateProgram();
 
 int main()
@@ -41,8 +40,7 @@ int main()
     pthread_attr_setstacksize(&thread_attr, PTHREAD_STACK_MIN * 512);
 
     pthread_t t;
-    // pthread_create(&t, &thread_attr, mainThreadOne, NULL);
-    pthread_create(&t, &thread_attr, mainThreadTwo, NULL);
+    pthread_create(&t, &thread_attr, mainThreadOne, NULL);
 
     char tmp;
     cin >> tmp; //阻塞
@@ -53,7 +51,6 @@ int main()
 
 void *mainThreadOne(void *argc)
 {
-    OrdinaryCamera cam2("/dev/video0");
 #ifdef SENTRY
     SentryPictureManipulator pm;
 #endif
@@ -67,47 +64,7 @@ void *mainThreadOne(void *argc)
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
     Controller controller(&pm, &cam1);
-    controller.config("/dev/ttyUSB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
-
-    pthread_t ri_th, mp_th;
-
-    int err = pthread_create(&mp_th, &thread_attr, startManipulatePictureThread, &controller);
-
-    if (err != 0)
-    {
-        cout << "main:: startManipulatePictureThread failed" << endl;
-        printf("error message :%s\n",
-               strerror(errno));
-    }
-    //  启动接收线程
-    err = pthread_create(&ri_th, &thread_attr, startReceiveImageThread, &controller);
-    if (err != 0)
-    {
-        cout << "main:: startReceiveImageThread failed" << endl;
-        printf("error message :%s\n",
-               strerror(errno));
-    }
-    char tmp;
-    cin >> tmp; //用于阻塞
-}
-
-void *mainThreadTwo(void *argc)
-{
-    GxCamera cam2("1");
-    // OrdinaryCamera cam2("/dev/video2");
-// VirtualCamera cam2("./1572528438SRC.avi");
-#ifdef SENTRY
-    SentryPictureManipulator pm;
-#endif
-#ifdef INFANTRY
-    InfantryPictureManipulator pm;
-#endif
-#ifdef Hero
-    HeroPictureManipulator pm;
-#endif
-    Controller controller(&pm, &cam2);
-    // Controller controller(&pm, &cam1, &cam2);
-    // Controller controller(&pm,&cam1);
+    // controller.config("/dev/ttyUSB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
     controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;
@@ -143,7 +100,6 @@ void *mainThreadTwo(void *argc)
 void *startReceiveImageThread(void *ctrl)
 {
     pthread_detach(pthread_self());
-    // cout << "startReceiveImageThread" << endl;
     Controller *controller = (Controller *)ctrl;
     while (true)
     {
@@ -161,7 +117,7 @@ void *startManipulatePictureThread(void *ctrl)
     }
 }
 
-void *sendMSGThread(void* ctrl)
+void *sendMSGThread(void *ctrl)
 {
     pthread_detach(pthread_self());
     Controller *controller = (Controller *)ctrl;
@@ -170,7 +126,6 @@ void *sendMSGThread(void* ctrl)
         controller->sendMSG();
     }
 }
-
 
 int terminateProgram()
 {
