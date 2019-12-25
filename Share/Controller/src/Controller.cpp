@@ -92,8 +92,8 @@ void Controller::getImageFromCamera()
         is_ready_to_manipulate = 1;
         auto clone_end = chrono::system_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(clone_end - clone_start);
-        cout << "Clone time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
-        cout << controller_handle << endl;
+        // cout << "Clone time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
+        // cout << controller_handle << endl;
     }
 #ifdef SHOW_PICTURE
     showPicture("Controller::getImageFromCamera  img_ready_to_manipulate" + to_string(Controller::controller_handle), img_ready_to_manipulate, 1);
@@ -112,8 +112,8 @@ bool Controller::mainpulatePicture()
 
         auto manipulate_end = chrono::system_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(manipulate_end - manipulate_start);
-        cout << "ManipulatePicture Time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
-        cout << controller_handle << endl;
+        // cout << "ManipulatePicture Time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
+
 #ifdef SHOW_PICTURE
         showPicture("after", img_ready_to_manipulate, 1);
 #endif
@@ -128,13 +128,19 @@ bool Controller::mainpulatePicture()
 
 void Controller::sendMSG()
 {
+    auto manipulate_start = chrono::system_clock::now();
     sem_wait(&Controller::con_sem);
+    cJSON *j = cJSON_CreateObject();
+    pm->armor_data.toJson(j);
 #ifdef SOCKET_COMMUNICATION
-    client.sendToServer((char *)&pm->armor_data);
+    client.sendToServer(cJSON_Print(j));
 #endif
 #ifdef STM32
     stm32.send(pm->armor_data);
 #endif
+    auto manipulate_end = chrono::system_clock::now();
+    auto duration = chrono::duration_cast<chrono::microseconds>(manipulate_end - manipulate_start);
+    cout << "sendMSG Time: " << double(duration.count()) * chrono::microseconds::period::num / chrono::microseconds::period::den * 1000 << "ms" << endl;
 }
 
 bool Controller::config(string serial_port,

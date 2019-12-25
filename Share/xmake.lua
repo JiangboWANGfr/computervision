@@ -1,4 +1,4 @@
-add_syslinks("pthread","gxiapi")
+add_syslinks("pthread","gxiapi","cjson")
 add_requires("opencv")
 
 includes("Camera")

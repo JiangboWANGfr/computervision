@@ -55,6 +55,8 @@
 // #include "Serialport.h"
 #include "DxImageProc.h"
 
+#include <cjson/cJSON.h>
+
 //////////namespace/////////////
 using namespace cv;
 using namespace std;
@@ -117,6 +119,13 @@ typedef struct TargetData
             << "\t\t\tis_get:" << is_get << "\n"
             << "\t\tyaw_angle=" << yaw_angle << "\n"
             << "\t\tpitch_angle=" << pitch_angle << "\n";
+    }
+
+    void toJson(cJSON* j)
+    {
+        cJSON_AddNumberToObject(j, "yaw_angle", yaw_angle);
+        cJSON_AddNumberToObject(j, "pitch_angle", pitch_angle);
+        cJSON_AddNumberToObject(j, "distance", atocDistance);
     }
 
 } TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)
