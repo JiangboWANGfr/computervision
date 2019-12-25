@@ -13,8 +13,10 @@
 
 #include <chrono> //用于计算时间
 
+//初始化静态变量以及为静态变量分配空间
 int Controller::num_of_controller = 0;
 pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
+sem_t Controller::con_sem;
 
 #ifdef SOCKET_COMMUNICATION
 Socket Controller::client(SOCK_STREAM, 8848, "127.0.0.1");
@@ -36,6 +38,10 @@ Controller::Controller(PictureManipulator *pmr, Camera *camera1, Camera *camera2
     : pm(pmr), cam1(camera1), cam2(camera2)
 {
     pthread_mutex_lock(&s_mutex);
+    if (num_of_controller == 0) //避免重复初始化
+    {
+        sem_init(&con_sem, 0, 0);
+    }
     num_of_controller++;
     controller_handle = num_of_controller;
     pthread_mutex_unlock(&s_mutex);
@@ -115,16 +121,20 @@ bool Controller::mainpulatePicture()
         fin_video << img_ready_to_manipulate; //保存处理后的图像
 #endif
         is_ready_to_manipulate = 0;
-#ifdef SOCKET_COMMUNICATION
-        client.sendToServer((char *)&pm->armor_data);
-#endif
-#ifdef STM32
-        stm32.send(pm->armor_data);
-        // stm32.sendAngle(1,2);
-#endif
-        // pm->armor_data.print();
+        sem_post(&Controller::con_sem);
     }
     pthread_mutex_unlock(&mutex);
+}
+
+void Controller::sendMSG()
+{
+    sem_wait(&Controller::con_sem);
+#ifdef SOCKET_COMMUNICATION
+    client.sendToServer((char *)&pm->armor_data);
+#endif
+#ifdef STM32
+    stm32.send(pm->armor_data);
+#endif
 }
 
 bool Controller::config(string serial_port,

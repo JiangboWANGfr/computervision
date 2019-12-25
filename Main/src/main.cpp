@@ -28,6 +28,7 @@
 pthread_attr_t thread_attr;
 void *startReceiveImageThread(void *ctrl);
 void *startManipulatePictureThread(void *ctrl);
+void *sendMSGThread(void* ctrl);
 void *mainThreadOne(void *argc);
 void *mainThreadTwo(void *argc);
 int terminateProgram();
@@ -127,6 +128,14 @@ void *mainThreadTwo(void *argc)
         printf("error message :%s\n",
                strerror(errno));
     }
+    //启动发消息线程
+    err = pthread_create(&ri_th, &thread_attr, sendMSGThread, &controller);
+    if (err != 0)
+    {
+        cout << "main:: sendMSGThread failed" << endl;
+        printf("error message :%s\n",
+               strerror(errno));
+    }
     char tmp;
     cin >> tmp; //用于阻塞
 }
@@ -151,6 +160,17 @@ void *startManipulatePictureThread(void *ctrl)
         controller->mainpulatePicture();
     }
 }
+
+void *sendMSGThread(void* ctrl)
+{
+    pthread_detach(pthread_self());
+    Controller *controller = (Controller *)ctrl;
+    while (true)
+    {
+        controller->sendMSG();
+    }
+}
+
 
 int terminateProgram()
 {

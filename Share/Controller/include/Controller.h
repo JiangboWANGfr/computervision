@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "SerialPort.hpp"
 #include "Socket.h"
+#include <semaphore.h>
 
 class Controller
 {
@@ -25,6 +26,8 @@ private:
     static int num_of_controller;
     //防止多线程同时创建controller
     static pthread_mutex_t s_mutex;
+    //防止消息发送冲突
+    static sem_t con_sem;
 #ifdef STM32
     static SerialPort stm32;
 #endif
@@ -63,6 +66,7 @@ public:
 
     void getImageFromCamera();
     bool startReceiveImageThread(Camera *cam);
+    void sendMSG();
     bool mainpulatePicture();
     bool config(string serial_port,
                 string path,
