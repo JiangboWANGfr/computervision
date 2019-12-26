@@ -13,6 +13,7 @@
 Mat_<float> intrinsic_matrix_8_640 = (Mat_<float>(3, 3) << 1453.68113, 0, 329.79786-8,
                                                         0, 1453.28168, 251.06453-6,
                                                         0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
+//相机畸变参数
 vector<float> distCoeff_8_640 = { -0.07301, 0.18455, -0.00017, -0.00115, 0 };
 
 void SentryAngleCalculate::pnpSolver(cv::RotatedRect &R1, cv::RotatedRect &R2, TargetData &point4data)

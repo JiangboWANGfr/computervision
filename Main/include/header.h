@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <chrono>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -126,6 +127,9 @@ typedef struct TargetData
         cJSON_AddNumberToObject(j, "yaw_angle", yaw_angle);
         cJSON_AddNumberToObject(j, "pitch_angle", pitch_angle);
         cJSON_AddNumberToObject(j, "distance", atocDistance);
+        chrono::system_clock::time_point now_time = chrono::system_clock::now();
+        int64_t send_time =  chrono::duration_cast<chrono::milliseconds>(now_time.time_since_epoch()).count();
+        cJSON_AddNumberToObject(j, "timestamp", send_time);
     }
 
 } TargetData; //armorData(mian)<->armordeta(ArmorDetector)<->point4Data(AngleCalculate)

@@ -135,6 +135,7 @@ void Controller::sendMSG()
 #ifdef SOCKET_COMMUNICATION
     client.sendToServer(cJSON_Print(j));
 #endif
+
 #ifdef STM32
     stm32.send(pm->armor_data);
 #endif
@@ -162,6 +163,7 @@ bool Controller::config(string serial_port,
     }
 #ifdef STM32
     stm32.open_port(serial_port);
+    stm32.set_opt(115200, 8, 'N', 1);
 #endif
 
     filename = path;
