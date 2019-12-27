@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-10-26 18:01:37
- * @LastEditTime: 2019-11-01 20:09:13 +0800
+ * @LastEditTime: 2019-12-26 22:46:41
  * @LastEditors: 
  * @Description: 
  */
@@ -23,9 +23,9 @@ void InfantryArmorDetector::getCenter(Mat &source_img, TargetData &armor_data)
         imshow("roi", roiimg);
     getBinaryImage();
     //imshow("bin",binary);
-    getContours();
-    getTarget();
-    getPnP();
+    getContours(armor_data);
+    getTarget(armor_data);
+    getPnP(armor_data);
 }
 
 /**
@@ -74,7 +74,7 @@ void InfantryArmorDetector::getBinaryImage()
     //erode(binary, binary, element);
 }
 
-void InfantryArmorDetector::getContours()
+void InfantryArmorDetector::getContours(TargetData &armor_data)
 {
     vector<Vec4i> hierarcy;
     Point2f rect[4];
@@ -187,7 +187,7 @@ void InfantryArmorDetector::getContours()
     }
 }
 
-void InfantryArmorDetector::getTarget()
+void InfantryArmorDetector::getTarget(TargetData &armor_data)
 {
     //初始化
     maxpoint = -8000;
@@ -199,37 +199,12 @@ void InfantryArmorDetector::getTarget()
         {
             local_num_i = i;
             local_num_j = j;
-            // cout<<"matchrank "<<i<<" "<<j<<" :"<<matchrank[i][j]<<endl;
-            // if (maxpoint<matchrank[i][j])
-            // {
-            //     maxpoint=matchrank[i][j];
-            //     if (mode == 3)
-            //     {
-            //         //cout<<"判断为大"<<endl;
-            //         if (dis[i][j]==1) armor_data.is_big = false;
-            //         else armor_data.is_big = true;
-            //     }
-            //     else;
-            //     besti=i;
-            //     bestj=j;
-            // }
-            pickBest();
+            pickBest(armor_data);
         }
     //视野中没有装甲板
     if (besti == -1 || bestj == -1)
     {
-        // armor_data.is_get = false;
-        // if (roi.lefttop.x - 10<=0) roi.lefttop.x=0;
-        // else roi.lefttop.x -= 10;
-        // if (roi.lefttop.y - 10<=0) roi.lefttop.y=0;
-        // else roi.lefttop.y -= 10;
-        // if (roi.lefttop.x + roi.rwidth + 20 > src.cols) roi.rwidth=src.cols-roi.lefttop.x;
-        // else roi.rwidth=roi.rwidth + 20;
-        // if (roi.lefttop.y + roi.rheight + 20 > src.rows) roi.rheight=src.rows-roi.lefttop.y;
-        // else roi.rheight=roi.rheight + 20;
-        // roiimg=src(Rect(roi.lefttop.x,roi.lefttop.y,roi.rwidth,roi.rheight));
-        // return;
-        lostArmor();
+        lostArmor(armor_data);
         return;
     }
 
@@ -237,9 +212,6 @@ void InfantryArmorDetector::getTarget()
     boxi = minAreaRect(Mat(contours[besti]));
     boxj = minAreaRect(Mat(contours[bestj]));
     target.center = Point2f((boxi.center.x + boxj.center.x) / 2, (boxi.center.y + boxj.center.y) / 2);
-    //cout<<"i "<<besti<<" :x="<<boxi.center.x<<" y="<<boxi.center.y<<endl;
-    //cout<<"j "<<bestj<<" :x="<<boxj.center.x<<" y="<<boxj.center.y<<endl;
-    //cout<<"target : x="<<target.center.x<<" y="<<target.center.y<<endl;
     circle(src, Point(target.center.x, target.center.y), 5, Scalar(255, 0, 0), -1, 8);
     circle(outline, Point(target.center.x, target.center.y), 5, Scalar(255, 0, 0), -1, 8);
     char tam[100];
@@ -324,7 +296,7 @@ void InfantryArmorDetector::getTarget()
     roiimg = src(Rect(roi.lefttop.x, roi.lefttop.y, roi.rwidth, roi.rheight));
 }
 
-void InfantryArmorDetector::getPnP()
+void InfantryArmorDetector::getPnP(TargetData &armor_data)
 {
     //控制点在世界坐标系中
     //按照顺时针圧入，左上是第一个点
@@ -504,7 +476,6 @@ void InfantryArmorDetector::getPnP()
 
 InfantryArmorDetector::InfantryArmorDetector()
 {
-    armor_data.is_get = false;
     isred = true;
     mode = 3;
     roi.lefttop = Point2f(0, 0);
@@ -516,7 +487,6 @@ InfantryArmorDetector::InfantryArmorDetector()
 
 InfantryArmorDetector::InfantryArmorDetector(Mat &src)
 {
-    armor_data.is_get = false;
     isred = true;
     mode = 3;
     roi.lefttop = Point2f(0, 0);
@@ -528,7 +498,7 @@ InfantryArmorDetector::InfantryArmorDetector(Mat &src)
 
 /**
  * @Author: 孟文珩
- * @Description: 用于观察各部分函数作用，以及调参。可同时显示6乃至更多张图片以便对比。
+ * @Description: 用于观察各部分函数作用，以及调参。同时显示6或更多张图片以便对比。
  * @Param: src 原图
  * @Param: armor_data 保存了筛选后得到的装甲板的所有数据，详情参见TargetData
  * @Return: void
@@ -542,9 +512,9 @@ void InfantryArmorDetector::debugGetCenter(Mat &src, TargetData &armor_data)
             imshow("roi", roiimg);
         getBinaryImage();
         imshow("bin" + std::to_string(i), binary);
-        getContours();
-        getTarget();
-        getPnP();
+        getContours(armor_data);
+        getTarget(armor_data);
+        getPnP(armor_data);
         imshow("out", outline);
         imshow("last" + std::to_string(i), src);
         waitKey(1000); //延时1s
@@ -649,7 +619,7 @@ void InfantryArmorDetector::centerConnectionLengthFileter(ModeParam mode)
     cout << "i j d:" << local_num_j << " " << local_num_j << " " << d << endl;
 }
 
-void InfantryArmorDetector::pickBest()
+void InfantryArmorDetector::pickBest(TargetData &armor_data)
 {
     cout << "matchrank " << local_num_i << " " << local_num_j << " :" << matchrank[local_num_i][local_num_j] << endl;
     if (maxpoint < matchrank[local_num_i][local_num_j])
@@ -668,7 +638,7 @@ void InfantryArmorDetector::pickBest()
         bestj = local_num_j;
     }
 }
-void InfantryArmorDetector::lostArmor()
+void InfantryArmorDetector::lostArmor(TargetData &armor_data)
 {
     armor_data.is_get = false;
     if (roi.lefttop.x - 10 <= 0)
