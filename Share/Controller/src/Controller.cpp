@@ -132,7 +132,7 @@ void Controller::sendMSG()
     sem_wait(&Controller::con_sem);
     cJSON *j = cJSON_CreateObject();
     pm->armor_data.toJson(j);
-    cout << cJSON_Print(j) << endl;
+    cout << "Controller::sendMSG\n" << cJSON_Print(j) << endl;
 #ifdef SOCKET_COMMUNICATION
     client.sendToServer(cJSON_Print(j));
 #endif

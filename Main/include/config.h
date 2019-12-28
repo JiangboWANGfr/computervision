@@ -10,8 +10,8 @@
 
 //#define SENTRY
 // #define BUFF
-// #define INFANTRY
-#define Hero
+#define INFANTRY
+// #define Hero
 // #define UAV
 
 #define corps 1
