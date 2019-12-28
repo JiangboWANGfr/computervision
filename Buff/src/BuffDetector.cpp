@@ -1,7 +1,7 @@
 /*
  * @Author: WaltPeter
  * @Date: 2019-10-30 17:25:08
- * @LastEditTime : 2019-12-28 22:53:33
+ * @LastEditTime : 2019-12-29 00:04:46
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /MergeBuff/Detector/src/BuffDetector.cpp
@@ -42,7 +42,7 @@ float BuffDetectorWrapper::getDistance() {
 }
 
 int BuffArmorDetector::manipulatePicture(Mat img) {
-    
+    detect_buff.getCenter(img, armor_data); 
 }
 
 void BuffArmorDetector::getCenter(Mat &source_img, TargetData &armor_data) {
