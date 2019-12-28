@@ -4,8 +4,8 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime : 2019-12-28 16:59:24
- * @LastEditors  : zzdr
+ * @LastEditTime : 2019-12-28 21:53:33
+ * @LastEditors  : Please set LastEditors
  * @Description: 
  */
 
@@ -22,6 +22,7 @@
 #include "InfantryPictureManipulator.h"
 #include "SentryPictureManipulator.h"
 #include "HeroPictureManipulator.h"
+#include "BuffPictureManipulator.h"
 
 #pragma comment(linker, "/STACK:102400000,102400000")
 
@@ -59,6 +60,9 @@ void *mainThreadOne(void *argc)
 #endif
 #ifdef Hero
     HeroPictureManipulator pm;
+#endif
+#ifdef BUFF
+    BuffPictureManipulator pm;
 #endif
     GxCamera cam1("1");
     // Controller controller(&pm,&cam2);

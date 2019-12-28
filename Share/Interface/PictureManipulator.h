@@ -1,13 +1,12 @@
 /*
- * @Copyright: CS of BIT
- * @Author: 王占坤
- * @File name: 
- * @Version: 
- * @Date: 2019-09-28 11:40:32 +0800
- * @LastEditTime: 2019-10-17 19:35:28 +0800
- * @LastEditors: 
- * @Description: 
+ * @Author: your name
+ * @Date: 2019-12-28 22:14:03
+ * @LastEditTime : 2019-12-28 22:30:48
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /ComputerVision/Share/Interface/PictureManipulator.h
  */
+
 #ifndef __PICTURE_MANIPULATOR_H__
 #define __PICTURE_MANIPULATOR_H__
 #include "header.h"
@@ -16,6 +15,7 @@
 #include "SentryArmorDetector.h"
 #include "InfantryArmorDetector.h"
 #include "HeroArmorDetector.hpp"
+#include "BuffDetector.h"
 
 class PictureManipulator
 {
@@ -28,6 +28,9 @@ public:
 #endif
 #ifdef INFANTRY
     InfantryArmorDetector armor_detector;
+#endif
+#ifdef BUFF
+    BuffArmorDetector armor_detector;
 #endif
 
 TargetData armor_data;

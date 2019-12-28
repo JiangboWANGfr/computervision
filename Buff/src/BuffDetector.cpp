@@ -1,8 +1,8 @@
 /*
  * @Author: WaltPeter
  * @Date: 2019-10-30 17:25:08
- * @LastEditTime: 2019-11-04 15:43:56 +0800
- * @LastEditors: Please set LastEditors
+ * @LastEditTime : 2019-12-28 22:53:33
+ * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /MergeBuff/Detector/src/BuffDetector.cpp
  */
@@ -17,7 +17,7 @@ void BuffDetectorWrapper::getCenter(Mat &img, TargetData &armor_data) {
     {
         buff_detector.getAngle(yaw, pitch);
         distance = buff_detector.getDistance();
-        printf("Distance: %f, Yaw: %f, Pitch: %f\n", distance, yaw, pitch); 
+        //printf("Distance: %f, Yaw: %f, Pitch: %f\n", distance, yaw, pitch); 
         armor_data.yaw_angle = yaw; 
         armor_data.pitch_angle = pitch; 
         armor_data.atocDistance = distance; 
@@ -39,6 +39,14 @@ float BuffDetectorWrapper::getPitch() {
 
 float BuffDetectorWrapper::getDistance() { 
     return distance; 
+}
+
+int BuffArmorDetector::manipulatePicture(Mat img) {
+    
+}
+
+void BuffArmorDetector::getCenter(Mat &source_img, TargetData &armor_data) {
+    detect_buff.getCenter(source_img, armor_data); 
 }
 
 bool BuffDetector::DetectBuff(Mat& img, OtherParam other_param)

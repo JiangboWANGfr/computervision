@@ -4,8 +4,8 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime: 2019-11-04 15:42:05 +0800
- * @LastEditors: 
+ * @LastEditTime : 2019-12-28 22:52:34
+ * @LastEditors  : Please set LastEditors
  * @Description: 
  */
 
@@ -38,6 +38,9 @@ galaxy_0.xml"
 #define BULLET_SPEED 28.5
 #define BUFF_H 800
 #define BUFF_DISTANCE 7300
+
+#include "header.h"
+#include "ArmorDetector.h"
 
 struct OtherParam
 {
@@ -92,6 +95,18 @@ public:
 private:
     
 };
+
+class BuffArmorDetector : public ArmorDetector
+{
+private: 
+    BuffDetectorWrapper detect_buff; 
+public:
+    int gray_thresh = 100;
+    int single_color_thresh = 150;
+public: 
+    int manipulatePicture(Mat img); 
+    void getCenter(cv::Mat &source_img, TargetData &armor_data);
+}; 
 
 /**
  * @brief 矩形类物体属性
