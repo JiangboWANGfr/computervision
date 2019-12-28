@@ -19,7 +19,7 @@ pthread_mutex_t Controller::s_mutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t Controller::con_sem;
 
 #ifdef SOCKET_COMMUNICATION
-Socket Controller::client(SOCK_STREAM, 8848, "127.0.0.1");
+Socket Controller::client(SOCK_STREAM, 65535, "10.139.13.46");
 #endif
 #ifdef STM32
 SerialPort Controller::stm32;
@@ -132,6 +132,7 @@ void Controller::sendMSG()
     sem_wait(&Controller::con_sem);
     cJSON *j = cJSON_CreateObject();
     pm->armor_data.toJson(j);
+    // cout << cJSON_Print(j) << endl;
 #ifdef SOCKET_COMMUNICATION
     client.sendToServer(cJSON_Print(j));
 #endif

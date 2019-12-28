@@ -124,7 +124,7 @@ typedef struct TargetData
 
     void toJson(cJSON* j)
     {
-        cJSON_AddNumberToObject(j, "yaw_angle", yaw_angle);
+        cJSON_AddNumberToObject(j, "yaw_angle", yaw_angle*1000);
         cJSON_AddNumberToObject(j, "pitch_angle", pitch_angle);
         cJSON_AddNumberToObject(j, "distance", atocDistance);
         chrono::system_clock::time_point now_time = chrono::system_clock::now();
