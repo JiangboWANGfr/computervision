@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-10-26 19:20:55
- * @LastEditTime: 2019-11-01 20:07:09 +0800
+ * @LastEditTime: 2019-12-26 22:46:30
  * @LastEditors: 
  * @Description: 
  */
@@ -59,8 +59,8 @@ private:
     void centerConnectionLengthFileterofMode_3(int i,int j);
     void centerConnectionLengthFileter(ModeParam mode);
     void debugGetCenter(Mat &src, TargetData &armor_data);
-    void pickBest();
-    void lostArmor();
+    void pickBest(TargetData &armor_data);
+    void lostArmor(TargetData &armor_data);
 
 private:
     typedef struct ROI
@@ -84,9 +84,9 @@ private:
 
 private:
     void getBinaryImage();
-    void getContours();
-    void getTarget();
-    void getPnP();
+    void getContours(TargetData &armor_data);
+    void getTarget(TargetData &armor_data);
+    void getPnP(TargetData &armor_data);
 
 public: 
     InfantryArmorDetector();
