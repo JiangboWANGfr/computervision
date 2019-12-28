@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-07 00:51:35
- * @LastEditTime: 2019-10-19 09:39:39
- * @LastEditors: zzdr
+ * @LastEditTime : 2019-12-28 17:05:38
+ * @LastEditors  : zzdr
  */
 #ifndef HeroArmorDetector_H
 #define HeroArmorDetector_H
@@ -49,59 +49,81 @@ void HeroArmorDetector::setup()
             1, 1, 1,
             1, 1, 1); //卷积核 具有增强效果
 }
+// //裁剪图片，得到chasecenter表示中心点
+// void HeroArmorDetector::cut(cv::Mat &g_srcImage)
+// {
+//     cout<<g_srcImage.size()<<endl;
+//     //cv::resize(g_srcImage,g_srcImage,Size(1280,1080));
+//     cout<<g_srcImage.size()<<endl;
+//     cv::Mat cutImage;
+//     cv::Point2i center_point;
+//     cv::Point2i cur_pt;
+    
+//     if (armor_location)
+//     {
+//         center_point.x = chasecenter.back().x;
+//         center_point.y = chasecenter.back().y;
+//         width = 640;
+//         height = 480;
+//     }
+//     else
+//     {
+//         center_point.x = 640;
+//         center_point.y = 512;
+//         width = 1280;
+//         height = 1024;
+//     }
+
+//     srcImage.release();
+//     thresholdImageRed.release();
+//     thresholdImageBlue.release();
+
+//     cur_pt.x = center_point.x + width / 2;
+//     cur_pt.y = center_point.y + height / 2;
+//     pre_pt.x = center_point.x - width / 2;
+//     pre_pt.y = center_point.y - height / 2;
+
+//     cout << "17mm center_point:" << center_point << endl;
+
+//     if (pre_pt.x < 0)
+//     {
+//         pre_pt.x = 0;
+//     }
+//     if (pre_pt.y < 0)
+//     {
+//         pre_pt.y = 0;
+//     }
+//     if (cur_pt.x > 1280)
+//     {
+//         pre_pt.x = pre_pt.x - (cur_pt.x - 1280);
+//     }
+//     if (cur_pt.y > 1024)
+//     {
+//         pre_pt.y = pre_pt.y - (cur_pt.y - 1024);
+//     }
+  
+//     srcImage = g_srcImage(Rect(pre_pt.x, pre_pt.y, width, height));
+// }
+
 //裁剪图片，得到chasecenter表示中心点
 void HeroArmorDetector::cut(cv::Mat &g_srcImage)
 {
     cout<<g_srcImage.size()<<endl;
-    cv::Mat cutImage;
-    cv::Point2i center_point;
-    cv::Point2i cur_pt;
+    //cv::resize(g_srcImage,g_srcImage,Size(1280,1080));
+    cout<<g_srcImage.size()<<endl;
+    // cv::Point2i center_point;
+    // cv::Point2i cur_pt;
+    // center_point.x = chasecenter.back().x;
+    // center_point.y = chasecenter.back().y;
+    // width = 640;
+    // height = 480;
     
-    if (armor_location)
-    {
-        center_point.x = chasecenter.back().x;
-        center_point.y = chasecenter.back().y;
-        width = 640;
-        height = 480;
-    }
-    else
-    {
-        center_point.x = 640;
-        center_point.y = 512;
-        width = 1280;
-        height = 1024;
-    }
-
-    srcImage.release();
-    thresholdImageRed.release();
-    thresholdImageBlue.release();
-
-    cur_pt.x = center_point.x + width / 2;
-    cur_pt.y = center_point.y + height / 2;
-    pre_pt.x = center_point.x - width / 2;
-    pre_pt.y = center_point.y - height / 2;
-
-    cout << "17mm center_point:" << center_point << endl;
-
-    if (pre_pt.x < 0)
-    {
-        pre_pt.x = 0;
-    }
-    if (pre_pt.y < 0)
-    {
-        pre_pt.y = 0;
-    }
-    if (cur_pt.x > 1280)
-    {
-        pre_pt.x = pre_pt.x - (cur_pt.x - 1280);
-    }
-    if (cur_pt.y > 1024)
-    {
-        pre_pt.y = pre_pt.y - (cur_pt.y - 1024);
-    }
-  
-    srcImage = g_srcImage(Rect(pre_pt.x, pre_pt.y, width, height));
+    srcImage = g_srcImage;
 }
+
+
+
+
 //改变亮度并卷积加强边缘
 void HeroArmorDetector::Bright()
 {
@@ -180,6 +202,7 @@ void HeroArmorDetector::BrighttoCanny(int CannyLowThreshold)
 //旋转矩形包围轮廓方便观察
 void HeroArmorDetector::ShowAreaRect()
 {
+    
     cv::RotatedRect minRect;
     cv::Mat minAreaRectImage = cv::Mat::zeros(srcImage.size(), CV_8UC3);
     for (int j = 0; j < BrighttoCannyContours.size(); j++)
@@ -198,6 +221,7 @@ void HeroArmorDetector::ShowAreaRect()
 
     cv::namedWindow("minAreaRect", WINDOW_AUTOSIZE);
     cv::resize(minAreaRectImage,minAreaRectImage,srcImage.size()/3);
+    cout<<"showalearect"<<endl;
     cv::imshow("minAreaRect", minAreaRectImage);
 }
 
@@ -491,6 +515,7 @@ void HeroArmorDetector::filter()
     cv::Point2f frect_points[4];
     float real_angle;
     int counter = 0;
+    cout<<"go into filter"<<endl;
     ////遍历轮廓初步筛选寻找合适的矩阵将符合标准的旋转矩阵另存在filteredRect
     Traverse_contours_toFindrightRect(frect_points, real_angle, counter);
     ////寻找合适的矩形对，得到armorDetectionLeft，armorDetectionRight，
@@ -498,6 +523,7 @@ void HeroArmorDetector::filter()
     filteredcenter.clear();
     if (!armorDetectionLeft.empty())
     {
+        cout<<"findarmorlight"<<endl;
         armor_location = true; //是否找到了装甲板中心
         armor_frame.push_back(true);
         //得到的结果中filteredcenter表示装甲板中心的编号

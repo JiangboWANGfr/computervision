@@ -3,8 +3,8 @@
  * @version: 
  * @Author: zzdr
  * @Date: 2019-10-08 12:02:46
- * @LastEditors: zzdr
- * @LastEditTime: 2019-10-22 07:30:46
+ * @LastEditors  : zzdr
+ * @LastEditTime : 2019-12-28 17:05:48
  */
 #include "Controller.h"
 #include "HeroPictureManipulator.h"
@@ -33,22 +33,19 @@ int HeroPictureManipulator::manipulatePicture(Mat source_image_directly_from_cam
     initArmorData(armor_data);
     //armor_detector.setup();
     armor_detector.R_B = true; // Blue armor!
-    double start = clock();
-    cout<<"error1"<<endl;
+    //double start = clock();
     //cv::Mat g_srcImage = source_image_directly_from_camera;
     //src_video << g_srcImage; //保存图片
-    cout << "\n\n--------------------第\t" << loop_num++ << "帧--------------------" << endl;
+    //cout << "\n\n--------------------第\t" << loop_num++ << "帧--------------------" << endl;
     // armor_detector.cut(g_srcImage);
     // armor_detector.Bright();
     // armor_detector.BrighttoCanny();
     // armor_detector.filter();
     armor_detector.getCenter(source_image_directly_from_camera,armor_data);
-    cout << "------------------------------------------------\n"<< endl;
+    //cout << "------------------------------------------------\n"<< endl;
     //fin_video << g_srcImage; //保存处理后的图片
+   // double end = clock();
 
-    double end = clock();
-    std::cout << "Manipulate Time Per Pic:" << (end - start) / CLOCKS_PER_SEC * 1000 << "ms\n"
-              << endl;
 }
 
 
