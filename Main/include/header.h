@@ -80,11 +80,14 @@ typedef struct TargetData
 {
     bool is_get; //main<-ArmorDetector，ArmorData是否清零
     bool shoot;
+    //以度为单位
     float yaw_angle;   //AngleCalculate->ArmorDetector->main->Serial
+    //以度为单位
     float pitch_angle; //AngleCalculate->ArmorDetector->main->Serial
     float x;
     float y;
     float z;
+    //以毫米为单位
     float atocDistance; //ArmorDetector<-AngleCalculate，装甲板决策，main<-ArmorDetector
     bool is_big;        //ArmorDetector->AngleCalculate，计算pnp
     TargetData()
@@ -126,7 +129,7 @@ typedef struct TargetData
     {
         cJSON_AddNumberToObject(j, "yaw_angle", yaw_angle);
         cJSON_AddNumberToObject(j, "pitch_angle", pitch_angle);
-        cJSON_AddNumberToObject(j, "distance", atocDistance);
+        cJSON_AddNumberToObject(j, "distance", atocDistance / 1000);//转为以米为单位
         chrono::system_clock::time_point now_time = chrono::system_clock::now();
         int64_t send_time =  chrono::duration_cast<chrono::milliseconds>(now_time.time_since_epoch()).count();
         cJSON_AddNumberToObject(j, "timestamp", send_time);

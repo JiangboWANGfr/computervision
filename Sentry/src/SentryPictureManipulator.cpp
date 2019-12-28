@@ -58,6 +58,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     imshow("armor", img);
 #endif
     // armor_data.print();
+    armor_data.atocDistance /= 1000;//以毫米为单位
 }
 
 void SentryPictureManipulator::initArmorData()
