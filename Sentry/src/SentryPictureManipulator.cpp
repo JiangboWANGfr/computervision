@@ -31,6 +31,7 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     bool is_insight = false;
 
     armor_detector.getCenter(img, armor_data);
+    // armor_data.print();
 
     //防止计数溢出
     lost = lost < 2000 ? lost : 2000;
@@ -38,7 +39,11 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
     //目标丢失与否
     judgeTargetInsight();
 
-    maybeLostTarget();
+    is_insight = armor_data.is_get;
+    // maybeLostTarget();
+
+    // armor_data.print();
+
 
     //敌人不在视野中，初始化数据
     if (is_insight == false)
@@ -46,14 +51,13 @@ int SentryPictureManipulator::manipulatePicture(Mat source_image_directly_from_c
         initArmorData();
     }
 
-
-
     writeIntoFilterDataCSV();
 
 #ifdef DEBUG1
     showPicture("armor", img, 2);
     imshow("armor", img);
 #endif
+    // armor_data.print();
 }
 
 void SentryPictureManipulator::initArmorData()
@@ -87,9 +91,12 @@ void SentryPictureManipulator::maybeLostTarget()
     //丢失目标后的短暂寻找策略
     int lostmin = 30;
     int lostmax = 100; //根据自己的算法所需时间让云台停1.5s左右,复活赛时哨兵巡逻yaw��s转一圈，pitch轴搜索范��-30度，一圈俯����    if (lost < lostmin && lost > 0) //丢失时间很短，处理云台自身快速转动丢失目标问��    {
-    lostTargetShortTime_toDo();
+    if (is_insight == false && lost)
+    {
+        lostTargetShortTime_toDo();
+    }
 
-    if (lost >= lostmin && lost < lostmax) //丢失时间较短，处理猫步或陀螺切换装甲板导致目标短暂消失问题
+    else if (lost >= lostmin && lost < lostmax) //丢失时间较短，处理猫步或陀螺切换装甲板导致目标短暂消失问题
     {
         lostTargetLongTime_toDo();
     }
@@ -120,6 +127,5 @@ int SentryPictureManipulator::judgeTargetInsight()
         lost++;
     }
 }
-
 
 #endif

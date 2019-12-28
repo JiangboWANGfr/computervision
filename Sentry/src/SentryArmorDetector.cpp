@@ -141,7 +141,7 @@ void SentryArmorDetector::getCenter(cv::Mat &source_img, TargetData &armor_data)
     pnpor.pnpSolver(lightLists[iRem[armorRem]], lightLists[jRem[armorRem]], armordata);
 
     armor_data = armordata;
-    armor_data.print();
+    // armor_data.print();
 }
 
 int SentryArmorDetector::getContours()
