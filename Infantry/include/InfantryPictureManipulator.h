@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-07 18:20:39
- * @LastEditTime: 2019-10-26 20:03:31
+ * @LastEditTime: 2019-12-26 21:56:27
  * @LastEditors: Please set LastEditors
  */
 
@@ -25,10 +25,11 @@ private:
     };
     
 private:
-    int initArmorData(TargetData &armor_data);
+    int initArmorData();
     int verifyMode(int &mode, int &isred);
     void armorModeToDo(Mat srcimg);
     void sivirModeToDo();   //暂时置空，具体算法后续补充
+    void printTargetData();
 
 
 public:

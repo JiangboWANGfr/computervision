@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-28 13:14:07 +0800
- * @LastEditTime: 2019-11-01 19:55:50 +0800
+ * @LastEditTime: 2019-12-26 22:39:56
  * @LastEditors: 
  * @Description: 
  */
@@ -25,7 +25,7 @@ InfantryPictureManipulator::~InfantryPictureManipulator()
 {
 }
 
-int InfantryPictureManipulator::initArmorData(TargetData &armor_data)
+int InfantryPictureManipulator::initArmorData()
 {
     armor_data.yaw_angle = 0;
     armor_data.pitch_angle = 0;
@@ -58,9 +58,19 @@ int InfantryPictureManipulator::verifyMode(int &mode, int &isred)
     cout<<"findmode: "<<this->findmode<<endl;
 }
 
+void InfantryPictureManipulator::printTargetData()
+{
+    cout << "armor_data.yaw_angle" << armor_data.yaw_angle << endl;
+    cout << "armor_data.pitch_angle" << armor_data.pitch_angle << endl;
+    cout << "armor_data.atocDistance" << armor_data.atocDistance << endl;
+    cout << "armor_data.is_big" << armor_data.is_big << endl;
+    cout << "armor_data.is_get" << armor_data.is_get << endl;
+}
+
 void InfantryPictureManipulator::armorModeToDo(Mat srcimg)
 {
     armor_detector.getCenter(srcimg, armor_data);
+    printTargetData();
 }
 
 void InfantryPictureManipulator::sivirModeToDo()
@@ -69,7 +79,7 @@ void InfantryPictureManipulator::sivirModeToDo()
 
 int InfantryPictureManipulator::manipulatePicture(Mat srcimg)
 {
-    initArmorData(armor_data);
+    initArmorData();
     verifyMode(armor_detector.mode, armor_detector.isred);
     if(this->findmode == ARMOR_MODE)
     {
