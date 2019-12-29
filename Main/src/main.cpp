@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime : 2019-12-28 21:53:33
+ * @LastEditTime : 2019-12-29 12:44:31
  * @LastEditors  : Please set LastEditors
  * @Description: 
  */
@@ -68,7 +68,7 @@ void *mainThreadOne(void *argc)
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
     Controller controller(&pm, &cam1);
-   //controller.config("/dev/ttyUSB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
+    //controller.config("/dev/ttyUSB0", "./", 120, 1280, 1024, 6, 8, 1500, 200);
     controller.config("/tty/USB0", "./", 120, 640, 480, 6, 8, 1200, 200);
 
     pthread_t ri_th, mp_th;

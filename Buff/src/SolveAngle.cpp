@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:47:22
- * @LastEditTime: 2019-11-04 15:44:15 +0800
- * @LastEditors: Please set LastEditors
+ * @LastEditTime : 2019-12-29 12:57:15
+ * @LastEditors  : Please set LastEditors
  */
 
 #include "SolveAngle.h"
@@ -12,7 +12,7 @@
 
 SolveAngle::SolveAngle(const char* file_path, float c_x, float c_y, float c_z, float barrel_y)
 {
-    //读取摄像头标定xml文件
+    /*//读取摄像头标定xml文件
     FileStorage fs(file_path, FileStorage::READ);
     // 相关坐标转换偏移数据
     barrel_ptz_offset_y = barrel_y;
@@ -24,7 +24,8 @@ SolveAngle::SolveAngle(const char* file_path, float c_x, float c_y, float c_z, f
     fs["Distortion_Coefficients"] >> distCoeffs;
     //cout << "[" << file_path << "] cameraMatrix: " << cameraMatrix << endl;
     //cout << fs.state; 
-    //cout << distCoeffs << endl;
+    //cout << distCoeffs << endl;*/
+    
     Generate3DPoints(0,Point2f(0,0));
     Mat(objectPoints).convertTo(object_point_mat, CV_32F);
     Mat rvec(3, 1, DataType<double>::type);

@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:23:32
- * @LastEditTime: 2019-11-04 15:45:42 +0800
- * @LastEditors: Please set LastEditors
+ * @LastEditTime : 2019-12-29 12:55:50
+ * @LastEditors  : Please set LastEditors
  */
 #pragma once
 #include "header.h"
@@ -86,7 +86,16 @@ public:
     float BulletModel_ICRA(float x, float v, float angle);
     // ---------/ICRA-------------------
     void Generate3DPoints(uint mode, Point2f offset_point);
-    Mat cameraMatrix, distCoeffs;
+    //Mat cameraMatrix, distCoeffs;
+    
+    
+    Mat_<float> cameraMatrix = (Mat_<float>(3, 3) << 1453.68113, 0, 329.79786-8,
+                                                     0, 1453.28168, 251.06453-6,
+                                                     0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
+    //相机畸变参数
+    vector<float> distCoeffs = { -0.07301, 0.18455, -0.00017, -0.00115, 0 };
+    
+    
     Mat object_point_mat;
     vector<Point3f> objectPoints;
     vector<Point2f> projectedPoints;

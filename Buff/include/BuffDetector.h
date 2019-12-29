@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:26:02 +0800
- * @LastEditTime : 2019-12-28 22:52:34
+ * @LastEditTime : 2019-12-29 13:01:06
  * @LastEditors  : Please set LastEditors
  * @Description: 
  */
@@ -206,18 +206,18 @@ public:
     int getSimpleDirection(float angle);
 
     void readXML(){
-        FileStorage fs("../param/buff_offset.xml", FileStorage::READ);
+        /*FileStorage fs("../param/buff_offset.xml", FileStorage::READ);
         fs["offset_x"] >> buff_offset_x_;
-        fs["offset_y"] >> buff_offset_y_;
+        fs["offset_y"] >> buff_offset_y_;*/
 
-        if(buff_offset_x_ <= 0 || buff_offset_x_ >= 200)
+        //if(buff_offset_x_ <= 0 || buff_offset_x_ >= 200)
             buff_offset_x_ = BUFF_OFFSET_x;
-        if(buff_offset_y_ <= 0 || buff_offset_y_ >= 200)
+        //if(buff_offset_y_ <= 0 || buff_offset_y_ >= 200)
             buff_offset_y_ = BUFF_OFFSET_y;
         begin_offset_x_ = buff_offset_x_;
         begin_offset_y_ = buff_offset_y_;
         cout << "read:"<<buff_offset_x_ << ", " << buff_offset_y_ << endl;
-        fs.release();
+        //fs.release();
     }
     void writeXML(){
         FileStorage fs("../param/buff_offset.xml", FileStorage::WRITE);
