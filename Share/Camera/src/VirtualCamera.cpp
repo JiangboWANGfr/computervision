@@ -35,6 +35,8 @@ int VirtualCamera::configFrame(int64_t width,
                                double expotime,
                                int64_t gain)
 {
+    frame_width = width; 
+    frame_height = height; 
 }
 
 int VirtualCamera::close()
@@ -47,7 +49,10 @@ Mat VirtualCamera::getFrame()
 {
     Mat frame;
     bool status = cam.read(frame); 
-    if (!status) 
+    if (!status) {
+        cout << "Video ended. " << endl; 
         exit(0); 
+    }
+    resize(frame, frame, Size(frame_width, frame_height)); 
     return frame;
 }

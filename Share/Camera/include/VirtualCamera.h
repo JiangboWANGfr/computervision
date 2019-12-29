@@ -9,6 +9,8 @@ class VirtualCamera : public Camera
 {
 private:
     VideoCapture cam;
+    int frame_width = 640; //默认 640,480.
+    int frame_height = 480; 
 public:
     VirtualCamera(string cam); 
     ~VirtualCamera(); 
