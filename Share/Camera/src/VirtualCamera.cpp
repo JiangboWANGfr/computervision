@@ -46,6 +46,8 @@ int VirtualCamera::start()
 Mat VirtualCamera::getFrame()
 {
     Mat frame;
-    cam.read(frame);
+    bool status = cam.read(frame); 
+    if (!status) 
+        exit(0); 
     return frame;
 }

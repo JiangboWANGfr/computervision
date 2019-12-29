@@ -3,6 +3,8 @@
 #include "header.h"
 #include "Camera.h"
 
+#include "stdlib.h"
+
 class VirtualCamera : public Camera
 {
 private:
