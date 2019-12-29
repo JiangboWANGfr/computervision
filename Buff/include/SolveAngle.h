@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 17:23:32
- * @LastEditTime : 2019-12-29 12:55:50
+ * @LastEditTime : 2019-12-29 16:10:11
  * @LastEditors  : Please set LastEditors
  */
 #pragma once
@@ -71,7 +71,10 @@ public:
 class SolveAngle
 {
 public:
-    SolveAngle(){}
+    SolveAngle(){
+        std::cout << "cameraMatrix: " << cameraMatrix << "\ndistCoeffs: "; 
+        std::cout << distCoeffs << std::endl; 
+    }
     SolveAngle(const char* file_path, float c_x, float c_y, float c_z, float barrel_y);
     // 普通角度解算
     void getAngle(vector<Point2f>& image_point, float ballet_speed, float& angle_x, float& angle_y, float &dist);
@@ -89,12 +92,37 @@ public:
     //Mat cameraMatrix, distCoeffs;
     
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     Mat_<float> cameraMatrix = (Mat_<float>(3, 3) << 1453.68113, 0, 329.79786-8,
                                                      0, 1453.28168, 251.06453-6,
                                                      0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
     //相机畸变参数
-    vector<float> distCoeffs = { -0.07301, 0.18455, -0.00017, -0.00115, 0 };
+    Mat_<float> distCoeffs = (Mat_<float>(5,1) << -0.07301, 0.18455, -0.00017, -0.00115, 0 );
     
+    
+
+
+
+
+
+
+
+
+
+
     
     Mat object_point_mat;
     vector<Point3f> objectPoints;
