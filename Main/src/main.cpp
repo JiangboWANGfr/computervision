@@ -64,7 +64,9 @@ void *mainThreadOne(void *argc)
 #ifdef BUFF
     BuffPictureManipulator pm;
 #endif
-    GxCamera cam1("1");
+    // GxCamera cam1("1");
+    // VirtualCamera cam1("/home/ubuntu4/Downloads/3821568275374.avi");
+    VirtualCamera cam1("/home/ubuntu4/Downloads/Sivir2.avi");
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
     Controller controller(&pm, &cam1);
