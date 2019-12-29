@@ -8,20 +8,23 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-//#define SENTRY
+// #define SENTRY
  #define BUFF
-//#define INFANTRY
+// #define INFANTRY
 // #define Hero
 // #define UAV
 
 #define corps 1
 //#define watchdog
 
-#define RED
-// #define BLUE
+// #define RED
+#define BLUE
 
-#define STM32
-#define SOCKET_COMMUNICATION
+// #define BIG_ARMOR
+#define SMALL_ARMOR
+
+// #define STM32
+// #define SOCKET_COMMUNICATION
 
 #define SHOW_PICTURE
 // #define SAVE_DATA
