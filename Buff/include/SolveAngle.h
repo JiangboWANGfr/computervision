@@ -72,8 +72,8 @@ class SolveAngle
 {
 public:
     SolveAngle(){
-        std::cout << "cameraMatrix: " << cameraMatrix << "\ndistCoeffs: "; 
-        std::cout << distCoeffs << std::endl; 
+        //std::cout << "cameraMatrix: " << cameraMatrix << "\ndistCoeffs: "; 
+        //std::cout << distCoeffs << std::endl; 
     }
     SolveAngle(const char* file_path, float c_x, float c_y, float c_z, float barrel_y);
     // 普通角度解算
@@ -110,7 +110,7 @@ public:
                                                      0, 1453.28168, 251.06453-6,
                                                      0, 0, 1);   //cx,cy项-8.-6是因为获取图片时的截图导致原点偏移
     //相机畸变参数
-    Mat_<float> distCoeffs = (Mat_<float>(5,1) << -0.07301, 0.18455, -0.00017, -0.00115, 0 );
+    vector<float> distCoeffs = {-0.07301, 0.18455, -0.00017, -0.00115, 0};
     
     
 

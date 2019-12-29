@@ -35,6 +35,7 @@ SolveAngle::SolveAngle(const char* file_path, float c_x, float c_y, float c_z, f
 void SolveAngle::getAngle(vector<Point2f> &image_point, float ballet_speed, float& angle_x, float& angle_y, float &dist)
 {
     // 姿态结算
+    
     solvePnP(objectPoints, image_point, cameraMatrix, distCoeffs, rvec, tvec);
     float dh = ((image_point.at(3).y - image_point.at(0).y) + (image_point.at(2).y - image_point.at(1).y))/2;
     float state_dist = height_world * f_ / dh; // Z
@@ -154,18 +155,22 @@ void SolveAngle::getBuffAngle(bool flag, vector<Point2f> &image_point, float bal
     buff_h = 800*sin(predict_buff_angle *3.14/180)+800;   // 计算风车相对最底面装甲高度　０－１６００
     float target_h = delta_h + buff_h;
     dist = sqrt(pow(target_h, 2) + pow(D, 2));
-
+    
     tvec.at<double>(2,0) = dist;
 
     // 坐标系转换 -摄像头坐标到云台坐标
     double theta = -atan(static_cast<double>(ptz_camera_y + barrel_ptz_offset_y))/static_cast<double>(overlap_dist);
     double r_data[] = {1,0,0,0,cos(theta),sin(theta),0,-sin(theta),cos(theta)};
     double t_data[] = {static_cast<double>(ptz_camera_x),static_cast<double>(ptz_camera_y),static_cast<double>(ptz_camera_z)};
+    
     Mat t_camera_ptz(3,1,CV_64FC1,t_data);
     Mat r_camera_ptz(3,3,CV_64FC1,r_data);
-    Mat position_in_ptz;
-    position_in_ptz = /*r_camera_ptz **/ tvec - t_camera_ptz;
-
+    Mat position_in_ptz(3,1,CV_64FC1, {0.0,0.0,0.0});
+    //position_in_ptz = /*r_camera_ptz **/ tvec - t_camera_ptz;
+    position_in_ptz.at<double>(0,0) = double(tvec.at<float>(0,0) - t_camera_ptz.at<double>(0,0));
+    position_in_ptz.at<double>(1,0) = double(tvec.at<float>(1,0) - t_camera_ptz.at<double>(1,0));
+    position_in_ptz.at<double>(2,0) = double(tvec.at<float>(2,0) - t_camera_ptz.at<double>(2,0));
+    
     const double *_xyz = (const double *)position_in_ptz.data;
 
     // 计算角度
@@ -176,7 +181,7 @@ void SolveAngle::getBuffAngle(bool flag, vector<Point2f> &image_point, float bal
     float gimbal_y = dist * sin(gimbal_pitch*3.14/180);
     float thta = -static_cast<float>(atan2(xyz[1],dist)); // 云台与目标点的相对角度
     float balta = static_cast<float>(atan2(target_h,dist)) - thta; // 云台与地面的相对角度
-
+    
 #ifdef SET_ZEROS_GRAVITY
     angle_y = static_cast<float>(atan2(xyz[1],xyz[2]));
 #else
@@ -189,6 +194,7 @@ void SolveAngle::getBuffAngle(bool flag, vector<Point2f> &image_point, float bal
     //    else
     angle_y = -getBuffPitch(dist/1000, (target_h)/1000, ballet_speed);
     angle_y += balta;
+    
 #endif
 #endif
     angle_y = static_cast<float>(angle_y) * 57.2957805f ;

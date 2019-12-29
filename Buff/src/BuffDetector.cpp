@@ -301,11 +301,12 @@ int BuffDetector::BuffDetectTask(Mat& img, OtherParam other_param)
 #else
         world_offset = Point2f(world_offset_x_ - 500, world_offset_y_  - 500);
 #endif
+        
         solve_angle_long_.Generate3DPoints(2, world_offset);
         solve_angle_long_.getBuffAngle(1,points_2d, BULLET_SPEED
                                        , buff_angle_, pre_angle, gimbal
                                        , angle_x_, angle_y_, distance_);
-
+        
 #ifdef LINER_OFFSET_PITCH
         angle_y_ = angle_y_ + solve_angle_long_.buff_h * (pitch_offset-2000)/160000;
 #endif

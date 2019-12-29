@@ -216,7 +216,7 @@ public:
             buff_offset_y_ = BUFF_OFFSET_y;
         begin_offset_x_ = buff_offset_x_;
         begin_offset_y_ = buff_offset_y_;
-        cout << "read:"<<buff_offset_x_ << ", " << buff_offset_y_ << endl;
+        //cout << "read:"<<buff_offset_x_ << ", " << buff_offset_y_ << endl;
         //fs.release();
     }
     void writeXML(){
