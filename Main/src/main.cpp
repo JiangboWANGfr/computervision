@@ -4,7 +4,7 @@
  * @File name: 
  * @Version: 
  * @Date: 2019-09-09 19:35:43 +0800
- * @LastEditTime : 2019-12-29 12:44:31
+ * @LastEditTime : 2019-12-29 15:24:49
  * @LastEditors  : Please set LastEditors
  * @Description: 
  */
@@ -66,7 +66,7 @@ void *mainThreadOne(void *argc)
 #endif
     // GxCamera cam1("1");
     // VirtualCamera cam1("/home/ubuntu4/Downloads/3821568275374.avi");
-    VirtualCamera cam1("/home/ubuntu4/Downloads/Sivir2.avi");
+    VirtualCamera cam1("/home/waltpeter/Videos/Sivir2.avi");
     // Controller controller(&pm,&cam2);
     // Controller controller(&pm, &cam1, &cam2);
     Controller controller(&pm, &cam1);
