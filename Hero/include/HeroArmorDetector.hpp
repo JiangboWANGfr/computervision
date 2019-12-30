@@ -30,11 +30,13 @@ typedef struct ANGLE	//cout << s[0] << endl;
     float y;
     float z;
     bool find_armor;
+    float distance;
 } Angle;
 class HeroArmorDetector:public ArmorDetector
 {
 public:
     bool R_B;
+    bool B_S;
     cv::Mat srcImage;
     Armor target;
     Angle pnpresult;
@@ -55,7 +57,6 @@ private:
     int lens = 9;
     float disMatrix[9] = {0};
     bool armor_location;
-    bool B_S;
     cv::Point2i pre_pt;
     int width;
     int height;

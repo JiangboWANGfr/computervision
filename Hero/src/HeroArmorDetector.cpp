@@ -12,14 +12,36 @@
 #ifdef Hero
 using namespace std;
 using namespace cv;
+#define SMALLARMOR
+#ifdef BIGARMOR
+#define nThresh 255 
+#define thresholdlow  80
+#define colorthresh 10
+#endif
+#ifdef SMALLARMOR
+#define NThresh 200
+#define thresholdlow  160
+#define colorthresh 100
+#endif
 
+#ifdef BLUE  //BULL ARMOR
+#define R_B  false
+#else 
+#define R_B true
+#endif
+#define BIGARMOR
+#ifdef BIGARMOR  //BIGARM
+#define B_S  true
+#else 
+#define B_S  false
+#endif
 //初始化
 void HeroArmorDetector::setup()
 {
     srcImage = cv::Mat::zeros(1280, 1024, CV_8UC3);
     thresholdImageRed = cv::Mat::zeros(1280, 1024, CV_8UC3);
     thresholdImageBlue = cv::Mat::zeros(1280, 1024, CV_8UC3);
-
+    
     BrighttoCannyContours.resize(0);
     BrighttoCannyHierarchy.resize(0);
     chasecenter.resize(0);
@@ -29,8 +51,6 @@ void HeroArmorDetector::setup()
     armorDetectionLeft.resize(0);
     armorDetectionRight.resize(0);
     rgbChannels.resize(3);
-    R_B = false;
-    B_S = true;
     armor_location = false;
     pre_pt.x = 0;
     pre_pt.y = 0;
@@ -49,61 +69,7 @@ void HeroArmorDetector::setup()
             1, 1, 1,
             1, 1, 1); //卷积核 具有增强效果
 }
-// //裁剪图片，得到chasecenter表示中心点
-// void HeroArmorDetector::cut(cv::Mat &g_srcImage)
-// {
-//     cout<<g_srcImage.size()<<endl;
-//     //cv::resize(g_srcImage,g_srcImage,Size(1280,1080));
-//     cout<<g_srcImage.size()<<endl;
-//     cv::Mat cutImage;
-//     cv::Point2i center_point;
-//     cv::Point2i cur_pt;
-    
-//     if (armor_location)
-//     {
-//         center_point.x = chasecenter.back().x;
-//         center_point.y = chasecenter.back().y;
-//         width = 640;
-//         height = 480;
-//     }
-//     else
-//     {
-//         center_point.x = 640;
-//         center_point.y = 512;
-//         width = 1280;
-//         height = 1024;
-//     }
 
-//     srcImage.release();
-//     thresholdImageRed.release();
-//     thresholdImageBlue.release();
-
-//     cur_pt.x = center_point.x + width / 2;
-//     cur_pt.y = center_point.y + height / 2;
-//     pre_pt.x = center_point.x - width / 2;
-//     pre_pt.y = center_point.y - height / 2;
-
-//     cout << "17mm center_point:" << center_point << endl;
-
-//     if (pre_pt.x < 0)
-//     {
-//         pre_pt.x = 0;
-//     }
-//     if (pre_pt.y < 0)
-//     {
-//         pre_pt.y = 0;
-//     }
-//     if (cur_pt.x > 1280)
-//     {
-//         pre_pt.x = pre_pt.x - (cur_pt.x - 1280);
-//     }
-//     if (cur_pt.y > 1024)
-//     {
-//         pre_pt.y = pre_pt.y - (cur_pt.y - 1024);
-//     }
-  
-//     srcImage = g_srcImage(Rect(pre_pt.x, pre_pt.y, width, height));
-// }
 
 //裁剪图片，得到chasecenter表示中心点
 void HeroArmorDetector::cut(cv::Mat &g_srcImage)
@@ -128,7 +94,7 @@ void HeroArmorDetector::cut(cv::Mat &g_srcImage)
 void HeroArmorDetector::Bright()
 {
     int alpha = 10;
-    int nThresh = 200;
+    int nThresh = NThresh;
     //改变图像亮度
     cv::Mat Bright_image = srcImage;
     double Bright_alpha = alpha / 10;
@@ -165,8 +131,8 @@ void HeroArmorDetector::BrighttoCanny()
 {
     int CannyLowThreshold = 150;
 
-    cv::threshold(rgbChannels[0], thresholdImageBlue, 160, 255, THRESH_BINARY);
-    cv::threshold(rgbChannels[2], thresholdImageRed, 160, 255, THRESH_BINARY);
+    cv::threshold(rgbChannels[0], thresholdImageBlue, thresholdlow, 255, THRESH_BINARY);
+    cv::threshold(rgbChannels[2], thresholdImageRed, thresholdlow, 255, THRESH_BINARY);
 
     //Canny边缘检测&寻找轮廓
     if (R_B)
@@ -305,13 +271,13 @@ void HeroArmorDetector::Traverse_contours_toFindrightRect(cv::Point2f (&frect_po
             if (R_B)
             {
                 int red = rgbChannels[2].at<uchar>(Contour_center);
-                if (red < 100)
+                if (red < colorthresh)
                     armor_exist = true;
             }
             else
             {
                 int blue = rgbChannels[0].at<uchar>(Contour_center);
-                if (blue < 100)
+                if (blue < colorthresh)
                     armor_exist = true;
             }
 
@@ -363,10 +329,21 @@ int HeroArmorDetector::Find_final_rectangle(int &counter)
                 theta_angle = std::abs(a_real_angle - b_real_angle);
                 height_quotient = b_max / a_max;
                 width_quotient = b_min / a_min;
-
-                if (length > a_min * 1.8 && length > b_min * 1.8 && length < a_max * 6 && length < b_max * 6
-
-                    && (theta_angle < 12) && height_quotient < 2.5 && height_quotient > 0.4 && width_quotient < 2.5 && width_quotient > 0.4)
+                float length_max,length_min,theta_angle_max;
+                if(B_S){
+                    length_max = 5.8;
+                    length_min = 3.6;
+                    theta_angle_max = 12;
+                    cout << "B" << endl;
+                }
+                else{
+                    length_max = 2.75;
+                    length_min = 1.0;
+                    theta_angle_max = 12;
+                    cout << "S" << endl;
+                }
+                if (length > a_min * length_min && length > b_min * length_min && length < a_max * length_max && length < b_max * length_max
+                    && (theta_angle < theta_angle_max) && height_quotient < 2.5 && height_quotient > 0.4 && width_quotient < 2.5 && width_quotient > 0.4)
                 {
                     if (abs(int(filteredRect[a].center.x - filteredRect[b].center.x)) != 0)
                         line_angle = std::abs(180 / CV_PI * int(filteredRect[a].center.y - filteredRect[b].center.y)) / std::abs(int(filteredRect[a].center.x - filteredRect[b].center.x));
@@ -530,7 +507,7 @@ void HeroArmorDetector::filter()
         get_armorcenter_number(Rects_number);
         //选一个最合适的中心点,得到chasecenter表示中心点
         int hh = get_armorcenter_point();
-       pnpor.pnpSolver(pnpresult,hh,target,pre_pt);
+       pnpor.pnpSolver(pnpresult,target);
         ShowAreaRect();
     }
     else
@@ -583,6 +560,7 @@ bool HeroArmorDetector::xCmp(float &x1, float &x2)
     armor_data.y = pnpresult.y;
     armor_data.z = pnpresult.z;
     armor_data.is_get =pnpresult.find_armor;
+    armor_data.atocDistance = pnpresult.distance;
   }
 #endif // HeroArmorDetector_H
 #endif

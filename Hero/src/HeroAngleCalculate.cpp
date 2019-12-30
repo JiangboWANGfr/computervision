@@ -1,6 +1,6 @@
 /*
  * @Copyright: CS of BIT
- * @Author: 王占坤
+ * @Author: 王江波
  * @File name: 
  * @Version: 
  * @Date: 2019-08-31 10:33:12 +0800
@@ -9,23 +9,37 @@
  * @Description: 
  */
 #include "HeroAngleCalculate.hpp"
+#ifdef BIGARMOR //识别大装甲板
+B_S = true; 
 
+#endif
 #ifdef Hero
-void AngleCalculate::SetParameter_ForPnpSover(std::vector<cv::Point3f> &centerpoint_in_realworld_axis,std::vector<cv::Point2f> &centerpoint_in_camera_axis,Armor target, cv::Mat &_A_matrix, cv::Mat &distCoeffs)
+void AngleCalculate::SetParameter_ForPnpSover(Armor &target)
 {
+    
     //装甲板在世界坐标系中的坐标
     centerpoint_in_realworld_axis.clear();
-    centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 0, 0));
-    centerpoint_in_realworld_axis.push_back(cv::Point3f(134, 0, 0));
-    centerpoint_in_realworld_axis.push_back(cv::Point3f(134, 55, 0));
-    centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 55, 0));
+    if (B_S)
+    {
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 0, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(229, 0, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(299, 55, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 55, 0));
+    }
+    else
+    {
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 0, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(134, 0, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(134, 55, 0));
+        centerpoint_in_realworld_axis.push_back(cv::Point3f(0, 55, 0));
+    }
     //装甲板在图像坐标系下的坐标，因为裁剪过所以centerpoint_in_camera_axis等于target.rect[0] + cv::Point2f(pre_pt)
     //target.rect[]表示在裁剪过的图像中的坐标，Point2f(pre_pt)表示原始图片中的左下角的点
     centerpoint_in_camera_axis.clear();
-    centerpoint_in_camera_axis.push_back(target.rect[0] + cv::Point2f(pre_pt));
-    centerpoint_in_camera_axis.push_back(target.rect[2] + cv::Point2f(pre_pt));
-    centerpoint_in_camera_axis.push_back(target.rect[3] + cv::Point2f(pre_pt));
-    centerpoint_in_camera_axis.push_back(target.rect[1] + cv::Point2f(pre_pt));
+    centerpoint_in_camera_axis.push_back(target.rect[0]);
+    centerpoint_in_camera_axis.push_back(target.rect[2]);
+    centerpoint_in_camera_axis.push_back(target.rect[3]);
+    centerpoint_in_camera_axis.push_back(target.rect[1]);
     //设置相机内参
     _A_matrix.at<double>(0, 0) = 1453.68113; //      [ fx   0  cx ]
     _A_matrix.at<double>(1, 1) = 1453.28168; //      [  0  fy  cy ]
@@ -40,7 +54,7 @@ void AngleCalculate::SetParameter_ForPnpSover(std::vector<cv::Point3f> &centerpo
     distCoeffs.at<double>(0, 4) = 0.0;
 }
 //计算x y z
-void AngleCalculate::Calculate_x_y_z_in_camera_axis(Angle m_pnpresult,int &hh, cv::Mat &_R_matrix,cv::Mat &_t_matrix,double &newx,double &newy,double &newz)
+void AngleCalculate::Calculate_x_y_z_in_camera_axis(Angle &pnpresult)
 {
     double m00, m01, m02;
     double m10, m11, m12;
@@ -54,27 +68,35 @@ void AngleCalculate::Calculate_x_y_z_in_camera_axis(Angle m_pnpresult,int &hh, c
     m20 = _R_matrix.at<double>(2, 0);
     m21 = _R_matrix.at<double>(2, 0);
     m22 = _R_matrix.at<double>(2, 2);
-    newx = m00 * 67 + m01 * 27.5 + m02 * 0 + _t_matrix.at<double>(0, 0) - 35;   //76.4->35
-    newy = m10 * 67 + m11 * 27.5 + m12 * 0 + _t_matrix.at<double>(1, 0) + 39.2; //48.5->130
-    newz = m20 * 67 + m21 * 27.5 + m22 * 0 + _t_matrix.at<double>(2, 0);
     char tam1[100];
-    std::cout << "small armor!!!" << endl;
-    std::sprintf(tam1, "S");
-   // cv::putText(srcImage, tam1, cv::Point2i(armorDetectionLeft[filteredcenter[hh]].center / 2 + armorDetectionRight[filteredcenter[hh]].center / 2), FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
-
+    if (B_S)
+    {
+        newx = m00 * 114.5 + m01 * 27.5 + m02 * 0 + _t_matrix.at<double>(0, 0) - 76.4; //-76.4
+        newy = m10 * 114.5 + m11 * 27.5 + m12 * 0 + _t_matrix.at<double>(1, 0) - 80;   //-80
+        newz = m20 * 114.5 + m21 * 27.5 + m22 * 0 + _t_matrix.at<double>(2, 0);
+        std::cout << "big armor!!!" << endl;
+        std::sprintf(tam1, "B");
+    }
+    else
+    {
+        newx = m00 * 67 + m01 * 27.5 + m02 * 0 + _t_matrix.at<double>(0, 0) - 76.4; //76.4->35
+        newy = m10 * 67 + m11 * 27.5 + m12 * 0 + _t_matrix.at<double>(1, 0) - 80;   //48.5->130
+        newz = m20 * 67 + m21 * 27.5 + m22 * 0 + _t_matrix.at<double>(2, 0);
+        std::cout << "small armor!!!" << endl;
+        std::sprintf(tam1, "S");
+    }
     char tam2[100];
     std::sprintf(tam2, "center in cam(%0.0f,%0.0f,%0.0f)", newx, newy, newz);
-    //cv::putText(srcImage, tam2, Point(15, 30), FONT_HERSHEY_SIMPLEX, 0.4, cv::Scalar(0, 0, 255), 1);
     if (std::abs(newx) < 6000)
         pnpresult.x = newx;
     if (std::abs(newy) < 6000)
         pnpresult.y = newy;
     if (std::abs(newz) < 12000)
         pnpresult.z = newz;
-        pnpresult.find_armor = true;
+    pnpresult.find_armor = true;
 }
 //计算Pitch和yaw轴
-void AngleCalculate::calculate_pitch_and_yaw(Angle m_pnpresult,double &newx, double &newy, double &newz)
+void AngleCalculate::calculate_pitch_and_yaw(Angle &pnpresult)
 {
     float pitch, yaw;
     double vec[3];
@@ -85,22 +107,21 @@ void AngleCalculate::calculate_pitch_and_yaw(Angle m_pnpresult,double &newx, dou
     pitch = std::atan(vec[1] / vec[2]) * 180 / CV_PI; //因与刘的方向相反而作修改,zjh于2019.7.2
     pnpresult.yaw = yaw;
     pnpresult.pitch = pitch;
+    pnpresult.distance = sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
     char tam3[100];
-    std::sprintf(tam3, "tan yaw=%0.4f   tan pich=%0.4f", vec[0] / vec[2], vec[1] / vec[2]);
-    //cv::putText(srcImage, tam3, cv::Point(15, 45), FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 1);
+    //std::sprintf(tam3, "tan yaw=%0.4f   tan pich=%0.4f", vec[0] / vec[2], vec[1] / vec[2]);
     char tam4[100];
-    std::sprintf(tam4, "yaw=%0.4f   pitch=%0.4f", pnpresult.yaw, pnpresult.pitch);
-    //cv::putText(srcImage, tam4, cv::Point(15, 60), FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 1);
+    //std::sprintf(tam4, "yaw=%0.4f   pitch=%0.4f", pnpresult.yaw, pnpresult.pitch);
 }
 
-void AngleCalculate::pnpSolver(Angle m_pnpresult,int hh,Armor m_target,cv::Point2f pre_pt)
+void AngleCalculate::pnpSolver(Angle &pnpresult,Armor &target)
 {
-    SetParameter_ForPnpSover(centerpoint_in_realworld_axis,centerpoint_in_camera_axis,m_target, _A_matrix, distCoeffs);
+    SetParameter_ForPnpSover(target);
     cv::solvePnP(centerpoint_in_realworld_axis, centerpoint_in_camera_axis, _A_matrix, distCoeffs, rvec, tvec, false, SOLVEPNP_AP3P);
     cv::Rodrigues(rvec, _R_matrix); // converts Rotation Vector to Matrix
     _t_matrix = tvec;               // set translation matrix
-    Calculate_x_y_z_in_camera_axis(m_pnpresult,hh,_R_matrix,_t_matrix,newx,newy,newz);
-    calculate_pitch_and_yaw(m_pnpresult,newx, newy, newz);
+    Calculate_x_y_z_in_camera_axis(pnpresult);
+    calculate_pitch_and_yaw(pnpresult);
 }
 
 #endif
